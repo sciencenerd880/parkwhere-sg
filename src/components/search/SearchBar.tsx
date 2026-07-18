@@ -82,7 +82,7 @@ export default function SearchBar() {
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Search destination..."
+            placeholder="Where you going ah?"
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
             className="w-full h-14 pl-12 pr-12 rounded-full bg-white/75 backdrop-blur-3xl border-[0.5px] border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] text-[16px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-4 focus-visible:ring-blue-500/20 transition-all"
