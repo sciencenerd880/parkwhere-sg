@@ -239,22 +239,28 @@ export default function MapView() {
 
       if (isSelected) {
         // Selected marker: Full size, bright colors, shimmering glow
-        el.className = "flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden w-[36px] h-[36px] scale-110 z-20"
+        el.className = "flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden scale-110 z-20"
         el.style.background = c.bg
         el.style.border = "3px solid white"
         el.style.boxShadow = `0 4px 16px ${c.shadow}, 0 0 0 4px rgba(255,255,255,0.4)`
         el.style.opacity = "1"
+        el.style.minWidth = "36px"
+        el.style.height = "36px"
+        el.style.padding = "0 8px"
         span.style.fontSize = "13px"
         span.style.color = "white"
         shimmer.classList.add("animate-shimmer")
         shimmer.classList.remove("opacity-0")
       } else {
         // Unselected nearby markers: retain color but dim if another is selected
-        el.className = "flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden w-[24px] h-[24px] scale-100 z-10 hover:scale-110"
+        el.className = "flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden scale-100 z-10 hover:scale-110"
         el.style.background = c.bg
         el.style.border = "2px solid white"
         el.style.boxShadow = `0 2px 8px ${c.shadow}`
         el.style.opacity = selectedCarpark ? "0.4" : "0.95"
+        el.style.minWidth = "24px"
+        el.style.height = "24px"
+        el.style.padding = isUnknown ? "0" : "0 6px"
         span.style.fontSize = isUnknown ? "0px" : "10px"
         span.style.color = "white"
         shimmer.classList.remove("animate-shimmer")

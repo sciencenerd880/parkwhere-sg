@@ -22,6 +22,22 @@ export const AppleIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+export const MascotIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 100 100"
+    className={className}
+  >
+    <ellipse cx="28" cy="24" rx="12" ry="16" transform="rotate(-25 28 24)" fill="#007AFF" />
+    <ellipse cx="72" cy="24" rx="12" ry="16" transform="rotate(25 72 24)" fill="#007AFF" />
+    <circle cx="50" cy="52" r="34" fill="#3395FF" />
+    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#F5F9FF" />
+    <circle cx="38" cy="46" r="5" fill="#1C1C1E" />
+    <circle cx="62" cy="46" r="5" fill="#1C1C1E" />
+    <circle cx="50" cy="63" r="4.5" fill="#1C1C1E" />
+  </svg>
+)
+
 export const WazeIcon = ({ className }: { className?: string }) => (
   <svg
     role="img"

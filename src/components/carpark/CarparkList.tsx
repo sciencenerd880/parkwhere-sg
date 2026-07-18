@@ -77,7 +77,7 @@ export default function CarparkList() {
           </svg>
         </div>
         <p className="text-neutral-600 text-[15px] font-semibold tracking-tight">
-          No car parks found nearby
+          Aiyo, no carparks here lah
         </p>
         <p className="text-neutral-400 text-sm font-medium mt-1">
           Try searching another location

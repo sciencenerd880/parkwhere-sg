@@ -8,13 +8,13 @@ import LocationBanner from "@/components/search/LocationBanner"
 import CarparkList from "@/components/carpark/CarparkList"
 import { Navigation, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
+import { AppleIcon, GoogleMapsIcon, MascotIcon, WazeIcon } from "@/components/icons"
 
 export default function Home() {
   const { destination, error, selectedCarpark, setSelectedCarpark } =
     useParkingStore()
   const [showNavMenu, setShowNavMenu] = useState(false)
+  const [drawerExpanded, setDrawerExpanded] = useState(false)
 
   const handleNavigate = (app: "google" | "apple" | "waze") => {
     if (!selectedCarpark) return
@@ -42,15 +42,14 @@ export default function Home() {
       <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
         <div className="px-4 pt-4 pb-2 md:w-[420px] pointer-events-auto">
           <div className="flex items-center mb-4 px-1">
-            <div className="bg-white/75 backdrop-blur-3xl rounded-3xl px-3 py-2 shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5 inline-block">
-              <Image 
-                src="/logo.png" 
-                alt="ParkWhere SG" 
-                width={2172}
-                height={724}
-                className="h-9 md:h-11 w-auto object-contain"
-                priority
-              />
+            <div className="flex items-center gap-2 bg-white/75 backdrop-blur-3xl rounded-3xl pl-2 pr-3.5 py-2 shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5">
+              <MascotIcon className="h-7 w-7 md:h-8 md:w-8 shrink-0" />
+              <span className="text-base md:text-lg font-bold tracking-tight text-neutral-800">
+                ParkWhere
+              </span>
+              <span className="text-[10px] font-semibold text-white bg-emerald-500 px-1.5 py-0.5 rounded-full tracking-wide">
+                SG
+              </span>
             </div>
           </div>
           <SearchBar />
@@ -67,23 +66,12 @@ export default function Home() {
       {!destination && !error && (
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
           <div className="text-center px-8 -mt-20">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mx-auto mb-4 opacity-60"
-            >
-              <circle cx="12" cy="10" r="3" />
-              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
-            </svg>
+            <MascotIcon className="h-20 w-20 mx-auto mb-4 animate-pw-bob drop-shadow-[0_8px_16px_rgba(0,0,0,0.25)]" />
+            <p className="text-lg font-bold tracking-tight text-white mb-1.5">
+              Eh, where you parking today?
+            </p>
             <p className="text-sm font-medium tracking-wide text-white/70 max-w-xs mx-auto leading-relaxed">
-              Search for a destination or tap the location button to find car parks near you.
+              Key in your destination, I go chope you a lot.
             </p>
           </div>
         </div>
@@ -91,10 +79,19 @@ export default function Home() {
 
       {destination && (
         <div className="absolute bottom-4 left-4 right-4 z-20 md:bottom-0 md:left-auto md:right-6 md:top-24 md:w-[400px] md:bottom-6">
-          <div className="bg-white/75 backdrop-blur-3xl rounded-[32px] shadow-[0_12px_48px_rgba(0,0,0,0.12)] overflow-hidden border-[0.5px] border-black/5 max-h-[50vh] md:max-h-none md:h-full flex flex-col">
-            <div className="flex items-center justify-center pt-3 pb-2 shrink-0 md:hidden">
+          <div
+            className={cn(
+              "bg-white/75 backdrop-blur-3xl rounded-[32px] shadow-[0_12px_48px_rgba(0,0,0,0.12)] overflow-hidden border-[0.5px] border-black/5 md:max-h-none md:h-full flex flex-col transition-[max-height] duration-300 ease-out",
+              drawerExpanded ? "max-h-[78vh]" : "max-h-[46vh]",
+            )}
+          >
+            <button
+              type="button"
+              onClick={() => setDrawerExpanded((v) => !v)}
+              className="flex items-center justify-center pt-3 pb-2 shrink-0 md:hidden active:scale-95 transition-all"
+            >
               <div className="w-10 h-1.5 rounded-full bg-neutral-300/80" />
-            </div>
+            </button>
 
             {selectedCarpark && (
               <div className="flex items-center justify-between px-5 py-3.5 shrink-0 border-b border-black/5 bg-neutral-50/40">
