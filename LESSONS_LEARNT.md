@@ -15,6 +15,15 @@
 
 ---
 
+## 2026-07-18 — Multiple elements matched in E2E tests due to responsive layout duplication
+
+- **Symptom:** Playwright tests failed with `strict mode violation: getByPlaceholder(...) resolved to 2 elements`.
+- **Root Cause:** To support different responsive layouts (floating search on desktop, in-flow search on mobile), two `<SearchBar />` components were rendered in the DOM — one visible, one hidden via CSS (`hidden md:block` / `md:hidden`). Playwright`s `getByPlaceholder` and standard locators found both, violating strict mode.
+- **Fix:** Appended `:visible` pseudo-class to the locators in `tests/ui.spec.ts` (e.g. `locator("...:visible")`) and chained `.locator("visible=true")` to `getByPlaceholder` to ensure Playwright only interacts with the layout element actually visible to the user.
+- **Verification:** 18/18 E2E tests pass across Chromium, Firefox, and WebKit.
+- **Lesson:** When tests interact with components that are duplicated in the DOM for responsive CSS layout toggling, standard locators will fail strict mode. Always append Playwright`s `:visible` filter to target the actively rendered component.
+
+
 ## 2026-07-18 — Carpark markers pinned to top-left corner (invisible on map)
 
 - **Symptom:** After searching a destination, all 10 carpark markers render at viewport `(0, 0)` — hidden behind the logo/search bar — instead of being plotted around the destination on the map.

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useDestinationSearch } from "@/hooks/useDestinationSearch"
 import { useNearbyCarparks } from "@/hooks/useNearbyCarparks"
 import { useCurrentLocation } from "@/hooks/useCurrentLocation"
@@ -10,13 +10,14 @@ import { Input } from "@/components/ui/input"
 import { Search, Navigation, RotateCcw, MapPin, Loader2 } from "lucide-react"
 
 export default function SearchBar() {
-  const [query, setQuery] = useState("")
+  const { searchQuery, setSearchQuery, destination, isRefreshing, setIsRefreshing } =
+    useParkingStore()
   const { suggestions, search, selectResult } = useDestinationSearch()
   const { loadNearbyCarparks } = useNearbyCarparks()
-  const { destination, isRefreshing, setIsRefreshing } = useParkingStore()
   const { getCurrentLocation, isLocating, error, clearError } =
     useCurrentLocation()
   const inputRef = useRef<HTMLInputElement>(null)
+  const skipSearchRef = useRef(false)
 
   const handleSelect = (result: {
     lat: number
@@ -24,9 +25,18 @@ export default function SearchBar() {
     name: string
     address: string
   }) => {
-    setQuery(result.name || result.address)
+    skipSearchRef.current = true
+    setSearchQuery(result.name || result.address)
     selectResult(result)
   }
+
+  useEffect(() => {
+    if (skipSearchRef.current) {
+      skipSearchRef.current = false
+      return
+    }
+    search(searchQuery)
+  }, [searchQuery, search])
 
   useEffect(() => {
     if (destination) {
@@ -47,7 +57,8 @@ export default function SearchBar() {
       address: "Current location",
     }
 
-    setQuery(result.name)
+    skipSearchRef.current = true
+    setSearchQuery(result.name)
     selectResult(result)
   }
 
@@ -59,8 +70,7 @@ export default function SearchBar() {
   }
 
   const handleQueryChange = (value: string) => {
-    setQuery(value)
-    search(value)
+    setSearchQuery(value)
     if (error) clearError()
   }
 
@@ -72,32 +82,32 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="relative w-full max-w-lg mx-auto">
+    <div className="relative w-full">
       <form
         onSubmit={handleSubmit}
-        className="relative flex items-center gap-3"
+        className="relative flex items-center gap-2.5"
       >
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 group-focus-within:text-blue-500 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 group-focus-within:text-pw-teal transition-colors" />
           <Input
             ref={inputRef}
             type="text"
             placeholder="Where you going ah?"
-            value={query}
+            value={searchQuery}
             onChange={(e) => handleQueryChange(e.target.value)}
-            className="w-full h-14 pl-12 pr-12 rounded-full bg-white/75 backdrop-blur-3xl border-[0.5px] border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] text-[16px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-4 focus-visible:ring-blue-500/20 transition-all"
+            className="w-full h-13 pl-12 pr-13 rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-[15px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-4 focus-visible:ring-pw-teal/15 focus-visible:border-pw-teal/40 transition-all"
           />
           <button
             type="button"
             onClick={handleCurrentLocation}
             disabled={isLocating}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full bg-pw-mint text-pw-teal hover:bg-pw-teal hover:text-white active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             title="Use current location"
           >
             {isLocating ? (
-              <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Navigation className="h-4 w-4 text-blue-500" />
+              <Navigation className="h-4 w-4 fill-current" />
             )}
           </button>
         </div>
@@ -106,11 +116,11 @@ export default function SearchBar() {
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="shrink-0 h-14 w-14 flex items-center justify-center rounded-full bg-white/75 backdrop-blur-3xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5 hover:bg-white transition-all disabled:opacity-50 active:scale-95"
+            className="shrink-0 h-13 w-13 flex items-center justify-center rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-neutral-500 hover:text-pw-teal transition-all disabled:opacity-50 active:scale-95"
             title="Refresh availability"
           >
             <RotateCcw
-              className={`h-5 w-5 text-neutral-600 ${
+              className={`h-5 w-5 ${
                 isRefreshing ? "animate-spin" : ""
               }`}
             />
@@ -119,8 +129,8 @@ export default function SearchBar() {
       </form>
 
       {error && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white/85 backdrop-blur-3xl text-neutral-700 text-[13px] px-4 py-3 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5 font-medium flex items-start gap-2 z-50">
-          <MapPin className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+        <div className="absolute top-full left-0 right-0 mt-3 bg-white text-neutral-700 text-[13px] px-4 py-3 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5 font-medium flex items-start gap-2 z-50">
+          <MapPin className="h-4 w-4 text-pw-teal shrink-0 mt-0.5" />
           <span className="flex-1">{error.message}</span>
           <button
             type="button"
@@ -134,23 +144,23 @@ export default function SearchBar() {
       )}
 
       {suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white/75 backdrop-blur-3xl rounded-3xl shadow-[0_12px_48px_rgba(0,0,0,0.12)] z-50 max-h-72 overflow-y-auto border-[0.5px] border-black/5 p-2">
+        <div className="absolute top-full left-0 right-0 mt-2.5 bg-white rounded-2xl shadow-[0_12px_48px_rgba(0,0,0,0.12)] z-50 max-h-72 overflow-y-auto border-[0.5px] border-black/5 p-1.5">
           {suggestions.map((r, i) => (
             <button
               key={i}
               type="button"
-              className="w-full flex items-center gap-3 text-left px-4 py-3 rounded-2xl hover:bg-black/5 active:scale-[0.98] transition-all"
+              className="w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl hover:bg-pw-mint/60 active:scale-[0.99] transition-all"
               onClick={() => handleSelect(r)}
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-black/5 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-neutral-500" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pw-mint flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-pw-teal" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-neutral-900 text-[15px] tracking-tight truncate">
+                <div className="font-semibold text-neutral-900 text-[14px] tracking-tight truncate">
                   {r.name || r.address}
                 </div>
                 {r.name && r.address && (
-                  <div className="text-[13px] font-medium text-neutral-500 truncate mt-0.5">
+                  <div className="text-[12px] font-medium text-neutral-500 truncate mt-0.5">
                     {r.address}
                   </div>
                 )}

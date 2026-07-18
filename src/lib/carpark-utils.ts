@@ -20,6 +20,16 @@ export function findNearbyCarparks(
     .map((x) => x.cp)
 }
 
+export function filterCarparks(
+  carparks: CarparkWithDistance[],
+  availableNowOnly: boolean,
+): CarparkWithDistance[] {
+  if (!availableNowOnly) return carparks
+  return carparks.filter(
+    (cp) => cp.lotsAvailable !== null && cp.lotsAvailable > 0,
+  )
+}
+
 export function getAvailabilityStatus(lotsAvailable: number | null): AvailabilityStatus {
   if (lotsAvailable === null) return "unknown"
   if (lotsAvailable === 0) return "full"

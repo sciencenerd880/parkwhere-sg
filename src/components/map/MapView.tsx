@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback } from "react"
 import maplibregl from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css"
 import { useParkingStore } from "@/store/useParkingStore"
-import { getAvailabilityStatus } from "@/lib/carpark-utils"
+import { filterCarparks, getAvailabilityStatus } from "@/lib/carpark-utils"
 
 const ONEMAP_TILES =
   "https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png"
@@ -15,9 +15,9 @@ const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: bool
   if (isDesktop) {
     return {
       top: 0,
-      bottom: opts.hasSelectedCarpark ? 120 : 0,
+      bottom: 0,
       left: 0,
-      right: opts.hasDestination ? 450 : 0,
+      right: 0,
     }
   }
   return {
@@ -32,12 +32,12 @@ const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: bool
   }
 }
 
-const STATUS_MUTED: Record<string, { bg: string; border: string; shadow: string }> = {
-  healthy: { bg: "#7FB069", border: "#7FB069", shadow: "rgba(127, 176, 105, 0.4)" },
-  limited: { bg: "#E9C46A", border: "#E9C46A", shadow: "rgba(233, 196, 106, 0.4)" },
-  very_limited: { bg: "#E76F51", border: "#E76F51", shadow: "rgba(231, 111, 81, 0.4)" },
-  full: { bg: "#D62828", border: "#D62828", shadow: "rgba(214, 40, 40, 0.4)" },
-  unknown: { bg: "#E5E5E5", border: "#D4D4D4", shadow: "rgba(0, 0, 0, 0.1)" },
+const STATUS_MUTED: Record<string, { bg: string; shadow: string }> = {
+  healthy: { bg: "#2E9E63", shadow: "rgba(46, 158, 99, 0.4)" },
+  limited: { bg: "#E8A33D", shadow: "rgba(232, 163, 61, 0.4)" },
+  very_limited: { bg: "#E2762E", shadow: "rgba(226, 110, 46, 0.4)" },
+  full: { bg: "#D64541", shadow: "rgba(214, 69, 65, 0.4)" },
+  unknown: { bg: "#D4D4D4", shadow: "rgba(0, 0, 0, 0.1)" },
 }
 
 export default function MapView({ drawerExpanded = false }: { drawerExpanded?: boolean }) {
@@ -48,7 +48,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
   const destMarkerRef = useRef<maplibregl.Marker | null>(null)
   const userMarkerRef = useRef<maplibregl.Marker | null>(null)
 
-  const { destination, carparks, selectedCarpark, setSelectedCarpark, setMapView, userLocation } =
+  const { destination, carparks, selectedCarpark, setSelectedCarpark, setMapView, userLocation, availableNowOnly } =
     useParkingStore()
 
   const clearMarkers = useCallback(() => {
@@ -211,7 +211,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
 
     clearMarkers()
 
-    carparks.forEach((cp, i) => {
+    filterCarparks(carparks, availableNowOnly).forEach((cp, i) => {
       const el = document.createElement("div")
       // Start with neutral style
       el.innerHTML = `
@@ -234,7 +234,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
       markersRef.current.push(marker)
       markerElementsRef.current.set(cp.carparkNo, child)
     })
-  }, [carparks, clearMarkers, setSelectedCarpark]) // Removed selectedCarpark to prevent recreation
+  }, [carparks, availableNowOnly, clearMarkers, setSelectedCarpark]) // Removed selectedCarpark to prevent recreation
 
   // Handle Styling for Selected vs Unselected
   useEffect(() => {
@@ -254,7 +254,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
       span.innerText = isUnknown ? "" : labelText
 
       if (isSelected) {
-        // Selected marker: Full size, bright colors, shimmering glow
+        // Selected marker: bigger circle, bright colors, shimmering glow
         el.classList.remove("scale-100", "hover:scale-110")
         el.classList.add("scale-110", "z-20")
         el.classList.remove("z-10")
@@ -262,10 +262,11 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
         el.style.border = "3px solid white"
         el.style.boxShadow = `0 4px 16px ${c.shadow}, 0 0 0 4px rgba(255,255,255,0.4)`
         el.style.opacity = "1"
-        el.style.minWidth = "36px"
-        el.style.height = "36px"
-        el.style.padding = "0 8px"
-        span.style.fontSize = "13px"
+        el.style.width = "38px"
+        el.style.minWidth = "38px"
+        el.style.height = "38px"
+        el.style.padding = "0"
+        span.style.fontSize = isUnknown ? "0px" : labelText.length >= 3 ? "11px" : "13px"
         span.style.color = "white"
         shimmer.classList.add("animate-shimmer")
         shimmer.classList.remove("opacity-0")
@@ -277,10 +278,11 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
         el.style.border = "2px solid white"
         el.style.boxShadow = `0 2px 8px ${c.shadow}`
         el.style.opacity = selectedCarpark ? "0.4" : "0.95"
-        el.style.minWidth = "24px"
-        el.style.height = "24px"
-        el.style.padding = isUnknown ? "0" : "0 6px"
-        span.style.fontSize = isUnknown ? "0px" : "10px"
+        el.style.width = "28px"
+        el.style.minWidth = "28px"
+        el.style.height = "28px"
+        el.style.padding = "0"
+        span.style.fontSize = isUnknown ? "0px" : labelText.length >= 3 ? "9px" : "10px"
         span.style.color = "white"
         shimmer.classList.remove("animate-shimmer")
         shimmer.classList.add("opacity-0")

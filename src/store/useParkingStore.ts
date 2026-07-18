@@ -18,6 +18,9 @@ interface ParkingStore {
   mapView: MapViewState
   userLocation: UserLocation | null
   locationPermission: LocationPermission
+  availableNowOnly: boolean
+  favorites: string[]
+  searchQuery: string
 
   setDestination: (dest: Destination | null) => void
   setSelectedCarpark: (cp: CarparkWithDistance | null) => void
@@ -29,6 +32,10 @@ interface ParkingStore {
   setMapView: (view: MapViewState) => void
   setUserLocation: (loc: UserLocation | null) => void
   setLocationPermission: (status: LocationPermission) => void
+  toggleAvailableNow: () => void
+  toggleFavorite: (carparkNo: string) => void
+  setSearchQuery: (q: string) => void
+  clearDestination: () => void
 }
 
 export const useParkingStore = create<ParkingStore>((set) => ({
@@ -46,6 +53,9 @@ export const useParkingStore = create<ParkingStore>((set) => ({
   },
   userLocation: null,
   locationPermission: "prompt",
+  availableNowOnly: false,
+  favorites: [],
+  searchQuery: "",
 
   setDestination: (dest) => set({ destination: dest, selectedCarpark: null }),
   setSelectedCarpark: (cp) => set({ selectedCarpark: cp }),
@@ -57,4 +67,20 @@ export const useParkingStore = create<ParkingStore>((set) => ({
   setMapView: (view) => set({ mapView: view }),
   setUserLocation: (loc) => set({ userLocation: loc }),
   setLocationPermission: (status) => set({ locationPermission: status }),
+  toggleAvailableNow: () =>
+    set((s) => ({ availableNowOnly: !s.availableNowOnly })),
+  toggleFavorite: (carparkNo) =>
+    set((s) => ({
+      favorites: s.favorites.includes(carparkNo)
+        ? s.favorites.filter((n) => n !== carparkNo)
+        : [...s.favorites, carparkNo],
+    })),
+  setSearchQuery: (q) => set({ searchQuery: q }),
+  clearDestination: () =>
+    set({
+      destination: null,
+      selectedCarpark: null,
+      carparks: [],
+      error: null,
+    }),
 }))

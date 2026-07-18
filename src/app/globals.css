@@ -10,6 +10,15 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+  --color-pw-teal: #0E7C6B;
+  --color-pw-teal-dark: #0B6B5D;
+  --color-pw-teal-face: #14A08C;
+  --color-pw-mint: #E9F7F3;
+  --color-pw-green: #2E9E63;
+  --color-pw-amber: #E8A33D;
+  --color-pw-orange: #E2762E;
+  --color-pw-red: #D64541;
+  --color-pw-ink: #153B37;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -133,7 +142,7 @@
 /* Applies only to the canvas, not to the marker overlays */
 
 .map-container .maplibregl-canvas-container {
-  filter: saturate(0.8) contrast(1.05) brightness(1.05);
+  filter: saturate(0.65) contrast(1.0) brightness(1.07);
 }
 
 /* ── Marker entry ── */

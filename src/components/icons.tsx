@@ -22,19 +22,41 @@ export const AppleIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export const MascotIcon = ({ className }: { className?: string }) => (
+export const MascotIcon = ({
+  className,
+  withBadge = false,
+}: {
+  className?: string
+  withBadge?: boolean
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 100 100"
     className={className}
   >
-    <ellipse cx="28" cy="24" rx="12" ry="16" transform="rotate(-25 28 24)" fill="#007AFF" />
-    <ellipse cx="72" cy="24" rx="12" ry="16" transform="rotate(25 72 24)" fill="#007AFF" />
-    <circle cx="50" cy="52" r="34" fill="#3395FF" />
-    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#F5F9FF" />
-    <circle cx="38" cy="46" r="5" fill="#1C1C1E" />
-    <circle cx="62" cy="46" r="5" fill="#1C1C1E" />
-    <circle cx="50" cy="63" r="4.5" fill="#1C1C1E" />
+    {withBadge && (
+      <g>
+        <rect x="70" y="6" width="22" height="22" rx="6" fill="#3B82F6" />
+        <text
+          x="81"
+          y="22"
+          textAnchor="middle"
+          fontSize="15"
+          fontWeight="800"
+          fill="white"
+          fontFamily="system-ui, sans-serif"
+        >
+          P
+        </text>
+      </g>
+    )}
+    <ellipse cx="28" cy="24" rx="12" ry="16" transform="rotate(-25 28 24)" fill="#0E7C6B" />
+    <ellipse cx="72" cy="24" rx="12" ry="16" transform="rotate(25 72 24)" fill="#0E7C6B" />
+    <circle cx="50" cy="52" r="34" fill="#14A08C" />
+    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#E9F7F3" />
+    <circle cx="38" cy="46" r="5" fill="#153B37" />
+    <circle cx="62" cy="46" r="5" fill="#153B37" />
+    <circle cx="50" cy="63" r="4.5" fill="#153B37" />
   </svg>
 )
 
