@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <div className="relative h-dvh w-full overflow-hidden bg-neutral-50">
       <div className="absolute inset-0">
-        <MapView />
+        <MapView drawerExpanded={drawerExpanded} />
       </div>
 
       <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
@@ -80,6 +80,7 @@ export default function Home() {
       {destination && (
         <div className="absolute bottom-4 left-4 right-4 z-20 md:bottom-0 md:left-auto md:right-6 md:top-24 md:w-[400px] md:bottom-6">
           <div
+            data-testid="carpark-panel"
             className={cn(
               "bg-white/75 backdrop-blur-3xl rounded-[32px] shadow-[0_12px_48px_rgba(0,0,0,0.12)] overflow-hidden border-[0.5px] border-black/5 md:max-h-none md:h-full flex flex-col transition-[max-height] duration-300 ease-out",
               drawerExpanded ? "max-h-[78vh]" : "max-h-[46vh]",

@@ -5,7 +5,7 @@ test.describe('Destination marker visibility', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
 
-    const searchInput = page.getByPlaceholder('Search destination...');
+    const searchInput = page.getByPlaceholder('Where you going ah?');
     await searchInput.fill('764675');
     
     const firstResult = page.locator('button.w-full.flex.items-center.gap-3').first();
@@ -19,7 +19,7 @@ test.describe('Destination marker visibility', () => {
     const markerBox = await marker.boundingBox();
     expect(markerBox).not.toBeNull();
 
-    const container = page.locator('.bg-white\\/95.backdrop-blur-2xl').first();
+    const container = page.locator('[data-testid="carpark-panel"]');
     if (await container.isVisible()) {
       const panelBox = await container.boundingBox();
       if (panelBox && markerBox) {
@@ -39,7 +39,7 @@ test.describe('Destination marker visibility', () => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');
 
-    const searchInput = page.getByPlaceholder('Search destination...');
+    const searchInput = page.getByPlaceholder('Where you going ah?');
     await searchInput.fill('764675');
     
     const firstResult = page.locator('button.w-full.flex.items-center.gap-3').first();
@@ -53,7 +53,7 @@ test.describe('Destination marker visibility', () => {
     const markerBox = await marker.boundingBox();
     expect(markerBox).not.toBeNull();
 
-    const container = page.locator('.bg-white\\/95.backdrop-blur-2xl').first();
+    const container = page.locator('[data-testid="carpark-panel"]');
     if (await container.isVisible()) {
       const panelBox = await container.boundingBox();
       

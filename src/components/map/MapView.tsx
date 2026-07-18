@@ -9,12 +9,27 @@ import { getAvailabilityStatus } from "@/lib/carpark-utils"
 const ONEMAP_TILES =
   "https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png"
 
-const getMapPadding = (hasSelectedCarpark: boolean = false) => {
+const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: boolean; drawerExpanded: boolean }) => {
   if (typeof window === "undefined") return { top: 0, bottom: 0, left: 0, right: 0 }
   const isDesktop = window.innerWidth >= 768
-  return isDesktop
-    ? { top: 0, bottom: hasSelectedCarpark ? 120 : 0, left: 0, right: 450 }
-    : { top: 0, bottom: window.innerHeight * (hasSelectedCarpark ? 0.6 : 0.45), left: 0, right: 0 }
+  if (isDesktop) {
+    return {
+      top: 0,
+      bottom: opts.hasSelectedCarpark ? 120 : 0,
+      left: 0,
+      right: opts.hasDestination ? 450 : 0,
+    }
+  }
+  return {
+    top: 0,
+    bottom: opts.hasDestination
+      ? window.innerHeight * (opts.drawerExpanded ? 0.8 : 0.5)
+      : opts.hasSelectedCarpark
+        ? window.innerHeight * 0.6
+        : 0,
+    left: 0,
+    right: 0,
+  }
 }
 
 const STATUS_MUTED: Record<string, { bg: string; border: string; shadow: string }> = {
@@ -25,7 +40,7 @@ const STATUS_MUTED: Record<string, { bg: string; border: string; shadow: string 
   unknown: { bg: "#E5E5E5", border: "#D4D4D4", shadow: "rgba(0, 0, 0, 0.1)" },
 }
 
-export default function MapView() {
+export default function MapView({ drawerExpanded = false }: { drawerExpanded?: boolean }) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<maplibregl.Marker[]>([])
@@ -133,12 +148,12 @@ export default function MapView() {
     map.flyTo({
       center: [destination.lng, destination.lat],
       zoom: 15,
-      padding: getMapPadding(!!selectedCarpark),
+      padding: getMapPadding({ hasDestination: true, hasSelectedCarpark: !!selectedCarpark, drawerExpanded }),
       duration: 1500,
     })
 
     return clearDestinationMarker
-  }, [destination, clearDestinationMarker, selectedCarpark])
+  }, [destination, clearDestinationMarker, selectedCarpark, drawerExpanded])
 
   // Handle User Location Marker
   useEffect(() => {
@@ -167,26 +182,27 @@ export default function MapView() {
       map.flyTo({
         center: [userLocation.lng, userLocation.lat],
         zoom: 15,
-        padding: getMapPadding(!!selectedCarpark),
+        padding: getMapPadding({ hasDestination: false, hasSelectedCarpark: !!selectedCarpark, drawerExpanded }),
         duration: 1200,
       })
     }
 
     return clearUserLocationMarker
-  }, [userLocation, clearUserLocationMarker, destination, selectedCarpark])
+  }, [userLocation, clearUserLocationMarker, destination, selectedCarpark, drawerExpanded])
 
   // Fly to selected carpark
   useEffect(() => {
     const map = mapRef.current
     if (!map || !selectedCarpark) return
 
+    const hasDest = !!destination
     map.flyTo({
       center: [selectedCarpark.lng, selectedCarpark.lat],
       zoom: 16,
-      padding: getMapPadding(true),
+      padding: getMapPadding({ hasDestination: hasDest, hasSelectedCarpark: true, drawerExpanded }),
       duration: 800,
     })
-  }, [selectedCarpark])
+  }, [selectedCarpark, destination, drawerExpanded])
 
   // Handle Carpark Markers Creation
   useEffect(() => {
@@ -199,7 +215,7 @@ export default function MapView() {
       const el = document.createElement("div")
       // Start with neutral style
       el.innerHTML = `
-        <div class="flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 animate-marker-in relative overflow-hidden" 
+        <div class="flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 animate-marker-in overflow-hidden"
              style="animation-delay: ${i * 30}ms;">
           <div class="marker-shimmer absolute inset-0 bg-white/40 pointer-events-none opacity-0"></div>
           <span class="marker-label font-bold text-white z-10 transition-colors duration-300"></span>
@@ -239,7 +255,9 @@ export default function MapView() {
 
       if (isSelected) {
         // Selected marker: Full size, bright colors, shimmering glow
-        el.className = "flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden scale-110 z-20"
+        el.classList.remove("scale-100", "hover:scale-110")
+        el.classList.add("scale-110", "z-20")
+        el.classList.remove("z-10")
         el.style.background = c.bg
         el.style.border = "3px solid white"
         el.style.boxShadow = `0 4px 16px ${c.shadow}, 0 0 0 4px rgba(255,255,255,0.4)`
@@ -253,7 +271,8 @@ export default function MapView() {
         shimmer.classList.remove("opacity-0")
       } else {
         // Unselected nearby markers: retain color but dim if another is selected
-        el.className = "flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 relative overflow-hidden scale-100 z-10 hover:scale-110"
+        el.classList.remove("scale-110", "z-20")
+        el.classList.add("scale-100", "z-10", "hover:scale-110")
         el.style.background = c.bg
         el.style.border = "2px solid white"
         el.style.boxShadow = `0 2px 8px ${c.shadow}`
