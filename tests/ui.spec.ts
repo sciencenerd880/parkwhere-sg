@@ -1,6 +1,31 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Destination marker visibility', () => {
+  test('carpark markers should be positioned on the map, not clustered at (0,0)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+
+    const searchInput = page.getByPlaceholder('Where you going ah?');
+    await searchInput.fill('764675');
+
+    const firstResult = page.locator('button.w-full.flex.items-center.gap-3').first();
+    await firstResult.waitFor({ state: 'visible' });
+    await firstResult.click();
+
+    await page.waitForTimeout(4000);
+
+    const positions = await page.evaluate(() => {
+      const markers = [...document.querySelectorAll('.maplibregl-marker')];
+      return markers.map((m) => {
+        const r = m.getBoundingClientRect();
+        return { x: Math.round(r.x), y: Math.round(r.y) };
+      });
+    });
+
+    expect(positions.length).toBeGreaterThan(1);
+    const onMap = positions.filter((p) => p.x > 50 && p.y > 50);
+    expect(onMap.length).toBeGreaterThanOrEqual(3);
+  });
   test('desktop panel should not obscure marker', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
