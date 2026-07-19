@@ -15,6 +15,19 @@
 
 ---
 
+## 2026-07-19 — Mobile selected-carpark flow: peek state, sticky pinnning, and row exclusion
+
+- **Symptom:** Selecting a carpark on mobile forced the drawer to 78vh (expanded), covering most of the map right when the user most wants to see the pin location. The selected card also appeared twice — once in the detail card and once in the row list — and would scroll away while browsing.
+- **Root Cause:** The mobile drawer had only two boolean states: collapsed (46vh) and expanded (78vh), with no awareness of whether a carpark was selected. Both states showed PanelHeader + list rows, and both included the selected carpark card.
+- **Fix:**
+  - Introduced a `peek` state: `selectedCarpark && !drawerExpanded` sets the drawer to `max-h-[36vh]`, showing just a "See all ▴" handle and the selected detail card. `page.tsx:70-82`.
+  - Auto-collapse to peek on first selection via a `useRef(selectedCarpark)` check; subsequent selections while expanded keep the drawer expanded. `page.tsx:68-74`.
+  - Expanded mode now renders the selected `CarparkDetail` as `sticky top-0` above the list, and `CarparkList` receives `excludeCarparkNo` to strip the selected carpark from the row list, eliminating the duplicate. `page.tsx:151-159`, `CarparkList.tsx:27-31`.
+  - `getMapPadding` updated with a third mobile bottom-padding tier for peek (`innerHeight * 0.42`) so the selected pin`s `flyTo` centers it in the visible map area above the peek card. `MapView.tsx:28-30`.
+- **Verification:** 23/24 Playwright tests pass (one known WebKit API timeout flake); new mobile tests assert peek height strictly below 42vh, single address occurrence in expanded panel, and sticky card remains visible after scrolling the list.
+- **Lesson:** When a floating UI panel has multiple logical states that affect map viewport occlusion, model them as a state machine (not booleans) and keep the map padding in lock-step with each state. The selected-carpark card should be pinned (sticky) and excluded from the scrollable list to prevent duplicates — this mirrors the "detail master-detail" pattern common in mobile list views.
+
+
 ## 2026-07-18 — Multiple elements matched in E2E tests due to responsive layout duplication
 
 - **Symptom:** Playwright tests failed with `strict mode violation: getByPlaceholder(...) resolved to 2 elements`.

@@ -24,7 +24,11 @@ function SkeletonRow() {
   )
 }
 
-export default function CarparkList() {
+export default function CarparkList({
+  excludeCarparkNo,
+}: {
+  excludeCarparkNo?: string
+}) {
   const {
     carparks,
     selectedCarpark,
@@ -52,7 +56,9 @@ export default function CarparkList() {
     )
   }
 
-  const visible = filterCarparks(carparks, availableNowOnly)
+  const visible = filterCarparks(carparks, availableNowOnly).filter(
+    (cp) => cp.carparkNo !== excludeCarparkNo,
+  )
 
   if (visible.length === 0) {
     return (

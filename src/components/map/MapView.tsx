@@ -23,7 +23,13 @@ const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: bool
   return {
     top: 0,
     bottom: opts.hasDestination
-      ? window.innerHeight * (opts.drawerExpanded ? 0.8 : 0.5)
+      ? window.innerHeight * (
+          opts.drawerExpanded
+            ? 0.8
+            : opts.hasSelectedCarpark
+              ? 0.42
+              : 0.55
+        )
       : opts.hasSelectedCarpark
         ? window.innerHeight * 0.6
         : 0,

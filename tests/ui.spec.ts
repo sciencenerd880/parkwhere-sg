@@ -137,3 +137,56 @@ test.describe('Sidebar and detail card', () => {
     await expect(panel.getByText(/Selected Car Park/i)).toBeVisible();
   });
 });
+
+test.describe('Mobile peek and expand flow', () => {
+  test('selecting a carpark on mobile should collapse drawer to peek height', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    await searchDestination(page);
+
+    const firstRow = page
+      .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
+      .first();
+    await firstRow.waitFor({ state: 'visible' });
+    await firstRow.click();
+    await page.waitForTimeout(600);
+
+    const panelBox = await page.locator('[data-testid="carpark-panel"]:visible').boundingBox();
+    expect(panelBox).not.toBeNull();
+    const vh = 812;
+    expect(panelBox!.height).toBeLessThan(vh * 0.42);
+  });
+
+  test('expanding drawer shows sticky detail card and excludes selected row', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    await searchDestination(page);
+
+    const firstRow = page
+      .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
+      .first();
+    await firstRow.waitFor({ state: 'visible' });
+    const addr = await firstRow.evaluate((el) =>
+      el.querySelector('h3')?.textContent?.trim(),
+    );
+    await firstRow.click();
+
+    const expandBtn = page.locator('[data-testid="carpark-panel"]:visible').getByText('See all');
+    await expandBtn.click();
+    await page.waitForTimeout(600);
+
+    const panel = page.locator('[data-testid="carpark-panel"]:visible');
+    await expect(panel.getByText('Navigate Here')).toBeVisible();
+
+    const occurrences = await panel.locator(`text=${addr}`).count();
+    expect(occurrences).toBe(1);
+
+    const listArea = panel.locator('.overflow-y-auto').first();
+    await listArea.evaluate((el) => el.scrollTo({ top: 300 }));
+    await page.waitForTimeout(300);
+    const detailBox = await panel.locator('h2').first().boundingBox();
+    expect(detailBox).not.toBeNull();
+    expect(detailBox!.y).toBeGreaterThan(0);
+    expect(detailBox!.y).toBeLessThan(500);
+  });
+});

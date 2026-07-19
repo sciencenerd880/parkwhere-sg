@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParkingStore } from "@/store/useParkingStore"
 import { filterCarparks } from "@/lib/carpark-utils"
 import MapView from "@/components/map/MapView"
@@ -12,6 +12,7 @@ import CarparkList from "@/components/carpark/CarparkList"
 import CarparkDetail from "@/components/carpark/CarparkDetail"
 import { MascotIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
+import { ChevronUp } from "lucide-react"
 
 function Logo() {
   return (
@@ -65,8 +66,17 @@ export default function Home() {
   const { destination, error, selectedCarpark, carparks, availableNowOnly } =
     useParkingStore()
   const [drawerExpanded, setDrawerExpanded] = useState(false)
+  const prevSelectedRef = useRef(selectedCarpark)
+
+  useEffect(() => {
+    if (selectedCarpark && !prevSelectedRef.current) {
+      setDrawerExpanded(false)
+    }
+    prevSelectedRef.current = selectedCarpark
+  }, [selectedCarpark])
 
   const visibleCount = filterCarparks(carparks, availableNowOnly).length
+  const isPeek = !!selectedCarpark && !drawerExpanded
 
   return (
     <div className="h-dvh w-full flex flex-col bg-white overflow-hidden">
@@ -120,21 +130,53 @@ export default function Home() {
                 data-testid="carpark-panel"
                 className={cn(
                   "bg-white rounded-[28px] shadow-[0_12px_48px_rgba(0,0,0,0.14)] overflow-hidden border-[0.5px] border-black/5 flex flex-col transition-[max-height] duration-300 ease-out",
-                  drawerExpanded ? "max-h-[78vh]" : "max-h-[46vh]",
+                  isPeek
+                    ? "max-h-[36vh]"
+                    : drawerExpanded
+                      ? "max-h-[78vh]"
+                      : "max-h-[46vh]",
                 )}
               >
-                <button
-                  type="button"
-                  onClick={() => setDrawerExpanded((v) => !v)}
-                  className="flex items-center justify-center pt-3 pb-1.5 shrink-0 active:scale-95 transition-all"
-                >
-                  <div className="w-10 h-1.5 rounded-full bg-neutral-300/80" />
-                </button>
-                <PanelHeader count={visibleCount} />
-                {selectedCarpark && <CarparkDetail />}
-                <div className="flex-1 overflow-y-auto scrollbar-hide">
-                  <CarparkList />
-                </div>
+                {isPeek ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setDrawerExpanded(true)}
+                      className="flex items-center justify-center gap-1 py-2.5 shrink-0 text-pw-teal text-[13px] font-semibold tracking-tight w-full active:scale-95 transition-all"
+                    >
+                      <span className="text-neutral-400 text-xs font-normal">
+                        See all
+                      </span>
+                      <ChevronUp className="h-4 w-4" />
+                    </button>
+                    <div className="flex-1 overflow-y-auto scrollbar-hide px-2 pb-2">
+                      <CarparkDetail />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setDrawerExpanded((v) => !v)}
+                      className="flex items-center justify-center pt-3 pb-1.5 shrink-0 active:scale-95 transition-all"
+                    >
+                      <div className="w-10 h-1.5 rounded-full bg-neutral-300/80" />
+                    </button>
+                    <PanelHeader count={visibleCount} />
+                    <div className="flex-1 overflow-y-auto scrollbar-hide">
+                      {drawerExpanded && selectedCarpark && (
+                        <div className="sticky top-0 z-10 bg-white px-2 pb-2">
+                          <CarparkDetail />
+                        </div>
+                      )}
+                      <CarparkList
+                        excludeCarparkNo={
+                          drawerExpanded ? selectedCarpark?.carparkNo : undefined
+                        }
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
