@@ -15,6 +15,16 @@
 
 ---
 
+## 2026-07-21 — Mobile empty-state text invisible over map background
+
+- **Symptom:** On mobile, the "Eh, where you parking today?" text and mascot were placed directly over the map layer. Black (`text-neutral-800`) text on a white/style map with roads, labels, and POIs was hard to read — the content visually collapsed into the background.
+- **Root Cause:** The empty-state container was a plain `div` with `text-center` and `px-8`. No background, no blur, no shadow — the text floated transparently over the map canvas with no visual anchor. `src/app/page.tsx:122-132`.
+- **Fix:** Wrapped the text/mascot in a frosted glass card using the app's existing glassmorphism tokens: `bg-white/75 backdrop-blur-3xl border-[0.5px] border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-2xl px-6 py-5`. This matches the search results panel, favourites card, and error banner — consistent pattern throughout the app.
+- **Verification:** `npx tsc --noEmit` → clean. `npm run lint` → clean.
+- **Lesson:** Any text-over-map overlay must have a background treatment (glassmorphism card, solid background, or text shadow) to guarantee readability against the full range of map tile colours (roads, parks, water, labels). For ParkWhere's Cupertino design language, glassmorphism is the default — never place plain text over a map without `bg-white/75 backdrop-blur-xl` or equivalent. This applies to all floating UI: search bar, error banner, empty state, results panel.
+
+---
+
 ## 2026-07-21 — Persisting favourites with zustand/persist + localStorage
 
 - **Symptom:** Favourites needed to survive page reloads and repeat visits. Could go with localStorage (client-side) or a server-side database (Postgres via Vercel Postgres / Supabase).
@@ -25,6 +35,8 @@
 - **The `partialize` trick:** By default, `persist` saves the entire store (destination, carparks, mapView, etc.). `partialize: (state) => ({ favorites: state.favorites })` restricts the persisted slice to just favourites, keeping the stored JSON tiny (`["ACB", "ACM"]`).
 - **Verification:** `npx tsc --noEmit` → clean. `npm run lint` → clean. `npm run build` → success. 4 new Playwright tests passing for favourites UI flow.
 - **Lesson:** For personal preference/configuration data in an unauthenticated, single-user utility app, `zustand/middleware/persist` + `partialize` targeting `localStorage` is the pragmatic default. Upgrade to a database only when you need cross-device sync (which requires auth anyway), multi-user collaboration, or data too large for localStorage's 5–10 MB limit.
+- Richer features - the tipping point is when the data needs to follow the user, not the browser. So ask ourself, do I want someone to sign in with Google on their laptop and see the same favorites on their phone? 
+- That is when a database starts to make sense. And then if your app becomes a platform with relationships between data like users, favorites, history, notifications, that's where Postgres really shines. So personally, I'd think about having a simple evolution. First, use local storage, then add Google Sign-In plus a database, and then later add richer features that need a backend. But no matter what, even with Postgres, keep Zustand for local UI state.
 
 ---
 

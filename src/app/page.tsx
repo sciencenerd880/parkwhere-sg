@@ -120,7 +120,7 @@ export default function Home() {
 
           {!destination && !error && (
             <div className="md:hidden absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-              <div className="text-center px-8 -mt-16">
+              <div className="mx-6 px-6 py-5 rounded-2xl bg-white/75 backdrop-blur-3xl border-[0.5px] border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] text-center">
                 <MascotIcon className="h-20 w-20 mx-auto mb-4 animate-pw-bob" />
                 <p className="text-lg font-bold tracking-tight text-neutral-800 mb-1.5">
                   Eh, where you parking today?
