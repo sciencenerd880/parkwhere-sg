@@ -134,7 +134,7 @@ export default function Home() {
 
           {!destination && favorites.length > 0 && (
             <div className="md:hidden absolute bottom-4 left-4 right-4 z-20">
-              <div className="bg-white rounded-[28px] shadow-[0_12px_48px_rgba(0,0,0,0.14)] overflow-hidden border-[0.5px] border-black/5 max-h-[20vh] flex flex-col">
+              <div className="bg-white rounded-[28px] shadow-[0_12px_48px_rgba(0,0,0,0.14)] overflow-hidden border-[0.5px] border-black/5 max-h-[26vh] flex flex-col">
                 <div className="flex items-center justify-center pt-3 pb-1 shrink-0">
                   <div className="w-10 h-1.5 rounded-full bg-neutral-300/80" />
                 </div>
