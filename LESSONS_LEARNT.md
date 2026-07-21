@@ -15,6 +15,18 @@
 
 ---
 
+## 2026-07-21 — Mobile favourites card height: 2 visible cards + scroll affordance
+
+- **Symptom:** With 4 saved carparks, the second card was clipped at `20vh`. User also reported the mascot card overlapping the favourites list when both rendered simultaneously.
+- **Root Cause:** The mobile favourites card was constrained to `max-h-[20vh]` (~162px), which wasn't enough to show 2 full favourite cards (header ~45px + 2 cards ~128px + drag handle ~16px = ~189px, needing ~23vh minimum). The mascot card also had no guard against rendering alongside favourites.
+- **Fix:**
+  - `src/app/page.tsx:137` — raised the card to `max-h-[26vh]` (~211px) so 2 cards fit fully with a sliver of a 3rd to signal scrollability.
+  - `src/app/page.tsx:121` — kept the mascot card rendering (user preference), but the increased card height + z-index layering ensures no overlap at `26vh`.
+  - `src/components/carpark/FavouriteList.tsx:34` — added `flex-1` so the list stretches to fill the card's constrained height; without it `overflow-y-auto` never engaged.
+- **Lesson:** When a floating bottom panel shows a variable-length list on mobile, the `max-h` must be calibrated to the tallest element you want fully visible under the fold. Measure: drag handle (16px) + section header (45px) + N card rows (64px each). For ParkWhere's 2-card preview target, `26vh` is correct. Without `flex-1` on the scroll container, overflow won't activate regardless of the card's `max-h`.
+
+---
+
 ## 2026-07-21 — Mobile empty-state text invisible over map background
 
 - **Symptom:** On mobile, the "Eh, where you parking today?" text and mascot were placed directly over the map layer. Black (`text-neutral-800`) text on a white/style map with roads, labels, and POIs was hard to read — the content visually collapsed into the background.
