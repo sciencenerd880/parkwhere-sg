@@ -15,6 +15,19 @@
 
 ---
 
+## 2026-07-21 — Persisting favourites with zustand/persist + localStorage
+
+- **Symptom:** Favourites needed to survive page reloads and repeat visits. Could go with localStorage (client-side) or a server-side database (Postgres via Vercel Postgres / Supabase).
+- **Root Cause:** The store used plain `create()` with no persistence — every page load initialised `favorites: []` in memory. `src/store/useParkingStore.ts:57`.
+- **Decision:** Used `zustand/middleware/persist` with `partialize` to persist only `favorites: string[]` to `localStorage`. No new dependencies — zustand v5 ships `persist` built-in. 3 lines changed in the store.
+- **Why not Postgres:** This is an unauthenticated utility app — no login, no user accounts. Postgres would require building auth first (login/signup flow), API routes for CRUD, and a managed DB instance — all for persisting at most a few carpark numbers. Massive overkill.
+- **Why localStorage fits:** Zero-latency reads/writes, zero infrastructure, works on Vercel's serverless edge without a DB, and the data is tiny (string array). Losing favourites on browser clear is acceptable for a parking utility — not critical data.
+- **The `partialize` trick:** By default, `persist` saves the entire store (destination, carparks, mapView, etc.). `partialize: (state) => ({ favorites: state.favorites })` restricts the persisted slice to just favourites, keeping the stored JSON tiny (`["ACB", "ACM"]`).
+- **Verification:** `npx tsc --noEmit` → clean. `npm run lint` → clean. `npm run build` → success. 4 new Playwright tests passing for favourites UI flow.
+- **Lesson:** For personal preference/configuration data in an unauthenticated, single-user utility app, `zustand/middleware/persist` + `partialize` targeting `localStorage` is the pragmatic default. Upgrade to a database only when you need cross-device sync (which requires auth anyway), multi-user collaboration, or data too large for localStorage's 5–10 MB limit.
+
+---
+
 ## 2026-07-19 — Mobile selected-carpark flow: peek state, sticky pinnning, and row exclusion
 
 - **Symptom:** Selecting a carpark on mobile forced the drawer to 78vh (expanded), covering most of the map right when the user most wants to see the pin location. The selected card also appeared twice — once in the detail card and once in the row list — and would scroll away while browsing.

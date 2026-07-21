@@ -10,13 +10,27 @@ import LocationBanner from "@/components/search/LocationBanner"
 import FilterChips from "@/components/search/FilterChips"
 import CarparkList from "@/components/carpark/CarparkList"
 import CarparkDetail from "@/components/carpark/CarparkDetail"
+import FavouriteList from "@/components/carpark/FavouriteList"
 import { MascotIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { ChevronUp } from "lucide-react"
 
 function Logo() {
+  const clearDestination = useParkingStore((s) => s.clearDestination)
+  const setSearchQuery = useParkingStore((s) => s.setSearchQuery)
+
+  const handleClick = () => {
+    clearDestination()
+    setSearchQuery("")
+  }
+
   return (
-    <div className="flex items-center gap-2.5">
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-label="Go home"
+      className="flex items-center gap-2.5 active:scale-95 transition-all"
+    >
       <div className="h-9 w-9 rounded-full bg-pw-mint flex items-center justify-center shrink-0">
         <MascotIcon className="h-6 w-6" />
       </div>
@@ -26,7 +40,7 @@ function Logo() {
       <span className="text-[10px] font-semibold text-white bg-emerald-500 px-1.5 py-0.5 rounded-full tracking-wide">
         SG
       </span>
-    </div>
+    </button>
   )
 }
 
@@ -63,7 +77,7 @@ function PanelHeader({ count }: { count: number }) {
 }
 
 export default function Home() {
-  const { destination, error, selectedCarpark, carparks, availableNowOnly } =
+  const { destination, error, selectedCarpark, carparks, availableNowOnly, favorites } =
     useParkingStore()
   const [drawerExpanded, setDrawerExpanded] = useState(false)
   const prevSelectedRef = useRef(selectedCarpark)
@@ -114,6 +128,17 @@ export default function Home() {
                 <p className="text-sm font-medium text-neutral-500 max-w-xs mx-auto leading-relaxed">
                   Key in your destination, I go chope you a lot.
                 </p>
+              </div>
+            </div>
+          )}
+
+          {!destination && favorites.length > 0 && (
+            <div className="md:hidden absolute bottom-4 left-4 right-4 z-20">
+              <div className="bg-white rounded-[28px] shadow-[0_12px_48px_rgba(0,0,0,0.14)] overflow-hidden border-[0.5px] border-black/5 max-h-[35vh] flex flex-col">
+                <div className="flex items-center justify-center pt-3 pb-1 shrink-0">
+                  <div className="w-10 h-1.5 rounded-full bg-neutral-300/80" />
+                </div>
+                <FavouriteList />
               </div>
             </div>
           )}
@@ -184,7 +209,10 @@ export default function Home() {
 
         <aside className="hidden md:flex w-[400px] shrink-0 border-l border-neutral-100 bg-white flex-col z-20">
           {!destination ? (
-            <SidebarEmptyState />
+            <>
+              <FavouriteList />
+              {favorites.length === 0 && <SidebarEmptyState />}
+            </>
           ) : (
             <div className="flex flex-col flex-1 min-h-0" data-testid="carpark-panel">
               <PanelHeader count={visibleCount} />

@@ -38,6 +38,23 @@ export function getAvailabilityStatus(lotsAvailable: number | null): Availabilit
   return "healthy"
 }
 
+const CARPARK_TYPE_LABELS: Record<string, string> = {
+  "MULTI-STOREY CAR PARK": "Multi-Storey",
+  "SURFACE CAR PARK": "Surface",
+  "BASEMENT CAR PARK": "Basement",
+}
+
+export function formatCarParkType(t: string): string {
+  return (
+    CARPARK_TYPE_LABELS[t] ??
+    t
+      .toLowerCase()
+      .replace(/car park/g, "")
+      .trim()
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+  )
+}
+
 export function mergeAvailability(
   nearbyCarparks: HdbCarpark[],
   availabilityMap: Map<string, CarparkAvailability>,

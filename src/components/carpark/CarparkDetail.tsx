@@ -3,26 +3,9 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { useParkingStore } from "@/store/useParkingStore"
-import { getAvailabilityStatus } from "@/lib/carpark-utils"
+import { getAvailabilityStatus, formatCarParkType } from "@/lib/carpark-utils"
 import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
 import { ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
-
-const CARPARK_TYPE_LABELS: Record<string, string> = {
-  "MULTI-STOREY CAR PARK": "Multi-Storey",
-  "SURFACE CAR PARK": "Surface",
-  "BASEMENT CAR PARK": "Basement",
-}
-
-function formatCarParkType(t: string): string {
-  return (
-    CARPARK_TYPE_LABELS[t] ??
-    t
-      .toLowerCase()
-      .replace(/car park/g, "")
-      .trim()
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-  )
-}
 
 function formatParkingSystem(s: string): string {
   return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())

@@ -111,6 +111,124 @@ test.describe('Carpark markers', () => {
   });
 });
 
+test.describe('Favourites', () => {
+  test('heart toggle in detail card adds and removes favourite', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+    await searchDestination(page);
+
+    const firstRow = page
+      .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
+      .first();
+    await firstRow.waitFor({ state: 'visible' });
+    await firstRow.click();
+
+    const heartBtn = page.locator('button[aria-label="Save carpark"]:visible');
+    await heartBtn.waitFor({ state: 'visible' });
+
+    const heartSvg = heartBtn.locator('svg');
+
+    await heartBtn.click();
+    await expect(heartSvg).toHaveClass(/fill-current/);
+
+    await heartBtn.click();
+    await expect(heartSvg).not.toHaveClass(/fill-current/);
+  });
+
+  test('desktop shows saved carparks after clearing destination', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+    await searchDestination(page);
+
+    const firstRow = page
+      .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
+      .first();
+    await firstRow.waitFor({ state: 'visible' });
+    const address = await firstRow.evaluate((el) =>
+      el.querySelector('h3')?.textContent?.trim(),
+    );
+    await firstRow.click();
+
+    const heartBtn = page.locator('button[aria-label="Save carpark"]:visible');
+    await heartBtn.waitFor({ state: 'visible' });
+    await heartBtn.click();
+
+    const clearBtn = page.locator(
+      '[data-testid="carpark-panel"]:visible button:has-text("Clear")',
+    );
+    await clearBtn.click();
+
+    const sidebar = page.locator('aside');
+    await expect(sidebar.getByText(/saved carpark/i)).toBeVisible();
+    if (address) {
+      await expect(sidebar.getByText(address).first()).toBeVisible();
+    }
+  });
+
+  test('mobile shows saved carparks card after clearing destination', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    await searchDestination(page);
+
+    const firstRow = page
+      .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
+      .first();
+    await firstRow.waitFor({ state: 'visible' });
+    await firstRow.click();
+
+    const heartBtn = page.locator('button[aria-label="Save carpark"]:visible');
+    await heartBtn.waitFor({ state: 'visible' });
+    await heartBtn.click();
+
+    const expandBtn = page.locator('[data-testid="carpark-panel"]:visible').getByText('See all');
+    await expandBtn.click();
+
+    const clearBtn = page.locator(
+      '[data-testid="carpark-panel"]:visible button:has-text("Clear")',
+    );
+    await clearBtn.click();
+
+    await expect(page.getByText(/saved carpark/i).locator('visible=true')).toBeVisible();
+  });
+
+  test('tapping a favourite card sets destination and loads carparks', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/');
+    await searchDestination(page);
+
+    const firstRow = page
+      .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
+      .first();
+    await firstRow.waitFor({ state: 'visible' });
+    const address = await firstRow.evaluate((el) =>
+      el.querySelector('h3')?.textContent?.trim(),
+    );
+    await firstRow.click();
+
+    const heartBtn = page.locator('button[aria-label="Save carpark"]:visible');
+    await heartBtn.waitFor({ state: 'visible' });
+    await heartBtn.click();
+
+    const clearBtn = page.locator(
+      '[data-testid="carpark-panel"]:visible button:has-text("Clear")',
+    );
+    await clearBtn.click();
+
+    const savedCard = page.locator('aside button.w-full.text-left').first();
+    await savedCard.waitFor({ state: 'visible' });
+    await savedCard.click();
+
+    await page.waitForTimeout(3000);
+
+    const panel = page.locator('[data-testid="carpark-panel"]:visible');
+    await expect(panel).toBeVisible();
+
+    if (address) {
+      await expect(panel.getByText(address).first()).toBeVisible();
+    }
+  });
+});
+
 test.describe('Sidebar and detail card', () => {
   test('desktop sidebar should show empty state before search', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
