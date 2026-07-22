@@ -5,24 +5,14 @@ export interface Destination {
   address: string
 }
 
-export interface HdbCarpark {
-  carparkNo: string
-  address: string
+export interface LtaCarpark {
+  carParkId: string
+  agency: "HDB" | "LTA" | "URA"
+  development: string
+  area: string
   lat: number
   lng: number
-  carParkType: string
-  parkingSystem: string
-  decks: number
-  gantryHeight: number
-  basement: boolean
-}
-
-export interface CarparkAvailability {
-  carparkNo: string
-  totalLots: number
-  lotsAvailable: number
-  lotType: string
-  updateDateTime: string
+  availableLots: number
 }
 
 export type AvailabilityStatus =
@@ -32,7 +22,12 @@ export type AvailabilityStatus =
   | "full"
   | "unknown"
 
-export interface CarparkWithDistance extends HdbCarpark {
+export interface CarparkWithDistance {
+  carparkNo: string
+  address: string
+  lat: number
+  lng: number
+  agency: string
   distance: number
   lotsAvailable: number | null
   totalLots: number | null

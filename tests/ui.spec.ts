@@ -1,5 +1,34 @@
 import { test, expect, Page } from '@playwright/test';
 
+const MOCK_LTA_CARPARKS = [
+  { CarParkID: "A2", Area: "", Development: "BLK 675A YISHUN AVE 4", Location: "1.41974 103.84270", AvailableLots: 45, LotType: "C", Agency: "HDB" },
+  { CarParkID: "A4", Area: "", Development: "BLK 675B YISHUN AVE 4", Location: "1.41990 103.84260", AvailableLots: 3, LotType: "C", Agency: "HDB" },
+  { CarParkID: "A7", Area: "", Development: "BLK 675C YISHUN AVE 4", Location: "1.41960 103.84285", AvailableLots: 0, LotType: "C", Agency: "HDB" },
+  { CarParkID: "A8", Area: "", Development: "BLK 676A YISHUN AVE 4", Location: "1.42000 103.84250", AvailableLots: 102, LotType: "C", Agency: "HDB" },
+  { CarParkID: "A9", Area: "", Development: "BLK 676B YISHUN AVE 4", Location: "1.41950 103.84295", AvailableLots: 12, LotType: "C", Agency: "HDB" },
+  { CarParkID: "B6", Area: "", Development: "BLK 677A YISHUN AVE 4", Location: "1.42010 103.84280", AvailableLots: 8, LotType: "C", Agency: "HDB" },
+  { CarParkID: "B7", Area: "", Development: "BLK 677B YISHUN AVE 4", Location: "1.41974 103.84300", AvailableLots: 67, LotType: "C", Agency: "HDB" },
+  { CarParkID: "B8", Area: "", Development: "BLK 678A YISHUN AVE 4", Location: "1.41974 103.84240", AvailableLots: 1, LotType: "C", Agency: "HDB" },
+  { CarParkID: "A0007", Area: "Marina", Development: "Suntec City", Location: "1.29375 103.85718", AvailableLots: 352, LotType: "C", Agency: "LTA" },
+  { CarParkID: "A0011", Area: "Orchard", Development: "ION Orchard", Location: "1.3040 103.8318", AvailableLots: 150, LotType: "C", Agency: "URA" },
+]
+
+async function mockLtaApi(page: Page) {
+  await page.route(
+    "**/api/carpark-availability**",
+    async (route) => {
+      const url = new URL(route.request().url())
+      const skip = parseInt(url.searchParams.get("$skip") ?? "0", 10)
+      const chunk = MOCK_LTA_CARPARKS.slice(skip, skip + 500)
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ value: chunk }),
+      })
+    },
+  )
+}
+
 async function searchDestination(page: Page) {
   const searchInput = page.getByPlaceholder('Where you going ah?').locator('visible=true');
   await searchInput.fill('764675');
@@ -10,6 +39,10 @@ async function searchDestination(page: Page) {
 }
 
 test.describe('Destination marker visibility', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockLtaApi(page)
+  })
+
   test('carpark markers should be positioned on the map, not clustered at (0,0)', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
@@ -87,12 +120,16 @@ test.describe('Destination marker visibility', () => {
 });
 
 test.describe('Carpark markers', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockLtaApi(page)
+  })
+
   test('markers should be circular pills', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
     await searchDestination(page);
 
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(5000);
 
     const shapes = await page.evaluate(() => {
       const markers = [...document.querySelectorAll('.maplibregl-marker')].filter(
@@ -112,6 +149,10 @@ test.describe('Carpark markers', () => {
 });
 
 test.describe('Favourites', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockLtaApi(page)
+  })
+
   test('heart toggle in detail card adds and removes favourite', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
@@ -230,6 +271,10 @@ test.describe('Favourites', () => {
 });
 
 test.describe('Sidebar and detail card', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockLtaApi(page)
+  })
+
   test('desktop sidebar should show empty state before search', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
@@ -244,6 +289,8 @@ test.describe('Sidebar and detail card', () => {
     await page.goto('/');
     await searchDestination(page);
 
+    await page.waitForTimeout(2000);
+
     const firstRow = page
       .locator('[data-testid="carpark-panel"]:visible button.w-full.text-left')
       .first();
@@ -257,6 +304,10 @@ test.describe('Sidebar and detail card', () => {
 });
 
 test.describe('Mobile peek and expand flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockLtaApi(page)
+  })
+
   test('selecting a carpark on mobile should collapse drawer to peek height', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');

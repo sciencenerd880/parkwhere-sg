@@ -1,24 +1,8 @@
-import type { AvailabilityStatus, CarparkWithDistance, HdbCarpark, CarparkAvailability } from "@/types"
+import type { AvailabilityStatus, CarparkWithDistance, LtaCarpark } from "@/types"
 import { haversineDistance } from "./haversine"
 
-const SEARCH_RADIUS_KM = 1
-const MAX_RESULTS = 10
-
-export function findNearbyCarparks(
-  carparks: HdbCarpark[],
-  destLat: number,
-  destLng: number,
-): HdbCarpark[] {
-  const withDistance = carparks.map((cp) => ({
-    cp,
-    dist: haversineDistance(destLat, destLng, cp.lat, cp.lng),
-  }))
-  withDistance.sort((a, b) => a.dist - b.dist)
-  return withDistance
-    .filter((x) => x.dist <= SEARCH_RADIUS_KM)
-    .slice(0, MAX_RESULTS)
-    .map((x) => x.cp)
-}
+export const SEARCH_RADIUS_KM = 1
+export const MAX_RESULTS = 10
 
 export function filterCarparks(
   carparks: CarparkWithDistance[],
@@ -34,45 +18,30 @@ export function getAvailabilityStatus(lotsAvailable: number | null): Availabilit
   return "healthy"
 }
 
-const CARPARK_TYPE_LABELS: Record<string, string> = {
-  "MULTI-STOREY CAR PARK": "Multi-Storey",
-  "SURFACE CAR PARK": "Surface",
-  "BASEMENT CAR PARK": "Basement",
-}
-
-export function formatCarParkType(t: string): string {
-  return (
-    CARPARK_TYPE_LABELS[t] ??
-    t
-      .toLowerCase()
-      .replace(/car park/g, "")
-      .trim()
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-  )
-}
-
-export function mergeAvailability(
-  nearbyCarparks: HdbCarpark[],
-  availabilityMap: Map<string, CarparkAvailability>,
+export function mapToCarparkWithDistance(
+  ltaCarparks: LtaCarpark[],
   destLat: number,
   destLng: number,
 ): CarparkWithDistance[] {
-  return nearbyCarparks
-    .map((cp) => {
-      const live = availabilityMap.get(cp.carparkNo)
-      const lotsAvailable = live?.lotsAvailable ?? null
-      return {
-        ...cp,
-        distance: haversineDistance(destLat, destLng, cp.lat, cp.lng),
-        lotsAvailable,
-        totalLots: live?.totalLots ?? null,
-        lastUpdated: live?.updateDateTime ?? null,
-        availabilityStatus: getAvailabilityStatus(lotsAvailable),
-      }
-    })
-    .sort((a, b) => {
-      if (a.availabilityStatus === "unknown" && b.availabilityStatus !== "unknown") return 1
-      if (b.availabilityStatus === "unknown" && a.availabilityStatus !== "unknown") return -1
-      return a.distance - b.distance
-    })
+  const withDistance = ltaCarparks
+    .map((cp) => ({
+      cp,
+      dist: haversineDistance(destLat, destLng, cp.lat, cp.lng),
+    }))
+    .filter((x) => x.dist <= SEARCH_RADIUS_KM)
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, MAX_RESULTS)
+
+  return withDistance.map(({ cp, dist }) => ({
+    carparkNo: cp.carParkId,
+    address: cp.development,
+    lat: cp.lat,
+    lng: cp.lng,
+    agency: cp.agency,
+    distance: dist,
+    lotsAvailable: cp.availableLots,
+    totalLots: null,
+    lastUpdated: null,
+    availabilityStatus: getAvailabilityStatus(cp.availableLots),
+  }))
 }

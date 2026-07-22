@@ -3,14 +3,10 @@
 import { useState, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { useParkingStore } from "@/store/useParkingStore"
-import { getAvailabilityStatus, formatCarParkType } from "@/lib/carpark-utils"
+import { getAvailabilityStatus } from "@/lib/carpark-utils"
 import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
 import { ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
 import HeartAnimation from "./HeartAnimation"
-
-function formatParkingSystem(s: string): string {
-  return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
-}
 
 function formatTimeAgo(timestamp: string): string {
   const now = Date.now()
@@ -91,10 +87,7 @@ export default function CarparkDetail() {
 
       <div className="flex flex-wrap gap-1.5 mt-2.5">
         <span className="px-2 py-0.5 rounded-full bg-white/80 text-pw-teal text-[11px] font-semibold">
-          {formatCarParkType(cp.carParkType)}
-        </span>
-        <span className="px-2 py-0.5 rounded-full bg-white/80 text-neutral-500 text-[11px] font-semibold">
-          {formatParkingSystem(cp.parkingSystem)}
+          {cp.agency}
         </span>
       </div>
 

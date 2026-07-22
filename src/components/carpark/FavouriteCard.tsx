@@ -1,13 +1,12 @@
 "use client"
 
 import { Heart } from "lucide-react"
-import type { HdbCarpark } from "@/types"
+import type { CarparkWithDistance } from "@/types"
 import { useParkingStore } from "@/store/useParkingStore"
-import { formatCarParkType } from "@/lib/carpark-utils"
 
 interface FavouriteCardProps {
-  carpark: HdbCarpark
-  onNavigate: (cp: HdbCarpark) => void
+  carpark: CarparkWithDistance
+  onNavigate: (cp: CarparkWithDistance) => void
 }
 
 export default function FavouriteCard({
@@ -28,7 +27,7 @@ export default function FavouriteCard({
         </h3>
         <div className="flex items-center gap-2 mt-1">
           <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-pw-mint/70 text-pw-teal">
-            {formatCarParkType(carpark.carParkType)}
+            {carpark.agency}
           </span>
           <span className="text-[11px] font-medium text-neutral-400">
             Tap to find parking nearby

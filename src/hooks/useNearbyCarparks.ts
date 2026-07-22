@@ -1,8 +1,7 @@
 import { useCallback } from "react"
 import { useParkingStore } from "@/store/useParkingStore"
-import { fetchCarparkAvailability } from "@/lib/carpark-api"
-import { findNearbyCarparks, mergeAvailability } from "@/lib/carpark-utils"
-import hdbCarparks from "@/data/hdb-carparks.json"
+import { fetchAllLtaCarparks } from "@/lib/lta-api"
+import { mapToCarparkWithDistance } from "@/lib/carpark-utils"
 
 export function useNearbyCarparks() {
   const {
@@ -21,27 +20,13 @@ export function useNearbyCarparks() {
     setSelectedCarpark(null)
 
     try {
-      const nearby = findNearbyCarparks(
-        hdbCarparks,
+      const allCarparks = await fetchAllLtaCarparks()
+      const nearby = mapToCarparkWithDistance(
+        allCarparks,
         destination.lat,
         destination.lng,
       )
-
-      if (nearby.length === 0) {
-        setCarparks([])
-        setIsLoading(false)
-        return
-      }
-
-      const availabilityMap = await fetchCarparkAvailability()
-      const merged = mergeAvailability(
-        nearby,
-        availabilityMap,
-        destination.lat,
-        destination.lng,
-      )
-
-      setCarparks(merged)
+      setCarparks(nearby)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load parking data",
