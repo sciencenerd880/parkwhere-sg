@@ -11,6 +11,8 @@ import FilterChips from "@/components/search/FilterChips"
 import CarparkList from "@/components/carpark/CarparkList"
 import CarparkDetail from "@/components/carpark/CarparkDetail"
 import FavouriteList from "@/components/carpark/FavouriteList"
+import AuthButton from "@/components/auth/AuthButton"
+import { useAuthStore } from "@/store/useAuthStore"
 import { MascotIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { ChevronUp } from "lucide-react"
@@ -45,6 +47,8 @@ function Logo() {
 }
 
 function SidebarEmptyState() {
+  const { user, isAuthLoading, signInWithGoogle } = useAuthStore()
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
       <MascotIcon withBadge className="h-24 w-24 mb-6 animate-pw-bob" />
@@ -54,6 +58,15 @@ function SidebarEmptyState() {
       <p className="text-sm font-medium text-neutral-500 max-w-[240px] leading-relaxed">
         Key in your destination, I go chope you a lot nearby.
       </p>
+      {!isAuthLoading && !user && (
+        <button
+          type="button"
+          onClick={() => signInWithGoogle()}
+          className="mt-5 text-[13px] font-semibold text-pw-teal hover:text-pw-teal-dark active:scale-95 transition-all"
+        >
+          Sign in to save favourite carparks
+        </button>
+      )}
     </div>
   )
 }
@@ -96,8 +109,11 @@ export default function Home() {
     <div className="h-dvh w-full flex flex-col bg-white overflow-hidden">
       <header className="h-16 shrink-0 bg-white border-b border-neutral-100 flex items-center justify-between px-4 md:px-5 z-30">
         <Logo />
-        <div className="hidden md:block">
-          <FilterChips />
+        <div className="flex items-center gap-3">
+          <div className="hidden md:block">
+            <FilterChips />
+          </div>
+          <AuthButton />
         </div>
       </header>
 
