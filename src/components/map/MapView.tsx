@@ -54,7 +54,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
   const destMarkerRef = useRef<maplibregl.Marker | null>(null)
   const userMarkerRef = useRef<maplibregl.Marker | null>(null)
 
-  const { destination, carparks, selectedCarpark, setSelectedCarpark, setMapView, userLocation, availableNowOnly } =
+  const { destination, carparks, selectedCarpark, setSelectedCarpark, setMapView, userLocation } =
     useParkingStore()
 
   const clearMarkers = useCallback(() => {
@@ -217,7 +217,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
 
     clearMarkers()
 
-    filterCarparks(carparks, availableNowOnly).forEach((cp, i) => {
+    filterCarparks(carparks).forEach((cp, i) => {
       const el = document.createElement("div")
       // Start with neutral style
       el.innerHTML = `
@@ -240,7 +240,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
       markersRef.current.push(marker)
       markerElementsRef.current.set(cp.carparkNo, child)
     })
-  }, [carparks, availableNowOnly, clearMarkers, setSelectedCarpark]) // Removed selectedCarpark to prevent recreation
+  }, [carparks, clearMarkers, setSelectedCarpark]) // Removed selectedCarpark to prevent recreation
 
   // Handle Styling for Selected vs Unselected
   useEffect(() => {

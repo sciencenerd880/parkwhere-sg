@@ -20,7 +20,6 @@ interface ParkingStore {
   mapView: MapViewState
   userLocation: UserLocation | null
   locationPermission: LocationPermission
-  availableNowOnly: boolean
   favorites: string[]
   searchQuery: string
 
@@ -34,7 +33,6 @@ interface ParkingStore {
   setMapView: (view: MapViewState) => void
   setUserLocation: (loc: UserLocation | null) => void
   setLocationPermission: (status: LocationPermission) => void
-  toggleAvailableNow: () => void
   toggleFavorite: (carparkNo: string) => void
   setFavorites: (favorites: string[]) => void
   setSearchQuery: (q: string) => void
@@ -56,7 +54,6 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
   },
   userLocation: null,
   locationPermission: "prompt",
-  availableNowOnly: false,
   favorites: [],
   searchQuery: "",
 
@@ -70,8 +67,6 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
   setMapView: (view) => set({ mapView: view }),
   setUserLocation: (loc) => set({ userLocation: loc }),
   setLocationPermission: (status) => set({ locationPermission: status }),
-  toggleAvailableNow: () =>
-    set((s) => ({ availableNowOnly: !s.availableNowOnly })),
   toggleFavorite: (carparkNo) => {
     const user = useAuthStore.getState().user
     if (!user) {

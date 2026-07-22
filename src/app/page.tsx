@@ -7,7 +7,6 @@ import MapView from "@/components/map/MapView"
 import MapTip from "@/components/map/MapTip"
 import SearchBar from "@/components/search/SearchBar"
 import LocationBanner from "@/components/search/LocationBanner"
-import FilterChips from "@/components/search/FilterChips"
 import CarparkList from "@/components/carpark/CarparkList"
 import CarparkDetail from "@/components/carpark/CarparkDetail"
 import FavouriteList from "@/components/carpark/FavouriteList"
@@ -90,7 +89,7 @@ function PanelHeader({ count }: { count: number }) {
 }
 
 export default function Home() {
-  const { destination, error, selectedCarpark, carparks, availableNowOnly, favorites } =
+  const { destination, error, selectedCarpark, carparks, favorites } =
     useParkingStore()
   const [drawerExpanded, setDrawerExpanded] = useState(false)
   const prevSelectedRef = useRef(selectedCarpark)
@@ -102,7 +101,7 @@ export default function Home() {
     prevSelectedRef.current = selectedCarpark
   }, [selectedCarpark])
 
-  const visibleCount = filterCarparks(carparks, availableNowOnly).length
+  const visibleCount = filterCarparks(carparks).length
   const isPeek = !!selectedCarpark && !drawerExpanded
 
   return (
@@ -110,9 +109,6 @@ export default function Home() {
       <header className="h-16 shrink-0 bg-white border-b border-neutral-100 flex items-center justify-between px-4 md:px-5 z-30">
         <Logo />
         <div className="flex items-center gap-3">
-          <div className="hidden md:block">
-            <FilterChips />
-          </div>
           <AuthButton />
         </div>
       </header>

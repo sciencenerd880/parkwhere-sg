@@ -22,12 +22,8 @@ export function findNearbyCarparks(
 
 export function filterCarparks(
   carparks: CarparkWithDistance[],
-  availableNowOnly: boolean,
 ): CarparkWithDistance[] {
-  if (!availableNowOnly) return carparks
-  return carparks.filter(
-    (cp) => cp.lotsAvailable !== null && cp.lotsAvailable > 0,
-  )
+  return carparks
 }
 
 export function getAvailabilityStatus(lotsAvailable: number | null): AvailabilityStatus {

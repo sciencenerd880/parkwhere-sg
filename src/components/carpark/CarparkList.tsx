@@ -17,7 +17,6 @@ export default function CarparkList({
     setSelectedCarpark,
     destination,
     isLoading,
-    availableNowOnly,
   } = useParkingStore()
 
   const handleSelect = (cp: CarparkWithDistance) => {
@@ -39,7 +38,7 @@ export default function CarparkList({
     )
   }
 
-  const visible = filterCarparks(carparks, availableNowOnly).filter(
+  const visible = filterCarparks(carparks).filter(
     (cp) => cp.carparkNo !== excludeCarparkNo,
   )
 
@@ -65,15 +64,11 @@ export default function CarparkList({
           </svg>
         </div>
         <p className="text-neutral-600 text-[15px] font-semibold tracking-tight">
-          {availableNowOnly && carparks.length > 0
-            ? "All full right now, sian"
-            : "Aiyo, no carparks here lah"}
-        </p>
-        <p className="text-neutral-400 text-sm font-medium mt-1">
-          {availableNowOnly && carparks.length > 0
-            ? "Try turning off \"Available now\""
-            : "Try searching another location"}
-        </p>
+            Aiyo, no carparks here lah
+          </p>
+          <p className="text-neutral-400 text-sm font-medium mt-1">
+            Try searching another location
+          </p>
       </div>
     )
   }
