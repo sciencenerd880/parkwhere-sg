@@ -3,26 +3,8 @@
 import { useParkingStore } from "@/store/useParkingStore"
 import { filterCarparks } from "@/lib/carpark-utils"
 import CarparkCard from "./CarparkCard"
+import MapLoadingAnimation from "@/components/map/MapLoadingAnimation"
 import type { CarparkWithDistance } from "@/types"
-
-function SkeletonRow() {
-  return (
-    <div className="relative px-4 py-3.5 flex items-start justify-between gap-3 border-b border-neutral-100 overflow-hidden">
-      <div className="flex-1 space-y-2">
-        <div className="h-4 w-3/4 rounded-md bg-neutral-100" />
-        <div className="flex gap-2">
-          <div className="h-4 w-14 rounded-md bg-neutral-100" />
-          <div className="h-4 w-16 rounded-md bg-neutral-100" />
-        </div>
-      </div>
-      <div className="flex flex-col items-end space-y-1.5">
-        <div className="h-6 w-10 rounded-md bg-neutral-100" />
-        <div className="h-3 w-8 rounded-md bg-neutral-100" />
-      </div>
-      <div className="absolute inset-0 animate-shimmer pointer-events-none" />
-    </div>
-  )
-}
 
 export default function CarparkList({
   excludeCarparkNo,
@@ -48,10 +30,11 @@ export default function CarparkList({
 
   if (isLoading) {
     return (
-      <div>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <SkeletonRow key={i} />
-        ))}
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <MapLoadingAnimation className="h-36 w-36" />
+        <p className="text-[13px] font-semibold text-neutral-500 -mt-2 tracking-tight">
+          Finding nearby carparks...
+        </p>
       </div>
     )
   }
