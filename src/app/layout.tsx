@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
+import AuthListener from "@/components/auth/AuthListener"
 import "./globals.css"
 
 const inter = Inter({
@@ -30,7 +31,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} font-sans h-full antialiased`}
     >
-      <body className="h-full bg-black text-foreground">{children}</body>
+      <body className="h-full bg-black text-foreground">
+        <AuthListener />
+        {children}
+      </body>
     </html>
   )
 }
