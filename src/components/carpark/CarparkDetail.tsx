@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { useParkingStore } from "@/store/useParkingStore"
 import { getAvailabilityStatus, formatCarParkType } from "@/lib/carpark-utils"
 import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
 import { ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
+import HeartAnimation from "./HeartAnimation"
 
 function formatParkingSystem(s: string): string {
   return s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
@@ -34,6 +35,13 @@ export default function CarparkDetail() {
   const { selectedCarpark, setSelectedCarpark, favorites, toggleFavorite } =
     useParkingStore()
   const [showNavMenu, setShowNavMenu] = useState(false)
+  const [showHeartAnim, setShowHeartAnim] = useState(false)
+
+  const handleFavouriteToggle = useCallback(() => {
+    const isCurrentlyFav = favorites.includes(selectedCarpark?.carparkNo ?? "")
+    toggleFavorite(selectedCarpark!.carparkNo)
+    if (!isCurrentlyFav) setShowHeartAnim(true)
+  }, [favorites, selectedCarpark, toggleFavorite])
 
   if (!selectedCarpark) return null
 
@@ -149,21 +157,26 @@ export default function CarparkDetail() {
           <span className="relative z-10">Navigate Here</span>
         </button>
 
-        <button
-          type="button"
-          onClick={() => toggleFavorite(cp.carparkNo)}
-          aria-label="Save carpark"
-          className={cn(
-            "h-12 w-12 shrink-0 rounded-xl border flex items-center justify-center transition-all active:scale-90",
-            isFav
-              ? "bg-pw-teal/10 border-pw-teal/30 text-pw-teal"
-              : "bg-white border-neutral-200 text-neutral-400 hover:text-neutral-500 hover:border-neutral-300",
+        <div className="relative h-12 w-12 shrink-0">
+          {showHeartAnim && (
+            <HeartAnimation onComplete={() => setShowHeartAnim(false)} />
           )}
-        >
-          <Heart
-            className={cn("h-5 w-5 transition-all", isFav && "fill-current scale-110")}
-          />
-        </button>
+          <button
+            type="button"
+            onClick={handleFavouriteToggle}
+            aria-label="Save carpark"
+            className={cn(
+              "h-12 w-12 rounded-xl border flex items-center justify-center transition-all active:scale-90",
+              isFav
+                ? "bg-pw-teal/10 border-pw-teal/30 text-pw-teal"
+                : "bg-white border-neutral-200 text-neutral-400 hover:text-neutral-500 hover:border-neutral-300",
+            )}
+          >
+            <Heart
+              className={cn("h-5 w-5 transition-all", isFav && "fill-current scale-110")}
+            />
+          </button>
+        </div>
       </div>
     </div>
   )
