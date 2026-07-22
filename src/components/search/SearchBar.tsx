@@ -69,6 +69,24 @@ export default function SearchBar() {
     setIsRefreshing(false)
   }
 
+  useEffect(() => {
+    const placeholders = [
+      "Where you going ah?",
+      "e.g. ION Orchard",
+      "e.g. 238861 (postal code)",
+      "e.g. Orchard Road",
+      "Block, building, all can!",
+    ]
+    let index = 0
+    const el = inputRef.current
+    if (el) el.placeholder = placeholders[0]
+    const interval = setInterval(() => {
+      index = (index + 1) % placeholders.length
+      if (el) el.placeholder = placeholders[index]
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [])
+
   const handleQueryChange = (value: string) => {
     setSearchQuery(value)
     if (error) clearError()
