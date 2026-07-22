@@ -15,6 +15,78 @@
 
 ---
 
+## 2026-07-22 — Favourites insert failing with `42501 permission denied` (GRANT vs. RLS are two different gates)
+
+- **Symptom:** Sign-in worked, but every attempt to favourite a carpark failed with a generic "Couldn't update favourites. Please try again." toast. Supabase's Postgres logs showed `42501 permission denied for table parkwhere_favorites` on every insert.
+- **Root Cause:** The table was created via a raw `CREATE TABLE` + RLS policy migration (through a script/tool), not through Supabase Studio's table editor UI. Studio's UI auto-`GRANT`s base table privileges (SELECT/INSERT/UPDATE/DELETE) to the `anon`/`authenticated` Postgres roles when you create a table there; a bare `CREATE TABLE` does not. So `authenticated` (the role PostgREST assumes for signed-in requests) had *zero* privilege on the table — Postgres rejected every query at the `permission denied` layer, before RLS was ever evaluated. RLS only filters *which* rows a role can see once that role already has table access — it can't substitute for the base grant.
+- **Fix:** `grant select, insert, update, delete on table public.parkwhere_favorites to authenticated;` run once in Supabase's SQL Editor.
+- **Verification:** Retried favouriting on live production — insert succeeded, row visible in Table Editor.
+- **Lesson:** Supabase/PostgREST access control is two independent layers, both required: (1) coarse `GRANT` — can this role touch the table at all, and (2) fine-grained `RLS policy` — which rows. Whenever a table is created via raw SQL rather than Studio's UI, always pair `ENABLE ROW LEVEL SECURITY` + policy with an explicit `GRANT ... TO authenticated`. The error message is the tell: `42501 permission denied for table X` means a missing GRANT; `new row violates row-level security policy for table X` means the policy itself is wrong — different bugs, different fixes.
+
+---
+
+## 2026-07-22 — OAuth redirect silently landing on localhost instead of production (Supabase Redirect URLs allow-list)
+
+- **Symptom:** Testing Google sign-in on live `https://parkwhere-sg.vercel.app`, after approving on Google's consent screen the browser landed on `http://localhost:3000/?code=...` — or, on a retry, an error page `.../?error=invalid_request&error_code=flow_state_already_used`. No error was shown on the production domain at all; it just silently redirected to a machine the user wasn't even on.
+- **Root Cause:** Two compounding issues:
+  1. Supabase's **Redirect URLs** allow-list had `https://parkwhere-sg.vercel.app` entered *without* a path wildcard, while the app requests `https://parkwhere-sg.vercel.app/auth/callback`. A bare domain entry does not implicitly cover its own sub-paths — it needs the `/**` suffix. Since the requested redirect didn't match, Supabase fell back to the configured **Site URL** (`http://localhost:3000` at the time) and just appended the `code`/`error` query params to it.
+  2. Separately, the very first attempt happened *before* the PR containing the `/auth/callback` route had been merged to `main` — so even a correctly matched redirect to production would have hit a 404, since that route didn't exist in the live deployment yet.
+- **Fix:** Added `https://parkwhere-sg.vercel.app/**` (with wildcard) to Redirect URLs; updated Site URL to the real production domain; merged the PR so the route actually exists in the deployed build (confirmed via the Vercel build log's route table: `ƒ /auth/callback`, `ƒ Proxy (Middleware)`).
+- **Verification:** Fresh Incognito sign-in on `parkwhere-sg.vercel.app` completed and landed back there, signed in.
+- **Lesson:** Supabase's `redirectTo` must exactly match an allow-listed pattern, wildcard included if there's a path — and on any mismatch it does not error, it silently falls back to Site URL, which reads like a bizarre unrelated bug rather than a config typo. Also: never debug an OAuth flow against a hosted URL without first confirming (via the deployment's own build/route log) that the branch containing the relevant code is actually what's live there.
+
+---
+
+## 2026-07-22 — Google Sign-In + account-based favourites (Supabase Auth + Postgres)
+
+- **Symptom / motivation:** The prior entry (2026-07-21) flagged the tipping point explicitly: "do I want someone to sign in with Google on their laptop and see the same favourites on their phone? That's when a database starts to make sense." Favourites lived only in `localStorage` via `zustand/persist` — tied to one browser, not the person. This entry is that upgrade.
+
+- **Why OAuth (Google Sign-In) instead of our own login:** We never want to own passwords — storing them means salting/hashing correctly, building reset-password flows, and owning the blast radius of a breach. OAuth flips this: the *user* proves their identity to Google (who they already trust), and Google hands us a signed token vouching for who they are. We never see a password, only a verified identity.
+
+- **Why Supabase specifically:** The feature needs two things that are normally two separate integrations — (1) an OAuth-capable identity provider, and (2) a real multi-user database, since favourites now belong to a `user_id`, not a browser. Supabase bundles both behind one project: **Auth** is a hosted GoTrue instance that wraps OAuth providers (Google, GitHub, etc.) and issues JWTs; the **database** is a real Postgres instance with Row Level Security built in and exposed automatically over a REST API (PostgREST) — no hand-written CRUD endpoints needed. One dashboard, one set of credentials, instead of wiring an identity provider to a separate DB host.
+
+- **The schema, and why it looks like this:**
+  ```sql
+  create table public.parkwhere_favorites (
+    user_id uuid references auth.users(id) on delete cascade not null,
+    carpark_no text not null,
+    created_at timestamptz default now() not null,
+    primary key (user_id, carpark_no)
+  );
+  ```
+  - The **composite primary key** `(user_id, carpark_no)` models the relationship directly: a user can favourite many carparks, a carpark can be favourited by many users (classic many-to-many). It also does double duty as a free uniqueness constraint — inserting the same pair twice fails at the database, so there's no app-side "check if already favourited" logic needed.
+  - `references auth.users(id) on delete cascade` — `auth.users` is Supabase's own managed table of signed-in identities. Foreign-keying into it means if a user's account is ever deleted, their favourite rows vanish automatically. No orphaned data, no cleanup job.
+
+- **Row Level Security (RLS), the part that replaces "remember to filter by user_id everywhere":**
+  ```sql
+  alter table public.parkwhere_favorites enable row level security;
+  create policy "Users manage own favorites" on public.parkwhere_favorites
+    for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  ```
+  Normally, any role with table access can read/write any row. RLS makes Postgres silently AND a policy predicate onto every query for a given role — like a WHERE clause you can't forget to write. `auth.uid()` reads the `sub` claim out of the caller's JWT (Supabase injects the identity per-request), so every query a signed-in user makes is automatically scoped to their own rows, enforced at the database layer. Even a bug in our client code that forgot `.eq("user_id", ...)` couldn't leak another user's favourites — the database itself won't return the rows.
+
+- **Client/Secret + Site URL / Redirect URL configuration, and what each piece is actually for:**
+  - Google Cloud Console OAuth client: **Authorized redirect URIs** must contain Supabase's own callback, `https://<project-ref>.supabase.co/auth/v1/callback` — *not* our app's route. Google only ever talks to Supabase directly; our app never sees Google's response.
+  - The full handshake: our app calls `signInWithOAuth` → browser goes to Supabase's `/authorize` → Supabase redirects to Google's consent screen → user approves → Google redirects back to **Supabase's** `/auth/v1/callback` with a code → Supabase exchanges that code with Google server-to-server (using the **Client Secret**, which only Supabase ever holds) → Supabase mints its *own* one-time code → redirects the browser to **our** app's `redirectTo` (`/auth/callback`) → our route handler exchanges that second code for a session via `exchangeCodeForSession`, using only the public anon key (no secret needed client-side).
+  - Supabase's **Redirect URLs allow-list** (Authentication → URL Configuration) is a separate gate from Google's: it controls which `redirectTo` values Supabase will honor for that last hop. **Site URL** is the fallback used whenever the requested `redirectTo` doesn't match anything in that allow-list — silently, with no error. This fallback behavior is what caused the confusing bugs below.
+
+- **Fix / implementation:** `src/proxy.ts`, `src/app/auth/callback/route.ts`, `src/lib/supabase/{client,server}.ts`, `src/store/useAuthStore.ts`, `src/components/auth/{AuthListener,AuthButton}.tsx`, `src/lib/favorites.ts`. Dropped `zustand/persist` from `useParkingStore` entirely — `toggleFavorite` is now optimistic (updates UI immediately, syncs to Supabase in the background, rolls back on failure) and prompts sign-in if called while signed out.
+
+- **Verification:** `npm run lint` / `npm run build` clean; manually verified sign-in, favourite persistence across refresh, and RLS scoping via Supabase Table Editor on the live `parkwhere-sg.vercel.app` deployment.
+
+- **Lesson:** The natural progression for a small app's persistence needs is: local state (`useState`) → persisted local state (`zustand/persist` + `localStorage`) → account-backed state (OAuth + a real database) — each step only when the previous one's ceiling is actually hit (browser-only vs. cross-device). Reach for Supabase-style "Auth + Postgres in one project" specifically when you need *both* identity and multi-user data at once — it removes an entire integration seam (wiring a separate identity provider to a separate DB) that would otherwise be pure plumbing.
+
+---
+
+## 2026-07-22 — Next.js 16 renamed `middleware.ts` → `proxy.ts`
+
+- **Symptom:** Standard Supabase SSR auth guides (and general Next.js knowledge) instruct creating a root `middleware.ts`. Caught proactively rather than as a runtime bug, per this repo's `AGENTS.md` warning to verify framework APIs against what's actually installed.
+- **Root Cause:** Next.js 16.2.10 (this repo's installed version) deprecates that convention. `next/server`'s `NextMiddleware` / `MiddlewareConfig` types are marked `@deprecated` in `node_modules/next/dist/server/web/types.d.ts`; the build system looks for a root/`src`-level `proxy.ts` (`PROXY_FILENAME` in `next/dist/lib/constants.js`) as the replacement. A `middleware.ts` file still technically works but logs a deprecation warning and is slated for removal — it doesn't fail loudly, so this is easy to miss.
+- **Fix:** Created `src/proxy.ts` (not `src/middleware.ts`), exporting a default function typed as `NextProxy`. Verified via `npm run build` output showing `ƒ Proxy (Middleware)` in the route table with no deprecation warning.
+- **Lesson:** For file-naming/config-shape conventions (as opposed to typed APIs), a wrong guess doesn't show up as a compile error — it silently no-ops or falls back to a deprecated path. When AGENTS.md says "this is NOT the Next.js you know," that applies as much to build-time file conventions as to runtime APIs — grep `node_modules/next/dist` for the actual constant/behavior before trusting training-data memory.
+
+---
+
 ## 2026-07-21 — Mobile favourites card height: 2 visible cards + scroll affordance
 
 - **Symptom:** With 4 saved carparks, the second card was clipped at `20vh`. User also reported the mascot card overlapping the favourites list when both rendered simultaneously.
