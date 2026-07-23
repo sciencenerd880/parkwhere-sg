@@ -15,6 +15,52 @@
 
 ---
 
+## 2026-07-22 — LTA DataMall migration: expanding carpark coverage beyond HDB
+
+- **Symptom:** The app only showed HDB carparks (from `data.gov.sg`). User wanted URA, LTA-managed, and major shopping mall carparks — all of which exist in Singapore but were invisible in the app.
+- **Root Cause:** The `data.gov.sg` carpark availability API (`v1/transport/carpark-availability`) serves 2,009 carpark numbers — but all follow HDB naming patterns (e.g., `ACB`, `AM16`). Despite documentation claims of covering HDB + URA + LTA, the actual response has no `agency` field and no discernible non-HDB carpark numbers. The static coordinate file (`src/data/hdb-carparks.json`) is also HDB-only. Together, there was zero signal for non-HDB carparks anywhere in the pipeline.
+- **Research process:**
+  1. Validated the current data source: live API curl → confirmed no `agency` field, HDB-patterned carpark numbers only.
+  2. Cross-referenced API carpark numbers against static JSON: 1,989 matched, 279 static-only (decommissioned), 8 API-only (ambiguous — could be any agency but negligible count).
+  3. Searched alternatives: **LTA DataMall `CarParkAvailabilityv2`** — free account key, returns 2,603 records (2,118 car lots). Includes `Agency` field: HDB (1,989), URA (88), LTA malls (41 — Suntec, ION, Raffles City, Sentosa, VivoCity, etc.). Has built-in coordinates via `Location` field. Paginated 500/call via `$skip`. No CORS headers (critical — see next entry).
+  4. **URA Data Service** and **OneMap carpark API** were considered but required separate API keys and offered less coverage than LTA DataMall.
+  5. **data.gov.sg static datasets** (CSV/GeoJSON) exist for URA parking places but have no live availability feed — useless for real-time parking search.
+- **Decision:** Replace the entire data pipeline (`data.gov.sg` API + `hdb-carparks.json` static file) with LTA DataMall as the single source of truth. LTA returns coordinates (no static JSON needed), agency tags, developer-friendly `Development` names, and covers all three agencies + major malls in one API.
+- **What changed:** New `src/lib/lta-api.ts` with pagination + 60s cache. Types simplified — dropped `HdbCarpark`, `CarparkAvailability`, `gantryHeight`, `decks`, `carParkType`, `parkingSystem`, `basement`. New flat `CarparkWithDistance` and `LtaCarpark` types. Utilities simplified — `findNearbyCarparks()` + `mergeAvailability()` replaced by `mapToCarparkWithDistance()`. `FavouriteList` now uses LTA cache instead of static JSON for favorites lookup. UI badges changed from carpark type to `agency` (HDB/URA/LTA). `carpark-api.ts` deleted.
+- **Verification:** `npx tsc --noEmit` clean, `npm run lint` clean, `npm run build` success, 24/36 Playwright tests pass (12 failures = pre-existing Google auth redirect issue).
+- **Lesson:** When expanding data coverage for a government open-data product, always verify the API response firsthand (curl + inspect) — documentation can be misleading (data.gov.sg claims HDB+URA+LTA coverage but the response tells a different story). LTA DataMall is the most comprehensive free source for Singapore carpark availability and should be the default choice for any parking app. The `Agency` field is the key differentiator — without it, you can't tell HDB from URA from LTA. Always prefer APIs that return coordinates inline (`Location`) over split static/dynamic datasets — it removes an entire cross-referencing layer and keeps data types lean.
+- **Guard-rail for AGENTS.md:** Prefer APIs that self-contain both location and real-time availability. When evaluating a new data source, curl the actual response first — don't trust portal-level descriptions. The `Agency` field is critical for filtering/display differentiation in multi-agency datasets.
+
+---
+
+## 2026-07-22 — CORS: browser can't fetch LTA DataMall directly, needs API route proxy
+
+- **Symptom:** `TypeError: Failed to fetch` at `src/lib/lta-api.ts:29` in the browser, while `curl` from the terminal worked fine.
+- **Root Cause:** LTA DataMall's API server (`datamall2.mytransport.sg`) does not return `Access-Control-Allow-Origin` CORS headers. Browsers enforce CORS for cross-origin `fetch()` calls — `localhost:3000` → `datamall2.mytransport.sg` is cross-origin and gets blocked. Terminals (`curl`) don't enforce CORS, which is why the key-validation curl worked but the browser fetch didn't.
+- **Fix:**
+  - Created `src/app/api/carpark-availability/route.ts` — a Next.js API route that acts as a server-side proxy. The route handler: (a) reads `$skip` from the incoming request's query string, (b) forwards the request to LTA DataMall with `AccountKey` header set from `process.env.LTA_ACCOUNT_KEY`, (c) returns the response JSON. Server-to-server calls bypass CORS entirely.
+  - Moved `LTA_ACCOUNT_KEY` to `.env.local` (server-only, not `NEXT_PUBLIC_`) so the key is never exposed to the browser. On Vercel, the key is set in the project's Environment Variables dashboard.
+  - `src/lib/lta-api.ts`: changed `BASE_URL` from `https://datamall2.mytransport.sg/...` to `/api/carpark-availability`, removed hardcoded `ACCOUNT_KEY` and `AccountKey` header. The client now calls its own origin.
+  - Updated Playwright mock (`tests/ui.spec.ts`) to intercept `**/api/carpark-availability**` instead of the LTA URL.
+- **Verification:** `npm run dev` — no more `Failed to fetch` errors. 24/36 Playwright tests pass.
+- **Lesson:** Third-party APIs that don't set CORS headers (common with government/specialised APIs) must be proxied through a server-side route in Next.js. `next.config.ts` rewrites can proxy the URL but **cannot inject custom headers** (like `AccountKey`) — for header-based auth, you must use an API route. Always keep API keys in server-only env vars (no `NEXT_PUBLIC_` prefix) when proxying — the browser never sees them. On Vercel, replicate all server-side env vars in the project's Environment Variables dashboard before the first deploy, otherwise the API route will 500 at runtime.
+- **Guard-rail for AGENTS.md:** When adding a third-party API that the browser calls directly, first test with `curl` then test in `npm run dev`. If curl works but browser fails → CORS. Fix: create `src/app/api/<name>/route.ts` as a proxy. Never put API keys in client code or `NEXT_PUBLIC_` env vars. Always add the corresponding Vercel env var before pushing.
+
+---
+
+## 2026-07-22 — Playwright mock must be active before page.goto — component mounts fire immediately
+
+- **Symptom:** Two Playwright tests (`markers should be circular pills`, `clicking a carpark row should show detail card`) failed consistently in Chromium but passed in Firefox and WebKit. The mock LTA API data was set up inside the `searchDestination()` helper, which runs after `page.goto('/')`.
+- **Root Cause:** `FavouriteList.tsx` component calls `fetchAllLtaCarparks()` in a `useEffect` on mount. When the mock is set up inside `searchDestination()` (called after `page.goto`), there's a race where `FavouriteList`'s `useEffect` fires first, triggers a real `fetch('/api/carpark-availability')` that hits the (unmocked) Next.js server, fails because LTA is unreachable from CI, and throws an error. The `lta-api.ts` cache stores only successful results, so the 60s TTL doesn't protect against this failure. Subsequent calls (from the search flow) still hit the real API because the cache is null.
+- **Fix:**
+  - Moved `await mockLtaApi(page)` from the `searchDestination()` helper into `test.beforeEach()` hooks in every `test.describe` block. This ensures the route interception is active before `page.goto('/')` and any component mounts.
+  - Pattern: `test.describe('Block name', () => { test.beforeEach(async ({ page }) => { await mockLtaApi(page) }); ... })`.
+- **Verification:** Chromium tests now pass consistently. 24/36 Playwright tests pass across all 3 browsers.
+- **Lesson:** When a page has components that call an API on mount (via `useEffect` or similar), Playwright mocks must be registered **before** `page.goto('/')`. `beforeEach` hooks at the `describe` level are the correct place. Never put mock registration inside helper functions that run after navigation — the mount will have already fired. If the API has a client-side cache that only stores successes, a pre-mock failure poisons the entire test session because the cache never gets populated. For module-level caches (like the 60s TTL in `lta-api.ts`), consider exposing a `clearCache()` function for tests to reset state between runs.
+- **Guard-rail for AGENTS.md:** Playwright route interception for API mocks goes in `test.beforeEach` at the `test.describe` level — never inside individual test helpers that run after `page.goto`. If an API client has a module-level cache, add a test-only `clearCache()` export or accept that tests sharing a worker may see stale data.
+
+---
+
 ## 2026-07-21 — Mobile favourites card height: 2 visible cards + scroll affordance
 
 - **Symptom:** With 4 saved carparks, the second card was clipped at `20vh`. User also reported the mascot card overlapping the favourites list when both rendered simultaneously.
