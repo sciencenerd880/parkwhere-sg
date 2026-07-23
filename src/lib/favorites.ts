@@ -13,9 +13,16 @@ export async function fetchFavorites(userId: string): Promise<string[]> {
 
 export async function addFavorite(userId: string, carparkNo: string) {
   const supabase = createClient()
+  // upsert with onConflict makes add idempotent — a second insert for the
+  // same (user_id, carpark_no) becomes a no-op update instead of throwing a
+  // unique-violation error. This is what makes the optimistic-UI pattern
+  // in `toggleFavorite` safe under rapid double-taps.
   const { error } = await supabase
     .from("parkwhere_favorites")
-    .insert({ user_id: userId, carpark_no: carparkNo })
+    .upsert(
+      { user_id: userId, carpark_no: carparkNo },
+      { onConflict: "user_id,carpark_no" },
+    )
 
   if (error) throw error
 }

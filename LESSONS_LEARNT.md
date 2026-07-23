@@ -15,6 +15,38 @@
 
 ---
 
+## 2026-07-23 — Code review: fix 4 criticals (open redirect, $skip injection, pagination loop, favourites TOCTOU)
+
+- **Symptom:** Multi-pass code review surfaced 4 CRITICAL issues across security & correctness. User (backend Python enthusiast) requested plain-language explanations + fix plan + test plan; then approved implementation.
+- **Root Cause & Fixes (one entry per finding):**
+
+  **1. Open redirect in OAuth callback** (`src/app/auth/callback/route.ts:7,13`).
+  - RC: `next` query param concatenated into `${origin}${next}` unsanitised. A `next=//evil.com` produces a protocol-relative URL → browser navigates off-site post-auth (credential phishing). OWASP Unvalidated Redirects.
+  - Fix: extracted `safeNext()` to `src/lib/redirect-target.ts` — rejects anything not a single-leading-slash relative path, with an allowlist regex `^/[A-Za-z0-9._~!$&'()*+,;=:@/?-]*$`. Route now uses idiomatic `NextResponse.redirect(new URL(next, request.url))` (URL constructor, never string concat) per the Next.js redirect docs.
+
+  **2. Unvalidated `$skip` + unauthenticated proxy** (`src/app/api/carpark-availability/route.ts:3,5-6`).
+  - RC: raw query interpolated into the upstream LTA URL — `0&$filter=...` / hash traversal could redirect the upstream call through our authenticated relay (parameter injection). Route had no auth, no rate limit → LTA `AccountKey` quota exhaustion DoS.
+  - Fix: extracted `parseSkip()` to `src/lib/skip-validator.ts` (parseInt + clamp `0..MAX_SKIP=5000`). Added `src/lib/rate-limit.ts` (in-memory sliding-window limiter, 60 req/min/IP per edge instance + `getClientIp()` from `x-forwarded-for`). Route now 429s over limit, 503s when `LTA_ACCOUNT_KEY` unset (fail-closed), and emits `Cache-Control: public, max-age=30`. **Known limitation:** per-instance limiter on Vercel serverless — determined attacker can sidestep across instances; Upstash/Redis-backed limiter filed as follow-up.
+
+  **3. Pagination loop with no max iterations** (`src/lib/lta-api.ts:25-55`).
+  - RC: `while (true)` with break condition `values.length < 500`. When dataset size is divisible by 500 (or LTA changes pagination shape), the break never triggers → unbounded fetches, unbounded `results` array, LTA quota exhaustion in seconds. Classic "loop depends on external data shape" bug.
+  - Fix: rewrote as `for (page = 0; page < MAX_PAGES; page++)` with `MAX_PAGES = 20` safety valve + `console.warn` when the valve trips. Added `_clearCacheForTests()` export for test isolation. Extracted `toLtaCarpark()` helper for clarity.
+
+  **4. TOCTOU race in `toggleFavorite`** (`src/store/useParkingStore.ts:70-96`, `src/lib/favorites.ts:14-21`).
+  - RC: rapid double-tap fires two synchronous `toggleFavorite` calls; both read the same `wasFavorite` from a stale closure tick, both optimistically add, both call `addFavorite` → second `.insert` hits the `(user_id, carpark_no)` unique constraint, throws, `.catch()` rolls back to empty → UI shows "not favourited", DB row exists. Permanent client/DB divergence.
+  - Fix: (a) `addFavorite` now uses `.upsert({...}, { onConflict: "user_id,carpark_no" })` — idempotent, second insert becomes a no-op update. (b) Store keeps an `inFlightFavorites: Set<string>` guard; second tap on the same carpark while a mutation is pending early-returns; flag released in `.finally()`.
+
+- **Test plan executed:** Added **Vitest** (new devDep, `vitest.config.ts`, `tests/unit/` dir, npm scripts `test` / `test:watch` / `test:ui`). 65 unit tests across 5 files: `redirect-target.spec.ts` (20), `skip-validator.spec.ts` (14), `rate-limit.spec.ts` (11), `lta-api.spec.ts` (8, incl. the safety-valve test that would *hang* under the old `while(true)`), `parking-store.spec.ts` (7, incl. the TOCTOU double-tap regression). Playwright's `testIgnore: ['unit/**']` prevents the e2e runner from picking up vitest specs.
+- **Verification:** `npm run test` → 65/65 pass (≈230ms). `npm run lint` → clean (after fixing `no-explicit-any` and unused-var warnings in tests). `npx tsc --noEmit` → clean. `npm run build` → success (2.7s, route handlers correctly marked ƒ dynamic). `npm run test:e2e --project=chromium` → 10 pass, 4 fail; the 4 failures are pre-existing Favourites auth tests (confirmed identical on clean baseline via `git stash -u` + rerun) — they need a Supabase session the e2e environment doesn't provide.
+- **Lesson:** Four "trust boundary" failures, all worth permanent guard-rails in AGENTS.md:
+  - **Query params → redirect target:** always validate via `safeNext`-style allowlist + use `new URL(path, request.url)`, never string concat. OAuth `next` is attacker-controlled.
+  - **Query params → upstream URL:** never interpolate raw strings into upstream fetch URLs. Parse + clamp + type-coerce via a unit-tested helper module. Public proxy routes need rate limiting + fail-closed on missing secrets.
+  - **Pagination loops:** any `while` whose break depends on upstream data shape must have a `MAX_PAGES` structural upper bound + observable warning when the valve trips.
+  - **Optimistic-UI mutations:** the mutation must be idempotent (`upsert`/`ON CONFLICT DO NOTHING`) AND guarded by a per-key in-flight `Set`. Optimistic set + rollback is only safe if the underlying write can't unique-violate on a duplicated call.
+- **Follow-up filed:** replace in-memory rate limiter with Upstash/Redis-backed limiter for cross-instance enforcement.
+
+---
+
 ## 2026-07-22 — LTA DataMall migration: expanding carpark coverage beyond HDB
 
 - **Symptom:** The app only showed HDB carparks (from `data.gov.sg`). User wanted URA, LTA-managed, and major shopping mall carparks — all of which exist in Singapore but were invisible in the app.
