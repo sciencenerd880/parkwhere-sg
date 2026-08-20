@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import AuthListener from "@/components/auth/AuthListener"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 const inter = Inter({
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className="h-full bg-black text-foreground">
         <AuthListener />
         {children}
+        <Analytics />
       </body>
     </html>
   )
