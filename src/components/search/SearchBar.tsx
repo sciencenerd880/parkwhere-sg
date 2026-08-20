@@ -106,20 +106,20 @@ export default function SearchBar() {
         className="relative flex items-center gap-2.5"
       >
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 group-focus-within:text-pw-teal transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 group-focus-within:text-blue-600 transition-colors" />
           <Input
             ref={inputRef}
             type="text"
             placeholder="Where you going ah?"
             value={searchQuery}
             onChange={(e) => handleQueryChange(e.target.value)}
-            className="w-full h-13 pl-12 pr-13 rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-[15px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-4 focus-visible:ring-pw-teal/15 focus-visible:border-pw-teal/40 transition-all"
+            className="w-full h-13 pl-12 pr-13 rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-[15px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-4 focus-visible:ring-blue-500/15 focus-visible:border-blue-500/40 transition-all"
           />
           <button
             type="button"
             onClick={handleCurrentLocation}
             disabled={isLocating}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full bg-pw-mint text-pw-teal hover:bg-pw-teal hover:text-white active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             title="Use current location"
           >
             {isLocating ? (
@@ -134,7 +134,7 @@ export default function SearchBar() {
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="shrink-0 h-13 w-13 flex items-center justify-center rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-neutral-500 hover:text-pw-teal transition-all disabled:opacity-50 active:scale-95"
+            className="shrink-0 h-13 w-13 flex items-center justify-center rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-neutral-500 hover:text-blue-600 transition-all disabled:opacity-50 active:scale-95"
             title="Refresh availability"
           >
             <RotateCcw
@@ -148,7 +148,7 @@ export default function SearchBar() {
 
       {error && (
         <div className="absolute top-full left-0 right-0 mt-3 bg-white text-neutral-700 text-[13px] px-4 py-3 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5 font-medium flex items-start gap-2 z-50">
-          <MapPin className="h-4 w-4 text-pw-teal shrink-0 mt-0.5" />
+          <MapPin className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
           <span className="flex-1">{error.message}</span>
           <button
             type="button"
@@ -167,11 +167,11 @@ export default function SearchBar() {
             <button
               key={i}
               type="button"
-              className="w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl hover:bg-pw-mint/60 active:scale-[0.99] transition-all"
+              className="w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl hover:bg-blue-50/70 active:scale-[0.99] transition-all"
               onClick={() => handleSelect(r)}
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-pw-mint flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-pw-teal" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-neutral-900 text-[14px] tracking-tight truncate">

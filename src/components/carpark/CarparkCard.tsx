@@ -18,23 +18,23 @@ const statusConfig: Record<
 > = {
   healthy: {
     label: "Available",
-    badge: "bg-pw-green/10 text-pw-green",
-    text: "text-pw-green",
+    badge: "bg-emerald-50 text-emerald-600 border border-emerald-200/60",
+    text: "text-blue-600",
   },
   limited: {
     label: "Limited",
-    badge: "bg-pw-amber/15 text-pw-amber",
-    text: "text-pw-amber",
+    badge: "bg-amber-50 text-amber-600 border border-amber-200/60",
+    text: "text-amber-600",
   },
   very_limited: {
     label: "Very Limited",
-    badge: "bg-pw-orange/10 text-pw-orange",
-    text: "text-pw-orange",
+    badge: "bg-orange-50 text-orange-600 border border-orange-200/60",
+    text: "text-orange-600",
   },
   full: {
     label: "Full",
-    badge: "bg-pw-red/10 text-pw-red",
-    text: "text-pw-red",
+    badge: "bg-red-50 text-red-600 border border-red-200/60",
+    text: "text-red-600",
   },
   unknown: {
     label: "Unknown",
@@ -58,7 +58,7 @@ export default function CarparkCard({
       onClick={() => onSelect(carpark)}
       className={cn(
         "w-full text-left px-4 py-3.5 flex items-start justify-between gap-3 transition-all duration-200 animate-card-enter border-b border-neutral-100 last:border-b-0 active:scale-[0.99]",
-        isSelected ? "bg-pw-mint/60" : "bg-white hover:bg-neutral-50",
+        isSelected ? "bg-blue-50/80" : "bg-white hover:bg-neutral-50",
       )}
       style={{ animationDelay: `${index * 40}ms` }}
     >

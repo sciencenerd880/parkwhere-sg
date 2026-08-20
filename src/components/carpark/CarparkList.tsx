@@ -45,7 +45,7 @@ export default function CarparkList({
   if (visible.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center animate-card-enter px-6">
-        <div className="w-14 h-14 rounded-full bg-pw-mint flex items-center justify-center mb-4">
+        <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -56,7 +56,7 @@ export default function CarparkList({
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-pw-teal"
+            className="text-blue-600"
           >
             <circle cx="12" cy="12" r="10" />
             <line x1="15" y1="9" x2="9" y2="15" />

@@ -18,7 +18,7 @@ export default function MapTip() {
             <button
               type="button"
               onClick={() => setSearchQuery(t)}
-              className="font-semibold text-pw-teal hover:text-pw-teal-dark hover:underline underline-offset-2 transition-colors"
+              className="font-semibold text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 transition-colors"
             >
               &quot;{t}&quot;
             </button>

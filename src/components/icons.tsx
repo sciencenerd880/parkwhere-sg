@@ -22,6 +22,20 @@ export const AppleIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+export const ParkWhereAppIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 100 100"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <rect width="100" height="100" rx="26" fill="#1D70EC" />
+    <path
+      d="M36 76V24H52.5C61.06 24 67 29.37 67 37.5C67 45.63 61.06 51 52.5 51H46.5V76H36ZM46.5 41.5H51.8C55.6 41.5 57.8 39.8 57.8 37.5C57.8 35.2 55.6 33.5 51.8 33.5H46.5V41.5Z"
+      fill="white"
+    />
+  </svg>
+)
+
 export const MascotIcon = ({
   className,
   withBadge = false,
@@ -36,7 +50,7 @@ export const MascotIcon = ({
   >
     {withBadge && (
       <g>
-        <rect x="70" y="6" width="22" height="22" rx="6" fill="#3B82F6" />
+        <rect x="70" y="6" width="22" height="22" rx="6" fill="#1D70EC" />
         <text
           x="81"
           y="22"
@@ -50,13 +64,13 @@ export const MascotIcon = ({
         </text>
       </g>
     )}
-    <ellipse cx="28" cy="24" rx="12" ry="16" transform="rotate(-25 28 24)" fill="#0E7C6B" />
-    <ellipse cx="72" cy="24" rx="12" ry="16" transform="rotate(25 72 24)" fill="#0E7C6B" />
-    <circle cx="50" cy="52" r="34" fill="#14A08C" />
-    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#E9F7F3" />
-    <circle cx="38" cy="46" r="5" fill="#153B37" />
-    <circle cx="62" cy="46" r="5" fill="#153B37" />
-    <circle cx="50" cy="63" r="4.5" fill="#153B37" />
+    <ellipse cx="28" cy="24" rx="12" ry="16" transform="rotate(-25 28 24)" fill="#1D70EC" />
+    <ellipse cx="72" cy="24" rx="12" ry="16" transform="rotate(25 72 24)" fill="#1D70EC" />
+    <circle cx="50" cy="52" r="34" fill="#3B82F6" />
+    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#EBF2FE" />
+    <circle cx="38" cy="46" r="5" fill="#0F172A" />
+    <circle cx="62" cy="46" r="5" fill="#0F172A" />
+    <circle cx="50" cy="63" r="4.5" fill="#0F172A" />
   </svg>
 )
 

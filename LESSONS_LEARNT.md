@@ -15,6 +15,22 @@
 
 ---
 
+## 2026-08-20 — Frontend theme overhaul: vibrant blue visual identity
+
+- **Symptom:** The interface was overly green/teal (green logo, mint card background, teal primary CTA buttons, green lot count numbers), clashing with the user's intended brand identity from promotional mockups.
+- **Root Cause:** Legacy CSS theme tokens (`--color-pw-teal: #0E7C6B`, `--color-pw-mint: #E9F7F3`) and component styling in `CarparkDetail`, `CarparkCard`, `SearchBar`, and `page.tsx` hardcoded green/teal classes across primary actions and lot availability metrics.
+- **Fix:**
+  - Added `ParkWhereAppIcon` in `src/components/icons.tsx` (blue squircle "P" icon matching mockups).
+  - Overhauled design tokens in `src/app/globals.css` with vibrant blue (`--color-pw-blue: #1D70EC`, `--color-pw-blue-light: #EBF2FE`).
+  - Updated `src/app/page.tsx` header logo to "ParkWhere **SG**" with electric blue styling and blue empty states.
+  - Updated `src/components/carpark/CarparkDetail.tsx` to use clean light blue surfaces (`bg-blue-50/50 border-blue-100`), vibrant blue lot counts (`text-blue-600`), and a vivid blue CTA button (`bg-blue-600 shadow-[0_8px_24px_rgba(29,112,236,0.35)]`).
+  - Updated `src/components/carpark/CarparkCard.tsx` to render available lot numbers in vibrant blue (`text-blue-600`) with refined subtle emerald status tags.
+  - Updated `SearchBar.tsx`, `FavouriteCard.tsx`, and `AuthButton.tsx` to blue focus/action accents.
+- **Verification:** `npm run test` (65/65 passed), `npx tsc --noEmit` (0 errors), `npm run lint` (clean), and full live browser automated verification with search & selection interaction testing.
+- **Lesson:** Primary brand color and status indicators should be decoupled: use brand blue for primary identity and lot counts, and use subtle semantic pill tags (green/amber/red) for status cues.
+
+---
+
 ## 2026-07-23 — Code review: fix 4 criticals (open redirect, $skip injection, pagination loop, favourites TOCTOU)
 
 - **Symptom:** Multi-pass code review surfaced 4 CRITICAL issues across security & correctness. User (backend Python enthusiast) requested plain-language explanations + fix plan + test plan; then approved implementation.

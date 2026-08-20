@@ -20,10 +20,10 @@ function formatTimeAgo(timestamp: string): string {
 }
 
 const statusColor: Record<string, string> = {
-  healthy: "text-pw-green",
-  limited: "text-pw-amber",
-  very_limited: "text-pw-orange",
-  full: "text-pw-red",
+  healthy: "text-blue-600",
+  limited: "text-amber-500",
+  very_limited: "text-orange-500",
+  full: "text-red-500",
   unknown: "text-neutral-400",
 }
 
@@ -60,17 +60,17 @@ export default function CarparkDetail() {
   }
 
   return (
-    <div className="m-3 mb-0 rounded-2xl bg-pw-mint border border-pw-teal/15 p-4 animate-card-enter relative">
+    <div className="m-3 mb-0 rounded-2xl bg-blue-50/50 border border-blue-100 p-4 animate-card-enter relative">
       <button
         type="button"
         onClick={() => setSelectedCarpark(null)}
-        className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-pw-teal mb-2 active:scale-95 transition-all"
+        className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-2 active:scale-95 transition-all"
       >
         <ChevronLeft className="h-3.5 w-3.5" />
         Selected Car Park
       </button>
 
-      <h2 className="text-[17px] font-bold tracking-tight text-pw-ink leading-tight">
+      <h2 className="text-[17px] font-bold tracking-tight text-neutral-900 leading-tight">
         {cp.address}
       </h2>
       <p className="text-[12px] font-medium text-neutral-500 mt-1 flex items-center gap-1.5">
@@ -86,7 +86,7 @@ export default function CarparkDetail() {
       </p>
 
       <div className="flex flex-wrap gap-1.5 mt-2.5">
-        <span className="px-2 py-0.5 rounded-full bg-white/80 text-pw-teal text-[11px] font-semibold">
+        <span className="px-2 py-0.5 rounded-full bg-white text-blue-700 border border-blue-100 text-[11px] font-semibold">
           {cp.agency}
         </span>
       </div>
@@ -94,7 +94,7 @@ export default function CarparkDetail() {
       <div className="flex items-baseline gap-1.5 mt-3">
         <span
           className={cn(
-            "text-[34px] leading-none font-bold tracking-tight",
+            "text-[36px] leading-none font-extrabold tracking-tight",
             statusColor[status],
           )}
         >
@@ -143,7 +143,7 @@ export default function CarparkDetail() {
         <button
           type="button"
           onClick={() => setShowNavMenu((v) => !v)}
-          className="relative overflow-hidden flex-1 h-12 rounded-xl bg-pw-teal text-white text-[15px] font-semibold tracking-tight flex items-center justify-center gap-2.5 shadow-[0_8px_24px_rgba(14,124,107,0.4)] hover:bg-pw-teal-dark active:scale-[0.98] transition-all"
+          className="relative overflow-hidden flex-1 h-12 rounded-xl bg-blue-600 text-white text-[15px] font-semibold tracking-tight flex items-center justify-center gap-2.5 shadow-[0_8px_24px_rgba(29,112,236,0.35)] hover:bg-blue-700 active:scale-[0.98] transition-all"
         >
           <div className="absolute inset-0 animate-shimmer pointer-events-none" />
           <Navigation className="relative z-10 h-4 w-4 fill-current" />
@@ -161,7 +161,7 @@ export default function CarparkDetail() {
             className={cn(
               "h-12 w-12 rounded-xl border flex items-center justify-center transition-all active:scale-90",
               isFav
-                ? "bg-pw-teal/10 border-pw-teal/30 text-pw-teal"
+                ? "bg-blue-50 border-blue-200 text-blue-600"
                 : "bg-white border-neutral-200 text-neutral-400 hover:text-neutral-500 hover:border-neutral-300",
             )}
           >

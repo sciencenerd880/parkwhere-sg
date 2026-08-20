@@ -12,7 +12,7 @@ import CarparkDetail from "@/components/carpark/CarparkDetail"
 import FavouriteList from "@/components/carpark/FavouriteList"
 import AuthButton from "@/components/auth/AuthButton"
 import { useAuthStore } from "@/store/useAuthStore"
-import { MascotIcon } from "@/components/icons"
+import { MascotIcon, ParkWhereAppIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { ChevronUp } from "lucide-react"
 
@@ -30,16 +30,12 @@ function Logo() {
       type="button"
       onClick={handleClick}
       aria-label="Go home"
-      className="flex items-center gap-2.5 active:scale-95 transition-all"
+      className="flex items-center gap-2 active:scale-95 transition-all"
     >
-      <div className="h-9 w-9 rounded-full bg-pw-mint flex items-center justify-center shrink-0">
-        <MascotIcon className="h-6 w-6" />
-      </div>
-      <span className="text-lg font-bold tracking-tight text-pw-teal">
+      <ParkWhereAppIcon className="h-7 w-7 shrink-0 shadow-sm" />
+      <span className="text-[19px] font-bold tracking-tight text-neutral-900 flex items-baseline gap-1">
         ParkWhere
-      </span>
-      <span className="text-[10px] font-semibold text-white bg-emerald-500 px-1.5 py-0.5 rounded-full tracking-wide">
-        SG
+        <span className="text-blue-600 font-black tracking-normal">SG</span>
       </span>
     </button>
   )
@@ -61,7 +57,7 @@ function SidebarEmptyState() {
         <button
           type="button"
           onClick={() => signInWithGoogle()}
-          className="mt-5 text-[13px] font-semibold text-pw-teal hover:text-pw-teal-dark active:scale-95 transition-all"
+          className="mt-5 text-[13px] font-semibold text-blue-600 hover:text-blue-700 active:scale-95 transition-all"
         >
           Sign in to save favourite carparks
         </button>
@@ -80,7 +76,7 @@ function PanelHeader({ count }: { count: number }) {
       <button
         type="button"
         onClick={clearDestination}
-        className="text-[12px] font-semibold text-pw-teal hover:text-pw-teal-dark active:scale-95 transition-all"
+        className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 active:scale-95 transition-all"
       >
         Clear
       </button>
@@ -179,7 +175,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => setDrawerExpanded(true)}
-                      className="flex items-center justify-center gap-1 py-2.5 shrink-0 text-pw-teal text-[13px] font-semibold tracking-tight w-full active:scale-95 transition-all"
+                      className="flex items-center justify-center gap-1 py-2.5 shrink-0 text-blue-600 text-[13px] font-semibold tracking-tight w-full active:scale-95 transition-all"
                     >
                       <span className="text-neutral-400 text-xs font-normal">
                         See all

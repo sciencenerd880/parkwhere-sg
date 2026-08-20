@@ -64,7 +64,7 @@ export default function AuthButton() {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
         ) : (
-          <span className="h-full w-full flex items-center justify-center bg-pw-mint text-pw-teal text-sm font-bold">
+          <span className="h-full w-full flex items-center justify-center bg-blue-50 text-blue-600 text-sm font-bold">
             {initial}
           </span>
         )}

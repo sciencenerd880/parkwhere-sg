@@ -26,7 +26,7 @@ export default function FavouriteCard({
           {carpark.address}
         </h3>
         <div className="flex items-center gap-2 mt-1">
-          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-pw-mint/70 text-pw-teal">
+          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
             {carpark.agency}
           </span>
           <span className="text-[11px] font-medium text-neutral-400">
@@ -50,7 +50,7 @@ export default function FavouriteCard({
           }
         }}
         aria-label="Remove from favourites"
-        className="shrink-0 h-9 w-9 flex items-center justify-center rounded-full text-pw-teal hover:bg-pw-teal/10 transition-all active:scale-90 cursor-pointer"
+        className="shrink-0 h-9 w-9 flex items-center justify-center rounded-full text-blue-600 hover:bg-blue-50 transition-all active:scale-90 cursor-pointer"
       >
         <Heart className="h-4 w-4 fill-current" />
       </span>
