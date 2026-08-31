@@ -1,7 +1,21 @@
 import type { Metadata, Viewport } from "next"
+import { Inter, Newsreader } from "next/font/google"
 import AuthListener from "@/components/auth/AuthListener"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+})
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  style: ["normal", "italic"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   title: "ParkWhere SG — Find Your Spot, Instantly.",
@@ -24,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="font-sans h-full antialiased"
+      className={`${inter.variable} ${newsreader.variable} font-sans h-full antialiased`}
     >
       <body className="h-full bg-black text-foreground">
         <AuthListener />

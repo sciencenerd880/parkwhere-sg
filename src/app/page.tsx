@@ -49,7 +49,7 @@ function SidebarEmptyState() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
       <MascotIcon withBadge className="h-24 w-24 mb-6 animate-pw-bob" />
-      <p className="text-xl font-bold tracking-tight text-neutral-800 mb-2">
+      <p className="text-2xl font-serif font-bold tracking-tight text-neutral-900 mb-2 leading-snug">
         Eh, where you parking today?
       </p>
       <p className="text-sm font-medium text-neutral-500 max-w-[240px] leading-relaxed">
@@ -118,7 +118,7 @@ export default function Home() {
             <MapView drawerExpanded={drawerExpanded} />
           </div>
 
-          <div className="absolute top-0 left-0 right-0 z-20 bg-white md:bg-transparent border-b border-neutral-100 md:border-b-0 px-4 py-3 md:p-0 md:top-4 md:left-4 md:right-auto md:w-[400px]">
+          <div className="absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-2xl md:bg-transparent border-b border-neutral-100 md:border-b-0 px-4 py-3 md:p-0 md:top-4 md:left-4 md:right-auto md:w-[400px]">
             <SearchBar />
             <ParkingTimeControls />
             <LocationBanner />
@@ -131,10 +131,10 @@ export default function Home() {
           )}
 
           {!destination && !error && (
-            <div className="md:hidden absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-              <div className="mx-6 px-6 py-5 rounded-2xl bg-white/75 backdrop-blur-3xl border-[0.5px] border-black/5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] text-center">
+            <div className="md:hidden absolute inset-0 z-10 flex items-center justify-center pointer-events-none px-4">
+              <div className="w-full max-w-xs px-6 py-6 rounded-3xl bg-white/85 backdrop-blur-3xl border-[0.5px] border-black/8 shadow-[0_12px_40px_rgba(0,0,0,0.1)] text-center">
                 <MascotIcon className="h-20 w-20 mx-auto mb-4 animate-pw-bob" />
-                <p className="text-lg font-bold tracking-tight text-neutral-800 mb-1.5">
+                <p className="text-xl font-serif font-bold tracking-tight text-neutral-900 mb-1.5">
                   Eh, where you parking today?
                 </p>
                 <p className="text-sm font-medium text-neutral-500 max-w-xs mx-auto leading-relaxed">

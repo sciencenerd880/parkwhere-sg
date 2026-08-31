@@ -79,13 +79,13 @@ export default function ParkingTimeControls() {
   }
 
   return (
-    <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 px-0.5 animate-card-enter">
+    <div className="mt-2 flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 px-1 -mx-1 touch-pan-x animate-card-enter">
       {/* Primary Pill Button */}
       <button
         type="button"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold tracking-tight transition-all active:scale-95 shadow-sm border",
+          "shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold tracking-tight transition-all active:scale-95 shadow-sm border select-none",
           isOpen || arrivalTime
             ? "bg-blue-600 text-white border-blue-600 shadow-blue-500/20"
             : "bg-white/90 backdrop-blur-2xl text-neutral-800 border-neutral-200/80 hover:bg-neutral-50",
