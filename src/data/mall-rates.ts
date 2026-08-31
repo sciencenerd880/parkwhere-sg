@@ -22,6 +22,52 @@ export interface MallRateConfig {
 
 export const mallRatesData: MallRateConfig[] = [
   {
+    id: "BEDOK_MALL",
+    keywords: ["BEDOK MALL", "311 NEW UPPER CHANGI ROAD", "311 NEW UPPER CHANGI"],
+    name: "Bedok Mall",
+    gracePeriodMins: 15,
+    weekday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 1.55,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 2.60,
+      },
+    ],
+    saturday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 1.55,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 2.60,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 1.55,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 2.60,
+      },
+    ],
+    remarks: "15-min grace period. $2.60 per entry after 6:00 PM every day.",
+  },
+  {
     id: "VIVOCITY",
     keywords: ["VIVOCITY", "HARBOURFRONT", "1 HARBOURFRONT WALK"],
     name: "VivoCity",
@@ -29,43 +75,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "07:00",
-        end: "18:00",
-        firstHour: 2.20,
-        subsequentHalfHour: 1.00,
+        end: "17:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "07:00",
-        perEntry: 4.00,
+        end: "06:59",
+        perEntry: 3.50,
       },
     ],
     saturday: [
       {
         start: "07:00",
-        end: "18:00",
-        firstHour: 2.40,
+        end: "17:59",
+        firstHour: 2.20,
         subsequentHalfHour: 1.10,
       },
       {
         start: "18:00",
-        end: "07:00",
-        perEntry: 4.50,
+        end: "06:59",
+        perEntry: 4.00,
       },
     ],
     sundayAndPh: [
       {
         start: "07:00",
-        end: "18:00",
-        firstHour: 2.40,
+        end: "17:59",
+        firstHour: 2.20,
         subsequentHalfHour: 1.10,
       },
       {
         start: "18:00",
-        end: "07:00",
-        perEntry: 4.50,
+        end: "06:59",
+        perEntry: 4.00,
       },
     ],
-    remarks: "10-min grace period. Electric vehicle charging available at B1/B2.",
+    remarks: "10-min grace period. $3.50 per entry after 6:00 PM (Mon–Fri), $4.00 on weekends.",
   },
   {
     id: "ION_ORCHARD",
@@ -111,7 +157,7 @@ export const mallRatesData: MallRateConfig[] = [
         perEntry: 5.50,
       },
     ],
-    remarks: "Free parking perks with minimum spend on ION+ Rewards.",
+    remarks: "$5.00 per entry after 5:00 PM (Mon–Fri). Free parking perks with minimum spend on ION+ Rewards.",
   },
   {
     id: "NGEE_ANN_CITY",
@@ -157,7 +203,7 @@ export const mallRatesData: MallRateConfig[] = [
         perEntry: 5.00,
       },
     ],
-    remarks: "Spacious multi-deck carpark accessible via Orchard Link.",
+    remarks: "$4.50 per entry after 5:00 PM (Mon–Fri). Spacious basement parking.",
   },
   {
     id: "SUNTEC_CITY",
@@ -193,7 +239,7 @@ export const mallRatesData: MallRateConfig[] = [
         subsequentHalfHour: 1.30,
       },
     ],
-    remarks: "Weekends: First 4 hours flat $3.60, subsequent $1.30/30 mins.",
+    remarks: "Weekdays: $3.60 per entry after 5:00 PM. Weekends: First 4 hours flat $3.60.",
   },
   {
     id: "MARINA_SQUARE",
@@ -229,7 +275,7 @@ export const mallRatesData: MallRateConfig[] = [
         subsequentHalfHour: 1.20,
       },
     ],
-    remarks: "Weekdays: First 2 hours $3.00, subsequent $1.20/30 mins. $3.20 per entry after 5pm.",
+    remarks: "$3.20 per entry after 5:00 PM (Mon–Fri).",
   },
   {
     id: "BUGIS_JUNCTION",
@@ -275,7 +321,7 @@ export const mallRatesData: MallRateConfig[] = [
         perEntry: 3.50,
       },
     ],
-    remarks: "CapitaLand Mall rewards applicable.",
+    remarks: "$3.50 per entry after 5:00 PM daily.",
   },
   {
     id: "BUGIS_PLUS",
@@ -321,7 +367,7 @@ export const mallRatesData: MallRateConfig[] = [
         perEntry: 3.50,
       },
     ],
-    remarks: "Direct sheltered linkway to Bugis Junction.",
+    remarks: "$3.50 per entry after 5:00 PM daily.",
   },
   {
     id: "PLAZA_SINGAPURA",
@@ -367,7 +413,7 @@ export const mallRatesData: MallRateConfig[] = [
         perEntry: 3.50,
       },
     ],
-    remarks: "Direct access to Dhoby Ghaut MRT interchange.",
+    remarks: "$3.50 per entry after 6:00 PM daily. Direct connection to Dhoby Ghaut MRT.",
   },
   {
     id: "JEWEL_CHANGI",
@@ -398,7 +444,7 @@ export const mallRatesData: MallRateConfig[] = [
         subsequentHalfHour: 1.20,
       },
     ],
-    remarks: "General parking (B3-B5): $0.04/min ($2.40/hr). Short-stay B2M/B2 has higher rates ($5 for 1st 90 mins, $5/30m thereafter).",
+    remarks: "General parking (B3-B5): $0.04/min ($2.40/hr).",
   },
   {
     id: "WESTGATE",
@@ -408,7 +454,7 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "00:00",
-        end: "18:00",
+        end: "17:59",
         firstHour: 1.60,
         subsequentHalfHour: 0.80,
       },
@@ -421,7 +467,7 @@ export const mallRatesData: MallRateConfig[] = [
     saturday: [
       {
         start: "00:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
@@ -434,7 +480,7 @@ export const mallRatesData: MallRateConfig[] = [
     sundayAndPh: [
       {
         start: "00:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
@@ -444,7 +490,7 @@ export const mallRatesData: MallRateConfig[] = [
         perEntry: 3.00,
       },
     ],
-    remarks: "Linked to Jurong East MRT and JEM.",
+    remarks: "$3.00 per entry after 6:00 PM daily.",
   },
   {
     id: "JEM",
@@ -454,43 +500,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstHour: 1.60,
         subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.00,
       },
     ],
     saturday: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.00,
       },
     ],
     sundayAndPh: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.00,
       },
     ],
-    remarks: "Lendlease Plus member perks available.",
+    remarks: "$3.00 per entry after 6:00 PM daily.",
   },
   {
     id: "JURONG_POINT",
@@ -500,43 +546,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 2.50,
         subsequentHalfHour: 1.20,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 3.00,
       },
     ],
     saturday: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 1.20,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 3.50,
       },
     ],
     sundayAndPh: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 1.20,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 3.50,
       },
     ],
-    remarks: "Free parking 12pm-2pm Monday to Thursday (excluding PH).",
+    remarks: "Free parking 12pm–2pm Mon–Thu (excluding PH). $3.00 per entry after 5pm weekdays.",
   },
   {
     id: "NEX",
@@ -546,43 +592,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstHour: 1.60,
         subsequentHalfHour: 0.80,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 3.00,
       },
     ],
     saturday: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 3.00,
       },
     ],
     sundayAndPh: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 3.00,
       },
     ],
-    remarks: "Major transport hub with North-East and Circle Lines.",
+    remarks: "$3.00 per entry after 5:00 PM daily.",
   },
   {
     id: "TAMPINES_MALL",
@@ -592,43 +638,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstHour: 1.60,
         subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.00,
       },
     ],
     saturday: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.00,
       },
     ],
     sundayAndPh: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 3.00,
         subsequentHalfHour: 0.80,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.00,
       },
     ],
-    remarks: "CapitaLand Mall in Tampines Regional Centre.",
+    remarks: "$3.00 per entry after 6:00 PM daily.",
   },
   {
     id: "WATERWAY_POINT",
@@ -638,43 +684,227 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstHour: 1.60,
         subsequentHalfHour: 0.80,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 2.80,
       },
     ],
     saturday: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 2.80,
         subsequentHalfHour: 0.80,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 2.80,
       },
     ],
     sundayAndPh: [
       {
         start: "07:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 2.80,
         subsequentHalfHour: 0.80,
       },
       {
         start: "17:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 2.80,
       },
     ],
-    remarks: "Frasers Property Experience points accepted.",
+    remarks: "$2.80 per entry after 5:00 PM daily.",
+  },
+  {
+    id: "NORTHPOINT_CITY",
+    keywords: ["NORTHPOINT CITY", "NORTHPOINT", "930 YISHUN AVE 2"],
+    name: "Northpoint City",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 2.80,
+      },
+    ],
+    saturday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 2.80,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 2.80,
+      },
+    ],
+    remarks: "$2.80 per entry after 5:00 PM daily.",
+  },
+  {
+    id: "CAUSEWAY_POINT",
+    keywords: ["CAUSEWAY POINT", "1 WOODLANDS SQUARE"],
+    name: "Causeway Point",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 2.80,
+      },
+    ],
+    saturday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 2.80,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 2.80,
+      },
+    ],
+    remarks: "$2.80 per entry after 5:00 PM daily.",
+  },
+  {
+    id: "JUNCTION_8",
+    keywords: ["JUNCTION 8", "9 BISHAN PLACE"],
+    name: "Junction 8",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstTwoHours: 3.00,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.00,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstTwoHours: 3.00,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.00,
+      },
+    ],
+    remarks: "$3.00 per entry after 6:00 PM daily.",
+  },
+  {
+    id: "PAYA_LEBAR_QUARTER",
+    keywords: ["PAYA LEBAR QUARTER", "PLQ MALL", "10 PAYA LEBAR ROAD"],
+    name: "PLQ Mall",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstHour: 1.50,
+        subsequentHalfHour: 0.75,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstTwoHours: 1.80,
+        subsequentHalfHour: 0.90,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.00,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstTwoHours: 1.80,
+        subsequentHalfHour: 0.90,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.00,
+      },
+    ],
+    remarks: "$3.00 per entry after 6:00 PM daily.",
   },
   {
     id: "MARINA_BAY_SANDS",
@@ -684,42 +914,42 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "07:00",
-        end: "19:00",
+        end: "18:59",
         firstHour: 4.00,
         subsequentHalfHour: 2.00,
         maxCap: 35.00,
       },
       {
         start: "19:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 9.00,
       },
     ],
     saturday: [
       {
         start: "07:00",
-        end: "19:00",
+        end: "18:59",
         firstHour: 5.00,
         subsequentHalfHour: 2.50,
         maxCap: 40.00,
       },
       {
         start: "19:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 10.00,
       },
     ],
     sundayAndPh: [
       {
         start: "07:00",
-        end: "19:00",
+        end: "18:59",
         firstHour: 5.00,
         subsequentHalfHour: 2.50,
         maxCap: 40.00,
       },
       {
         start: "19:00",
-        end: "07:00",
+        end: "06:59",
         perEntry: 10.00,
       },
     ],
@@ -733,43 +963,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "06:00",
-        end: "17:00",
+        end: "16:59",
         firstHour: 2.00,
         subsequentHalfHour: 1.00,
       },
       {
         start: "17:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.50,
       },
     ],
     saturday: [
       {
         start: "06:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 3.50,
         subsequentHalfHour: 1.00,
       },
       {
         start: "17:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.50,
       },
     ],
     sundayAndPh: [
       {
         start: "06:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 3.50,
         subsequentHalfHour: 1.00,
       },
       {
         start: "17:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 3.50,
       },
     ],
-    remarks: "Directly connected to Great World MRT Station (Thomson-East Coast Line).",
+    remarks: "$3.50 per entry after 5:00 PM daily.",
   },
   {
     id: "PARAGON",
@@ -779,43 +1009,43 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "03:00",
-        end: "17:00",
+        end: "16:59",
         firstHour: 3.20,
         subsequentHalfHour: 1.60,
       },
       {
         start: "17:00",
-        end: "03:00",
+        end: "02:59",
         perEntry: 4.50,
       },
     ],
     saturday: [
       {
         start: "03:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 4.50,
         subsequentHalfHour: 1.80,
       },
       {
         start: "17:00",
-        end: "03:00",
+        end: "02:59",
         perEntry: 4.50,
       },
     ],
     sundayAndPh: [
       {
         start: "03:00",
-        end: "17:00",
+        end: "16:59",
         firstTwoHours: 4.50,
         subsequentHalfHour: 1.80,
       },
       {
         start: "17:00",
-        end: "03:00",
+        end: "02:59",
         perEntry: 4.50,
       },
     ],
-    remarks: "Premier Orchard shopping destination with high-capacity basement parking.",
+    remarks: "$4.50 per entry after 5:00 PM daily.",
   },
   {
     id: "SOMERSET_313",
@@ -825,42 +1055,42 @@ export const mallRatesData: MallRateConfig[] = [
     weekday: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstHour: 2.50,
         subsequentHalfHour: 1.25,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 4.00,
       },
     ],
     saturday: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 4.00,
         subsequentHalfHour: 1.50,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 4.00,
       },
     ],
     sundayAndPh: [
       {
         start: "06:00",
-        end: "18:00",
+        end: "17:59",
         firstTwoHours: 4.00,
         subsequentHalfHour: 1.50,
       },
       {
         start: "18:00",
-        end: "06:00",
+        end: "05:59",
         perEntry: 4.00,
       },
     ],
-    remarks: "Direct access to Somerset MRT Station.",
+    remarks: "$4.00 per entry after 6:00 PM daily.",
   },
 ]

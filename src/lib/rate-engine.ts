@@ -76,9 +76,13 @@ export function matchMall(
   return null
 }
 
-function parseTimeToMinutes(timeStr: string): number {
+function parseTimeToMinutes(timeStr: string, isEnd = false): number {
   const [h, m] = timeStr.split(":").map(Number)
-  return h * 60 + m
+  let total = h * 60 + m
+  if (isEnd && m === 59) {
+    total += 1
+  }
+  return total
 }
 
 /**
@@ -145,8 +149,8 @@ function calculateMallFee(
   // Find matching band
   let matchedBand: TimeBandRate | null = null
   for (const band of schedule) {
-    const startMins = parseTimeToMinutes(band.start)
-    let endMins = parseTimeToMinutes(band.end)
+    const startMins = parseTimeToMinutes(band.start, false)
+    let endMins = parseTimeToMinutes(band.end, true)
     if (endMins === 0 || endMins < startMins) endMins += 24 * 60
 
     let currentArr = arrMins

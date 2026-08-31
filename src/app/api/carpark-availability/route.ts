@@ -136,6 +136,24 @@ export async function GET(request: Request) {
       LotType: "C",
       Agency: "URA",
     },
+    {
+      CarParkID: "BEDOK_MALL",
+      Area: "Bedok",
+      Development: "Bedok Mall",
+      Location: "1.3245 103.9295",
+      AvailableLots: 310,
+      LotType: "C",
+      Agency: "LTA",
+    },
+    {
+      CarParkID: "BM2",
+      Area: "Bedok",
+      Development: "BLK 207 BEDOK NORTH STREET 1",
+      Location: "1.3255 103.9312",
+      AvailableLots: 45,
+      LotType: "C",
+      Agency: "HDB",
+    },
   ]
 
   const chunk = FALLBACK_CARPARKS.slice(skip, skip + 500)

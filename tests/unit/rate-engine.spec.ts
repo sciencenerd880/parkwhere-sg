@@ -108,7 +108,7 @@ describe("rate-engine — Public HDB / URA Rate Calculations", () => {
 describe("rate-engine — Shopping Mall Rate Calculations", () => {
   it("calculates VivoCity weekday daytime rate accurately", () => {
     // Weekday (Tuesday) 10:00am for 2 hours (120 mins)
-    // 1st hour: $2.20, next 1 hour (2 x $1.00): $2.00 -> Total: $4.20
+    // 1st hour: $1.60, next 1 hour (2 x $0.80): $1.60 -> Total: $3.20
     const result = calculateParkingFee(
       "1 HarbourFront Walk, VivoCity",
       "VIVOCITY",
@@ -118,7 +118,21 @@ describe("rate-engine — Shopping Mall Rate Calculations", () => {
     )
     expect(result.isMall).toBe(true)
     expect(result.mallName).toBe("VivoCity")
-    expect(result.estimatedCost).toBe(4.2)
+    expect(result.estimatedCost).toBe(3.2)
+  })
+
+  it("calculates VivoCity weekday evening per-entry rate accurately", () => {
+    // Weekday 8:00pm (20:00)
+    const result = calculateParkingFee(
+      "1 HarbourFront Walk, VivoCity",
+      "VIVOCITY",
+      "LTA",
+      new Date("2026-09-01T20:00:00"),
+      120,
+    )
+    expect(result.isMall).toBe(true)
+    expect(result.estimatedCost).toBe(3.5)
+    expect(result.rateSummary).toBe("$3.50/entry")
   })
 
   it("calculates ION Orchard weekday daytime rate accurately", () => {
@@ -133,6 +147,36 @@ describe("rate-engine — Shopping Mall Rate Calculations", () => {
     )
     expect(result.isMall).toBe(true)
     expect(result.estimatedCost).toBe(6.0)
+  })
+
+  it("calculates Bedok Mall weekday daytime rate accurately", () => {
+    // Weekday 2:00pm (14:00) for 2 hours (120 mins)
+    // 1st hour: $1.55, next 1 hour (2 x $0.80 = $1.60) -> Total: $3.15
+    const result = calculateParkingFee(
+      "311 New Upper Changi Road Bedok Mall",
+      "BEDOK_MALL",
+      "LTA",
+      new Date("2026-09-01T14:00:00"),
+      120,
+    )
+    expect(result.isMall).toBe(true)
+    expect(result.mallName).toBe("Bedok Mall")
+    expect(result.estimatedCost).toBe(3.15)
+  })
+
+  it("calculates Bedok Mall evening per-entry rate accurately ($2.60 after 6pm)", () => {
+    // Weekday 9:18pm (21:18)
+    const result = calculateParkingFee(
+      "311 New Upper Changi Road Bedok Mall",
+      "BEDOK_MALL",
+      "LTA",
+      new Date("2026-09-01T21:18:00"),
+      120,
+    )
+    expect(result.isMall).toBe(true)
+    expect(result.mallName).toBe("Bedok Mall")
+    expect(result.estimatedCost).toBe(2.6)
+    expect(result.rateSummary).toBe("$2.60/entry")
   })
 
   it("calculates evening per-entry rate for malls", () => {
@@ -181,12 +225,12 @@ describe("rate-engine — Smart Savings comparison vs nearby mall", () => {
 
     const enriched = enrichCarparksWithRates(
       mockCarparks,
-      new Date("2026-09-01T10:00:00"), // Tuesday 10am, 2h duration ($4.20 vs $2.40)
+      new Date("2026-09-01T20:00:00"), // Tuesday 8pm, 2h duration ($3.50 vs $2.40)
       120,
     )
 
-    expect(enriched[0].estimatedCost).toBe(4.2)
+    expect(enriched[0].estimatedCost).toBe(3.5)
     expect(enriched[1].estimatedCost).toBe(2.4)
-    expect(enriched[1].savingsVsNearbyMall).toBe(1.8)
+    expect(enriched[1].savingsVsNearbyMall).toBe(1.1)
   })
 })
