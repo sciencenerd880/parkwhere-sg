@@ -13,6 +13,20 @@
 > - **Lesson:**
 > ```
 
+## 2026-08-31 — Singapore shopping mall & HDB parking rate engine with Cupertino Quick-Time search UX
+
+- **Symptom:** Users needed to know estimated parking rates before choosing a destination carpark and compare expensive mall parking against adjacent cheaper HDB lots, but upfront time-pickers created severe search friction.
+- **Root Cause:** Shopping malls lack an open real-time government rate API, and traditional parking apps force high-friction input forms for arrival and departure dates before displaying search results.
+- **Fix:**
+  - Designed a "Smart Defaults" approach defaulting to `Arrive: Now` and `Duration: 2 hours` with zero upfront forms.
+  - Built a curated deterministic rate database in `src/data/mall-rates.json` and pure calculation engine in `src/lib/rate-engine.ts` supporting first-hour, subsequent blocks, per-entry transitions, Central area peak rules, HDB night caps ($5), and Sunday Free Parking Scheme (FPS).
+  - Built `src/components/search/ParkingTimeControls.tsx` with frosted Cupertino pill (`[ 🕒 Now · 2h ▾ ]`) and quick chips (`[1h]`, `[2h]`, `[3h]`, `[4h]`) allowing instant client-side rate recalculation without network fetches.
+  - Enhanced `CarparkCard.tsx` and `CarparkDetail.tsx` with rate badges, breakdown timelines, and a smart comparison tag (`💡 Save $X.XX vs Mall`).
+- **Verification:** 14 unit tests in `tests/unit/rate-engine.spec.ts` (all 79 test suite cases passed), `npx tsc --noEmit` (0 errors), ESLint (clean), and Next.js production build (`npx next build --webpack`).
+- **Lesson:** In mobility apps, compute prices instantly on smart defaults (Now + average dwell) and provide 1-tap quick pills for fine-tuning rather than blocking the search funnel with upfront date/time pickers.
+
+---
+
 ## 2026-08-31 — Onboarding flow, Google OAuth prompt & dual-layer user analytics
 
 - **Symptom:** Inability to distinguish unique visitors from developer testing or see user conversion from first visit to authenticated usage in Vercel Analytics alone.

@@ -63,10 +63,13 @@ export default function CarparkCard({
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="flex-1 min-w-0">
-        <h3 className="text-[14px] font-semibold tracking-tight text-neutral-900 truncate leading-snug">
-          {carpark.address}
-        </h3>
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-[14px] font-semibold tracking-tight text-neutral-900 truncate leading-snug">
+            {carpark.address}
+          </h3>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5 mt-1">
           <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-500">
             <MapPin className="h-3 w-3 text-neutral-400" />
             {carpark.distance.toFixed(2)} km
@@ -79,22 +82,51 @@ export default function CarparkCard({
           >
             {config.label}
           </span>
+          {carpark.isMall && (
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60">
+              Mall
+            </span>
+          )}
+          {carpark.savingsVsNearbyMall && (
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-tight bg-emerald-100/80 text-emerald-800 border border-emerald-300/60">
+              💡 Save ${carpark.savingsVsNearbyMall.toFixed(2)}
+            </span>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-col items-end shrink-0">
-        <span
-          className={cn(
-            "text-[20px] leading-none font-bold tracking-tight",
-            config.text,
-          )}
-        >
-          {carpark.lotsAvailable !== null ? carpark.lotsAvailable : "—"}
-        </span>
-        {carpark.totalLots !== null && (
-          <span className="text-[11px] font-semibold text-neutral-400 mt-0.5">
-            / {carpark.totalLots}
+      <div className="flex flex-col items-end shrink-0 pl-2">
+        <div className="flex items-baseline gap-1">
+          <span
+            className={cn(
+              "text-[18px] leading-none font-bold tracking-tight",
+              config.text,
+            )}
+          >
+            {carpark.lotsAvailable !== null ? carpark.lotsAvailable : "—"}
           </span>
+          {carpark.totalLots !== null && (
+            <span className="text-[10px] font-semibold text-neutral-400">
+              /{carpark.totalLots}
+            </span>
+          )}
+        </div>
+
+        {carpark.estimatedCost !== undefined && carpark.estimatedCost !== null && (
+          <div className="mt-1 flex flex-col items-end">
+            <span className="text-[13px] font-extrabold text-neutral-900 tracking-tight leading-none">
+              {carpark.estimatedCost === 0 ? (
+                <span className="text-emerald-600">Free</span>
+              ) : (
+                `~$${carpark.estimatedCost.toFixed(2)}`
+              )}
+            </span>
+            {carpark.rateSummary && (
+              <span className="text-[10px] font-medium text-neutral-400 mt-0.5 truncate max-w-[90px]">
+                {carpark.rateSummary}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </button>

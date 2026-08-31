@@ -6,6 +6,8 @@ import { mapToCarparkWithDistance } from "@/lib/carpark-utils"
 export function useNearbyCarparks() {
   const {
     destination,
+    arrivalTime,
+    parkingDurationMinutes,
     setCarparks,
     setIsLoading,
     setError,
@@ -21,10 +23,13 @@ export function useNearbyCarparks() {
 
     try {
       const allCarparks = await fetchAllLtaCarparks()
+      const arrDate = arrivalTime ? new Date(arrivalTime) : new Date()
       const nearby = mapToCarparkWithDistance(
         allCarparks,
         destination.lat,
         destination.lng,
+        arrDate,
+        parkingDurationMinutes,
       )
       setCarparks(nearby)
     } catch (err) {
@@ -35,7 +40,15 @@ export function useNearbyCarparks() {
     } finally {
       setIsLoading(false)
     }
-  }, [destination, setCarparks, setIsLoading, setError, setSelectedCarpark])
+  }, [
+    destination,
+    arrivalTime,
+    parkingDurationMinutes,
+    setCarparks,
+    setIsLoading,
+    setError,
+    setSelectedCarpark,
+  ])
 
   return { loadNearbyCarparks }
 }

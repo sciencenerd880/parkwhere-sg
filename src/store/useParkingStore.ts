@@ -9,6 +9,7 @@ import type {
 import { useAuthStore } from "@/store/useAuthStore"
 import { addFavorite, removeFavorite } from "@/lib/favorites"
 import { trackEvent } from "@/lib/analytics"
+import { enrichCarparksWithRates } from "@/lib/carpark-utils"
 
 // Per-carpark in-flight guard. While a favourite mutation for `carparkNo`
 // is pending, a second `toggleFavorite` for the same carpark early-returns
@@ -30,6 +31,8 @@ interface ParkingStore {
   locationPermission: LocationPermission
   favorites: string[]
   searchQuery: string
+  arrivalTime: string | null
+  parkingDurationMinutes: number
 
   setDestination: (dest: Destination | null) => void
   setSelectedCarpark: (cp: CarparkWithDistance | null) => void
@@ -44,6 +47,8 @@ interface ParkingStore {
   toggleFavorite: (carparkNo: string) => void
   setFavorites: (favorites: string[]) => void
   setSearchQuery: (q: string) => void
+  setArrivalTime: (time: string | null) => void
+  setParkingDurationMinutes: (minutes: number) => void
   clearDestination: () => void
 }
 
@@ -64,6 +69,8 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
   locationPermission: "prompt",
   favorites: [],
   searchQuery: "",
+  arrivalTime: null,
+  parkingDurationMinutes: 120,
 
   setDestination: (dest) => set({ destination: dest, selectedCarpark: null }),
   setSelectedCarpark: (cp) => {
@@ -85,6 +92,40 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
   setMapView: (view) => set({ mapView: view }),
   setUserLocation: (loc) => set({ userLocation: loc }),
   setLocationPermission: (status) => set({ locationPermission: status }),
+  setArrivalTime: (time) => {
+    const { carparks, selectedCarpark, parkingDurationMinutes } = get()
+    const arrDate = time ? new Date(time) : new Date()
+    const updatedCarparks = enrichCarparksWithRates(
+      carparks,
+      arrDate,
+      parkingDurationMinutes,
+    )
+    const updatedSelected = selectedCarpark
+      ? updatedCarparks.find((c) => c.carparkNo === selectedCarpark.carparkNo) ?? null
+      : null
+    set({
+      arrivalTime: time,
+      carparks: updatedCarparks,
+      selectedCarpark: updatedSelected,
+    })
+  },
+  setParkingDurationMinutes: (minutes) => {
+    const { carparks, selectedCarpark, arrivalTime } = get()
+    const arrDate = arrivalTime ? new Date(arrivalTime) : new Date()
+    const updatedCarparks = enrichCarparksWithRates(
+      carparks,
+      arrDate,
+      minutes,
+    )
+    const updatedSelected = selectedCarpark
+      ? updatedCarparks.find((c) => c.carparkNo === selectedCarpark.carparkNo) ?? null
+      : null
+    set({
+      parkingDurationMinutes: minutes,
+      carparks: updatedCarparks,
+      selectedCarpark: updatedSelected,
+    })
+  },
   toggleFavorite: (carparkNo) => {
     const user = useAuthStore.getState().user
     if (!user) {

@@ -33,6 +33,13 @@ export interface CarparkWithDistance {
   totalLots: number | null
   lastUpdated: string | null
   availabilityStatus: AvailabilityStatus
+  estimatedCost?: number | null
+  rateSummary?: string
+  rateBreakdown?: string[]
+  isMall?: boolean
+  mallName?: string
+  remarks?: string
+  savingsVsNearbyMall?: number | null
 }
 
 export interface OneMapSearchResult {

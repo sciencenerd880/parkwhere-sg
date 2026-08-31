@@ -6,6 +6,7 @@ import { filterCarparks } from "@/lib/carpark-utils"
 import MapView from "@/components/map/MapView"
 import MapTip from "@/components/map/MapTip"
 import SearchBar from "@/components/search/SearchBar"
+import ParkingTimeControls from "@/components/search/ParkingTimeControls"
 import LocationBanner from "@/components/search/LocationBanner"
 import CarparkList from "@/components/carpark/CarparkList"
 import CarparkDetail from "@/components/carpark/CarparkDetail"
@@ -119,6 +120,7 @@ export default function Home() {
 
           <div className="absolute top-0 left-0 right-0 z-20 bg-white md:bg-transparent border-b border-neutral-100 md:border-b-0 px-4 py-3 md:p-0 md:top-4 md:left-4 md:right-auto md:w-[400px]">
             <SearchBar />
+            <ParkingTimeControls />
             <LocationBanner />
           </div>
 

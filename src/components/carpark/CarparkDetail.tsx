@@ -117,6 +117,51 @@ export default function CarparkDetail() {
         )}
       </div>
 
+      {/* Pricing and Rates Breakdown Card */}
+      {cp.estimatedCost !== undefined && cp.estimatedCost !== null && (
+        <div className="mt-3.5 p-3.5 rounded-xl bg-white border border-blue-100/80 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                Estimated Parking Fee
+              </span>
+              {cp.isMall && (
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60">
+                  Mall Rates
+                </span>
+              )}
+            </div>
+            <span className="text-[18px] font-black text-neutral-900 tracking-tight">
+              {cp.estimatedCost === 0 ? (
+                <span className="text-emerald-600">Free</span>
+              ) : (
+                `~$${cp.estimatedCost.toFixed(2)}`
+              )}
+            </span>
+          </div>
+
+          {cp.rateBreakdown && cp.rateBreakdown.length > 0 && (
+            <div className="mt-2.5 pt-2 border-t border-neutral-100 flex flex-col gap-1">
+              {cp.rateBreakdown.map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center text-[11px] font-medium text-neutral-600 leading-tight"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {cp.remarks && (
+            <div className="mt-2 pt-2 border-t border-neutral-100 text-[11px] font-medium text-neutral-500 leading-normal">
+              ℹ️ {cp.remarks}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center gap-2 mt-3.5 relative">
         {showNavMenu && (
           <>
