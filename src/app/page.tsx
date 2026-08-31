@@ -11,6 +11,7 @@ import CarparkList from "@/components/carpark/CarparkList"
 import CarparkDetail from "@/components/carpark/CarparkDetail"
 import FavouriteList from "@/components/carpark/FavouriteList"
 import AuthButton from "@/components/auth/AuthButton"
+import OnboardingModal from "@/components/onboarding/OnboardingModal"
 import { useAuthStore } from "@/store/useAuthStore"
 import { MascotIcon, ParkWhereAppIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
@@ -102,6 +103,7 @@ export default function Home() {
 
   return (
     <div className="h-dvh w-full flex flex-col bg-white overflow-hidden">
+      <OnboardingModal />
       <header className="h-16 shrink-0 bg-white border-b border-neutral-100 flex items-center justify-between px-4 md:px-5 z-30">
         <Logo />
         <div className="flex items-center gap-3">

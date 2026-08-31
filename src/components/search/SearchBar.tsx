@@ -7,6 +7,7 @@ import { useCurrentLocation } from "@/hooks/useCurrentLocation"
 import { useParkingStore } from "@/store/useParkingStore"
 import { reverseGeocode } from "@/lib/onemap"
 import { Input } from "@/components/ui/input"
+import { trackEvent } from "@/lib/analytics"
 import { Search, Navigation, RotateCcw, MapPin, Loader2 } from "lucide-react"
 
 export default function SearchBar() {
@@ -28,6 +29,10 @@ export default function SearchBar() {
     skipSearchRef.current = true
     setSearchQuery(result.name || result.address)
     selectResult(result)
+    trackEvent("search_destination", {
+      name: result.name,
+      address: result.address,
+    })
   }
 
   useEffect(() => {

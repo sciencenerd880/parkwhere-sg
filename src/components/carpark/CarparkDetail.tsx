@@ -6,6 +6,7 @@ import { useParkingStore } from "@/store/useParkingStore"
 import { getAvailabilityStatus } from "@/lib/carpark-utils"
 import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
 import { ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
+import { trackEvent } from "@/lib/analytics"
 import HeartAnimation from "./HeartAnimation"
 
 function formatTimeAgo(timestamp: string): string {
@@ -37,6 +38,10 @@ export default function CarparkDetail() {
     const isCurrentlyFav = favorites.includes(selectedCarpark?.carparkNo ?? "")
     toggleFavorite(selectedCarpark!.carparkNo)
     if (!isCurrentlyFav) setShowHeartAnim(true)
+    trackEvent("favorite_toggled", {
+      carparkNo: selectedCarpark?.carparkNo,
+      action: isCurrentlyFav ? "remove" : "add",
+    })
   }, [favorites, selectedCarpark, toggleFavorite])
 
   if (!selectedCarpark) return null
@@ -55,6 +60,11 @@ export default function CarparkDetail() {
     } else if (app === "waze") {
       url = `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`
     }
+    trackEvent("navigate_clicked", {
+      carparkNo: cp.carparkNo,
+      agency: cp.agency,
+      app,
+    })
     window.open(url, "_blank")
     setShowNavMenu(false)
   }

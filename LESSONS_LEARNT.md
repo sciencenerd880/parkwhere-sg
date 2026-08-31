@@ -13,6 +13,18 @@
 > - **Lesson:**
 > ```
 
+## 2026-08-31 — Onboarding flow, Google OAuth prompt & dual-layer user analytics
+
+- **Symptom:** Inability to distinguish unique visitors from developer testing or see user conversion from first visit to authenticated usage in Vercel Analytics alone.
+- **Root Cause:** Vercel Analytics relies on cookie-less daily IP/UA hashes which can inflate visitor counts across network/device switches without identifying authenticated users or custom feature engagements.
+- **Fix:**
+  - Built an Apple-styled Cupertino frosted modal in `src/components/onboarding/OnboardingModal.tsx` displaying live lot features, cross-device favourites sync, and 1-tap navigation with Google OAuth as the primary action and "Explore as Guest" as fallback.
+  - Used `useSyncExternalStore` for clean, SSR-safe `localStorage` synchronization avoiding React 19 cascading re-render warnings.
+  - Implemented dual-layer telemetry in `src/lib/analytics.ts` (`@vercel/analytics` `track()` + first-party Supabase `user_events` and `profiles` trigger in `supabase/schema.sql`).
+  - Added event tracking for destination searches, carpark selections, navigation app choices, and favourites toggles.
+- **Verification:** Automated browser testing via DevTools subagent on `http://localhost:3000`, unit tests (65/65 passed), ESLint (clean), and Next.js production build (`npm run build`).
+- **Lesson:** Use React 19's `useSyncExternalStore` when reading browser storage (`localStorage`) in client components to guarantee zero hydration flicker and avoid `set-state-in-effect` linter errors.
+
 ---
 
 ## 2026-08-20 — Frontend theme overhaul: vibrant blue visual identity

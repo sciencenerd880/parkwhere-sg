@@ -8,6 +8,7 @@ import type {
 } from "@/types"
 import { useAuthStore } from "@/store/useAuthStore"
 import { addFavorite, removeFavorite } from "@/lib/favorites"
+import { trackEvent } from "@/lib/analytics"
 
 // Per-carpark in-flight guard. While a favourite mutation for `carparkNo`
 // is pending, a second `toggleFavorite` for the same carpark early-returns
@@ -65,7 +66,17 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
   searchQuery: "",
 
   setDestination: (dest) => set({ destination: dest, selectedCarpark: null }),
-  setSelectedCarpark: (cp) => set({ selectedCarpark: cp }),
+  setSelectedCarpark: (cp) => {
+    if (cp) {
+      trackEvent("carpark_selected", {
+        carparkNo: cp.carparkNo,
+        agency: cp.agency,
+        lotsAvailable: cp.lotsAvailable,
+        distanceKm: cp.distance,
+      })
+    }
+    set({ selectedCarpark: cp })
+  },
   setCarparks: (carparks) => set({ carparks }),
   setIsLoading: (v) => set({ isLoading: v }),
   setIsSearching: (v) => set({ isSearching: v }),
