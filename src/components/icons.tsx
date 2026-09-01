@@ -28,50 +28,37 @@ export const ParkWhereAppIcon = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <rect width="100" height="100" rx="26" fill="#1D70EC" />
+    <rect width="100" height="100" rx="28" fill="#171A20" />
     <path
-      d="M36 76V24H52.5C61.06 24 67 29.37 67 37.5C67 45.63 61.06 51 52.5 51H46.5V76H36ZM46.5 41.5H51.8C55.6 41.5 57.8 39.8 57.8 37.5C57.8 35.2 55.6 33.5 51.8 33.5H46.5V41.5Z"
-      fill="white"
+      d="M36 74V26H53C61.2 26 67 31.2 67 39C67 46.8 61.2 52 53 52H46.5V74H36ZM46.5 42.5H52.2C55.8 42.5 57.8 40.9 57.8 39C57.8 37.1 55.8 35.5 52.2 35.5H46.5V42.5Z"
+      fill="#FFFFFF"
     />
+  </svg>
+)
+
+export const RadarTelemetryIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 100 100"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <circle cx="50" cy="50" r="44" stroke="#E2E8F0" strokeWidth="2" strokeDasharray="4 4" />
+    <circle cx="50" cy="50" r="32" stroke="#CBD5E1" strokeWidth="2" />
+    <circle cx="50" cy="50" r="20" stroke="#94A3B8" strokeWidth="2" />
+    <circle cx="50" cy="50" r="8" fill="#3E6AE1" />
+    <path d="M50 50L78 22" stroke="#3E6AE1" strokeWidth="2.5" strokeLinecap="round" />
+    <circle cx="78" cy="22" r="3.5" fill="#3E6AE1" />
   </svg>
 )
 
 export const MascotIcon = ({
   className,
-  withBadge = false,
 }: {
   className?: string
   withBadge?: boolean
 }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 100 100"
-    className={className}
-  >
-    {withBadge && (
-      <g>
-        <rect x="70" y="6" width="22" height="22" rx="6" fill="#1D70EC" />
-        <text
-          x="81"
-          y="22"
-          textAnchor="middle"
-          fontSize="15"
-          fontWeight="800"
-          fill="white"
-          fontFamily="system-ui, sans-serif"
-        >
-          P
-        </text>
-      </g>
-    )}
-    <ellipse cx="28" cy="24" rx="12" ry="16" transform="rotate(-25 28 24)" fill="#1D70EC" />
-    <ellipse cx="72" cy="24" rx="12" ry="16" transform="rotate(25 72 24)" fill="#1D70EC" />
-    <circle cx="50" cy="52" r="34" fill="#3B82F6" />
-    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#EBF2FE" />
-    <circle cx="38" cy="46" r="5" fill="#0F172A" />
-    <circle cx="62" cy="46" r="5" fill="#0F172A" />
-    <circle cx="50" cy="63" r="4.5" fill="#0F172A" />
-  </svg>
+  <RadarTelemetryIcon className={className} />
 )
 
 export const GoogleIcon = ({ className }: { className?: string }) => (

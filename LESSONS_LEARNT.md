@@ -13,6 +13,34 @@
 > - **Lesson:**
 > ```
 
+## 2026-09-01 — Vector Map Styling Upgrade (CARTO Positron Vector GL)
+
+- **Symptom:** The default Singapore Land Authority (OneMap Default) raster tile basemap displayed dated topographic survey lines, bold orange/yellow highway lines, and restricted area hatching that conflicted with the clean, minimalist automotive UI.
+- **Root Cause:** Raster basemap tiles lack modern vector rendering, have fixed zoom resolutions, and cannot easily have their visual weight adjusted to prioritize user markers and telemetry.
+- **Fix:**
+  - Upgraded MapLibre to high-performance Vector GL rendering using CARTO Positron Vector (`https://basemaps.cartocdn.com/gl/positron-gl-style/style.json`).
+  - Switched from raster tiles to full client-side vector styling with smooth 60fps zooming, whisper-soft building footprints, and crisp street typography with zero watermark.
+  - Enhanced availability marker contrast against the clean light gray vector background.
+- **Verification:** Live browser testing across all screen states (home, search query, carpark detail), 82 unit tests passed, `npx tsc --noEmit` clean, ESLint clean.
+- **Lesson:** Use vector GL style specifications (`style.json`) instead of static raster tiles in MapLibre for modern web applications to achieve retina-crisp typography, zero tile seams, and customizable styling.
+
+---
+
+## 2026-09-01 — Tesla-inspired minimalist UI/UX redesign & telemetry overhaul
+
+- **Symptom:** The user requested an entire frontend and UI/UX redesign inspired by Tesla's minimalist in-car and web design language (soft squircle edges, clean typography, radical subtraction, removal of cartoon mascot and Singlish copy).
+- **Root Cause:** The interface previously had conversational Singlish copy ("Eh, where you parking today?", "Aiyo no carparks here lah", "chope you a lot"), a green/teal owl mascot, and cluttered badge styling that clashed with an engineered, driver-first automotive experience.
+- **Fix:**
+  - **Brand & Header:** Introduced a bold geometric `PARKWHERE` `SG` wordmark and sleek `AuthButton` capsule.
+  - **Telemetry Radar:** Replaced the mascot with a minimalist animated `RadarTelemetryIcon` with concentric telemetry rings and Tesla Electric Blue (`#3E6AE1`) pulse.
+  - **Floating Capsule Search:** Redesigned `SearchBar.tsx` as a floating glass capsule with GPS target locator and professional, driver-focused placeholders.
+  - **Supercharger-Style Telemetry:** Reimagined `CarparkCard.tsx` and `CarparkDetail.tsx` with high-contrast stall availability metrics (`269 / 400 SPOTS`), clean status dots (`Available`, `Limited`, `Full`), and a prominent Tesla Electric Blue `Start Navigation` CTA pill button with Apple/Google/Waze handoff.
+  - **Clean Micro-Copy:** Overhauled all empty and loading states with crisp, professional telemetry language.
+- **Verification:** 82 unit tests passed (`npm run test`), `npx tsc --noEmit` passed (0 errors), `npm run lint` clean, and automated Chrome DevTools browser verification testing all interactive states on `http://localhost:3001`.
+- **Lesson:** For mission-critical mobility/driver apps, "radical subtraction" of decorative mascots and chatty copy in favor of high-contrast typography and instant telemetry creates an immediate, professional, distraction-free user experience.
+
+---
+
 ## 2026-08-31 — Singapore shopping mall & HDB parking rate engine with Cupertino Quick-Time search UX
 
 - **Symptom:** Users needed to know estimated parking rates before choosing a destination carpark and compare expensive mall parking against adjacent cheaper HDB lots, but upfront time-pickers created severe search friction.

@@ -6,8 +6,8 @@ import "maplibre-gl/dist/maplibre-gl.css"
 import { useParkingStore } from "@/store/useParkingStore"
 import { filterCarparks, getAvailabilityStatus } from "@/lib/carpark-utils"
 
-const ONEMAP_TILES =
-  "https://www.onemap.gov.sg/maps/tiles/Default/{z}/{x}/{y}.png"
+const CARTO_POSITRON_VECTOR_STYLE =
+  "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
 
 const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: boolean; drawerExpanded: boolean }) => {
   if (typeof window === "undefined") return { top: 0, bottom: 0, left: 0, right: 0 }
@@ -39,11 +39,11 @@ const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: bool
 }
 
 const STATUS_MUTED: Record<string, { bg: string; shadow: string }> = {
-  healthy: { bg: "#2E9E63", shadow: "rgba(46, 158, 99, 0.4)" },
-  limited: { bg: "#E8A33D", shadow: "rgba(232, 163, 61, 0.4)" },
-  very_limited: { bg: "#E2762E", shadow: "rgba(226, 110, 46, 0.4)" },
-  full: { bg: "#D64541", shadow: "rgba(214, 69, 65, 0.4)" },
-  unknown: { bg: "#D4D4D4", shadow: "rgba(0, 0, 0, 0.1)" },
+  healthy: { bg: "#10B981", shadow: "rgba(16, 185, 129, 0.4)" },
+  limited: { bg: "#F59E0B", shadow: "rgba(245, 158, 11, 0.4)" },
+  very_limited: { bg: "#F97316", shadow: "rgba(249, 115, 22, 0.4)" },
+  full: { bg: "#E82127", shadow: "rgba(232, 33, 39, 0.4)" },
+  unknown: { bg: "#94A3B8", shadow: "rgba(148, 163, 184, 0.2)" },
 }
 
 export default function MapView({ drawerExpanded = false }: { drawerExpanded?: boolean }) {
@@ -83,24 +83,7 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
 
     const map = new maplibregl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          onemap: {
-            type: "raster",
-            tiles: [ONEMAP_TILES],
-            tileSize: 256,
-            attribution: "© Singapore Land Authority",
-          },
-        },
-        layers: [
-          {
-            id: "onemap",
-            type: "raster",
-            source: "onemap",
-          },
-        ],
-      },
+      style: CARTO_POSITRON_VECTOR_STYLE,
       center: [103.8198, 1.3521],
       zoom: 11,
     })

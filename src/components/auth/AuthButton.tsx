@@ -40,10 +40,10 @@ export default function AuthButton() {
       <button
         type="button"
         onClick={() => signInWithGoogle()}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[13px] font-semibold tracking-tight text-neutral-700 bg-white border border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300 active:scale-95 transition-all"
+        className="flex items-center gap-2 h-8 px-3.5 rounded-full text-[12px] font-semibold uppercase tracking-wider text-neutral-800 bg-neutral-100 hover:bg-neutral-200 active:scale-95 transition-all"
       >
-        <GoogleIcon className="h-4 w-4" />
-        Sign in
+        <GoogleIcon className="h-3.5 w-3.5" />
+        <span>Sign In</span>
       </button>
     )
   }
@@ -58,13 +58,13 @@ export default function AuthButton() {
         type="button"
         onClick={() => setMenuOpen((v) => !v)}
         aria-label="Account menu"
-        className="h-8 w-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 active:scale-95 transition-all"
+        className="h-8 w-8 rounded-full overflow-hidden shrink-0 border border-neutral-200 active:scale-95 transition-all focus:outline-none"
       >
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
         ) : (
-          <span className="h-full w-full flex items-center justify-center bg-blue-50 text-blue-600 text-sm font-bold">
+          <span className="h-full w-full flex items-center justify-center bg-neutral-900 text-white text-xs font-semibold">
             {initial}
           </span>
         )}
@@ -81,16 +81,16 @@ export default function AuthButton() {
           <div
             className={cn(
               "absolute right-0 top-10 z-50 w-56 rounded-2xl p-1.5",
-              "bg-white/75 backdrop-blur-3xl border-[0.5px] border-black/5",
-              "shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
+              "bg-white/90 backdrop-blur-2xl border-[0.5px] border-black/5",
+              "shadow-[0_12px_36px_rgba(0,0,0,0.1)]",
             )}
           >
-            <div className="px-3 py-2">
+            <div className="px-3 py-2 border-b border-neutral-100">
               <p className="text-[13px] font-semibold tracking-tight text-neutral-900 truncate">
                 {name}
               </p>
               {user.email && (
-                <p className="text-[11px] font-medium text-neutral-500 truncate">
+                <p className="text-[11px] font-medium text-neutral-400 truncate">
                   {user.email}
                 </p>
               )}
@@ -101,7 +101,7 @@ export default function AuthButton() {
                 setMenuOpen(false)
                 signOut()
               }}
-              className="w-full text-left px-3 py-2 rounded-xl text-[13px] font-semibold text-neutral-700 hover:bg-neutral-100 active:scale-[0.98] transition-all"
+              className="w-full text-left px-3 py-2 rounded-xl text-[12px] font-semibold uppercase tracking-wider text-neutral-700 hover:bg-neutral-100 active:scale-[0.98] transition-all"
             >
               Sign out
             </button>

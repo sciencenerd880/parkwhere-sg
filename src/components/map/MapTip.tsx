@@ -1,31 +1,29 @@
-"use client"
-
-import { MascotIcon } from "@/components/icons"
+import { Navigation } from "lucide-react"
 import { useParkingStore } from "@/store/useParkingStore"
 
-const TIPS = ["Toa Payoh Central", "Tampines Ave 4"]
+const QUICK_DESTINATIONS = ["Orchard Road", "Marina Bay", "Jewel Changi"]
 
 export default function MapTip() {
   const setSearchQuery = useParkingStore((s) => s.setSearchQuery)
 
   return (
-    <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/85 backdrop-blur-xl border-[0.5px] border-black/5 shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-      <MascotIcon className="h-5 w-5 shrink-0" />
-      <span className="text-[12px] font-medium text-neutral-500 whitespace-nowrap">
-        tip: try{" "}
-        {TIPS.map((t, i) => (
-          <span key={t}>
-            <button
-              type="button"
-              onClick={() => setSearchQuery(t)}
-              className="font-semibold text-blue-600 hover:text-blue-700 hover:underline underline-offset-2 transition-colors"
-            >
-              &quot;{t}&quot;
-            </button>
-            {i < TIPS.length - 1 ? " or " : ""}
-          </span>
-        ))}
+    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+      <Navigation className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
+      <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mr-1">
+        Quick:
       </span>
+      <div className="flex items-center gap-1.5">
+        {QUICK_DESTINATIONS.map((dest) => (
+          <button
+            key={dest}
+            type="button"
+            onClick={() => setSearchQuery(dest)}
+            className="text-[11px] font-semibold text-neutral-700 hover:text-neutral-900 bg-neutral-100/80 hover:bg-neutral-200/80 px-2 py-0.5 rounded-full transition-all active:scale-95"
+          >
+            {dest}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

@@ -76,11 +76,12 @@ export default function SearchBar() {
 
   useEffect(() => {
     const placeholders = [
-      "Where you going ah?",
+      "Search destination or postal code...",
       "e.g. ION Orchard",
-      "e.g. 238861 (postal code)",
-      "e.g. Orchard Road",
-      "Block, building, all can!",
+      "e.g. Marina Bay Sands",
+      "e.g. 238861 (Postal Code)",
+      "e.g. Changi Airport T3",
+      "e.g. Tampines Mall",
     ]
     let index = 0
     const el = inputRef.current
@@ -88,7 +89,7 @@ export default function SearchBar() {
     const interval = setInterval(() => {
       index = (index + 1) % placeholders.length
       if (el) el.placeholder = placeholders[index]
-    }, 2500)
+    }, 3000)
     return () => clearInterval(interval)
   }, [])
 
@@ -108,23 +109,23 @@ export default function SearchBar() {
     <div className="relative w-full">
       <form
         onSubmit={handleSubmit}
-        className="relative flex items-center gap-2.5"
+        className="relative flex items-center gap-2"
       >
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400 group-focus-within:text-blue-600 transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 group-focus-within:text-neutral-900 transition-colors" />
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Where you going ah?"
+            placeholder="Search destination or postal code..."
             value={searchQuery}
             onChange={(e) => handleQueryChange(e.target.value)}
-            className="w-full h-13 pl-12 pr-13 rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-[15px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-4 focus-visible:ring-blue-500/15 focus-visible:border-blue-500/40 transition-all"
+            className="w-full h-12 pl-11 pr-12 rounded-full bg-white/95 backdrop-blur-xl border border-neutral-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.06)] text-[14px] font-medium tracking-tight text-neutral-900 placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-900/10 focus-visible:border-neutral-400 transition-all"
           />
           <button
             type="button"
             onClick={handleCurrentLocation}
             disabled={isLocating}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-900 hover:text-white active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             title="Use current location"
           >
             {isLocating ? (
@@ -139,11 +140,11 @@ export default function SearchBar() {
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="shrink-0 h-13 w-13 flex items-center justify-center rounded-2xl bg-white border-[0.5px] border-neutral-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.06)] text-neutral-500 hover:text-blue-600 transition-all disabled:opacity-50 active:scale-95"
-            title="Refresh availability"
+            className="shrink-0 h-12 w-12 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-xl border border-neutral-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.06)] text-neutral-600 hover:text-neutral-900 transition-all disabled:opacity-50 active:scale-95"
+            title="Refresh availability telemetry"
           >
             <RotateCcw
-              className={`h-5 w-5 ${
+              className={`h-4 w-4 ${
                 isRefreshing ? "animate-spin" : ""
               }`}
             />
@@ -152,13 +153,13 @@ export default function SearchBar() {
       </form>
 
       {error && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white text-neutral-700 text-[13px] px-4 py-3 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border-[0.5px] border-black/5 font-medium flex items-start gap-2 z-50">
-          <MapPin className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-          <span className="flex-1">{error.message}</span>
+        <div className="absolute top-full left-0 right-0 mt-2.5 bg-white text-neutral-800 text-[13px] px-4 py-3 rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.08)] border border-neutral-200/80 font-medium flex items-start gap-2.5 z-50 animate-in fade-in zoom-in-95">
+          <MapPin className="h-4 w-4 text-tesla-blue shrink-0 mt-0.5" />
+          <span className="flex-1 leading-snug">{error.message}</span>
           <button
             type="button"
             onClick={clearError}
-            className="text-neutral-400 hover:text-neutral-600 shrink-0"
+            className="text-neutral-400 hover:text-neutral-700 shrink-0 text-sm font-semibold"
             aria-label="Dismiss"
           >
             ×
@@ -167,23 +168,26 @@ export default function SearchBar() {
       )}
 
       {suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2.5 bg-white rounded-2xl shadow-[0_12px_48px_rgba(0,0,0,0.12)] z-50 max-h-72 overflow-y-auto border-[0.5px] border-black/5 p-1.5">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.12)] z-50 max-h-72 overflow-y-auto border border-neutral-200/80 p-1.5 animate-in fade-in zoom-in-95 duration-150">
+          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+            Suggested Destinations
+          </div>
           {suggestions.map((r, i) => (
             <button
               key={i}
               type="button"
-              className="w-full flex items-center gap-3 text-left px-3.5 py-3 rounded-xl hover:bg-blue-50/70 active:scale-[0.99] transition-all"
+              className="w-full flex items-center gap-3 text-left px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.99] transition-all"
               onClick={() => handleSelect(r)}
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-blue-600" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-600">
+                <MapPin className="h-4 w-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-neutral-900 text-[14px] tracking-tight truncate">
+                <div className="font-semibold text-neutral-900 text-[13px] tracking-tight truncate">
                   {r.name || r.address}
                 </div>
                 {r.name && r.address && (
-                  <div className="text-[12px] font-medium text-neutral-500 truncate mt-0.5">
+                  <div className="text-[11px] font-normal text-neutral-500 truncate mt-0.5">
                     {r.address}
                   </div>
                 )}

@@ -57,10 +57,9 @@ export default function FavouriteList() {
 
   return (
     <div className="flex flex-col min-h-0 flex-1">
-      <div className="flex items-center justify-between px-4 py-3 shrink-0">
-        <p className="text-[12px] font-medium text-neutral-500">
-          {favouriteCarparks.length} saved carpark
-          {favouriteCarparks.length !== 1 ? "s" : ""}
+      <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-neutral-100">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-400">
+          Saved Destinations ({favouriteCarparks.length})
         </p>
       </div>
       <div className="flex-1 overflow-y-auto scrollbar-hide">

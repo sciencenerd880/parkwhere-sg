@@ -14,32 +14,37 @@ interface CarparkCardProps {
 
 const statusConfig: Record<
   string,
-  { label: string; badge: string; text: string }
+  { label: string; badge: string; text: string; dot: string }
 > = {
   healthy: {
     label: "Available",
-    badge: "bg-emerald-50 text-emerald-600 border border-emerald-200/60",
-    text: "text-blue-600",
+    badge: "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20",
+    text: "text-neutral-900",
+    dot: "bg-emerald-500",
   },
   limited: {
     label: "Limited",
-    badge: "bg-amber-50 text-amber-600 border border-amber-200/60",
+    badge: "bg-amber-500/10 text-amber-700 border border-amber-500/20",
     text: "text-amber-600",
+    dot: "bg-amber-500",
   },
   very_limited: {
     label: "Very Limited",
-    badge: "bg-orange-50 text-orange-600 border border-orange-200/60",
+    badge: "bg-orange-500/10 text-orange-700 border border-orange-500/20",
     text: "text-orange-600",
+    dot: "bg-orange-500",
   },
   full: {
     label: "Full",
-    badge: "bg-red-50 text-red-600 border border-red-200/60",
+    badge: "bg-red-500/10 text-red-700 border border-red-500/20",
     text: "text-red-600",
+    dot: "bg-red-500",
   },
   unknown: {
     label: "Unknown",
-    badge: "bg-neutral-100 text-neutral-500",
-    text: "text-neutral-500",
+    badge: "bg-neutral-100 text-neutral-500 border border-neutral-200/50",
+    text: "text-neutral-400",
+    dot: "bg-neutral-400",
   },
 }
 
@@ -57,39 +62,42 @@ export default function CarparkCard({
       type="button"
       onClick={() => onSelect(carpark)}
       className={cn(
-        "w-full text-left px-4 py-3.5 flex items-start justify-between gap-3 transition-all duration-200 animate-card-enter border-b border-neutral-100 last:border-b-0 active:scale-[0.99]",
-        isSelected ? "bg-blue-50/80" : "bg-white hover:bg-neutral-50",
+        "w-full text-left px-4 py-3.5 flex items-center justify-between gap-3 transition-all duration-150 animate-card-enter border-b border-neutral-100 last:border-b-0 active:scale-[0.99]",
+        isSelected
+          ? "bg-neutral-100/90 relative after:absolute after:left-0 after:top-2 after:bottom-2 after:w-1 after:bg-tesla-blue after:rounded-r"
+          : "bg-white hover:bg-neutral-50/80",
       )}
-      style={{ animationDelay: `${index * 40}ms` }}
+      style={{ animationDelay: `${index * 30}ms` }}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <h3 className="text-[14px] font-semibold tracking-tight text-neutral-900 truncate leading-snug">
+          <h3 className="text-[13.5px] font-semibold tracking-tight text-neutral-900 truncate leading-snug">
             {carpark.address}
           </h3>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-1">
-          <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-500">
+          <span className="flex items-center gap-1 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
             <MapPin className="h-3 w-3 text-neutral-400" />
             {carpark.distance.toFixed(2)} km
           </span>
           <span
             className={cn(
-              "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider",
+              "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-flex items-center gap-1",
               config.badge,
             )}
           >
+            <span className={cn("w-1.5 h-1.5 rounded-full", config.dot)} />
             {config.label}
           </span>
-          {carpark.isMall && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60">
-              Mall
+          {carpark.agency && (
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-neutral-100 text-neutral-600 border border-neutral-200/50">
+              {carpark.agency}
             </span>
           )}
           {carpark.savingsVsNearbyMall && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-tight bg-emerald-100/80 text-emerald-800 border border-emerald-300/60">
-              💡 Save ${carpark.savingsVsNearbyMall.toFixed(2)}
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-tight bg-emerald-50 text-emerald-700 border border-emerald-200">
+              Save ${carpark.savingsVsNearbyMall.toFixed(2)}
             </span>
           )}
         </div>
@@ -106,7 +114,7 @@ export default function CarparkCard({
             {carpark.lotsAvailable !== null ? carpark.lotsAvailable : "—"}
           </span>
           {carpark.totalLots !== null && (
-            <span className="text-[10px] font-semibold text-neutral-400">
+            <span className="text-[11px] font-medium text-neutral-400">
               /{carpark.totalLots}
             </span>
           )}
@@ -114,9 +122,9 @@ export default function CarparkCard({
 
         {carpark.estimatedCost !== undefined && carpark.estimatedCost !== null && (
           <div className="mt-1 flex flex-col items-end">
-            <span className="text-[13px] font-extrabold text-neutral-900 tracking-tight leading-none">
+            <span className="text-[12px] font-bold text-neutral-900 tracking-tight leading-none">
               {carpark.estimatedCost === 0 ? (
-                <span className="text-emerald-600">Free</span>
+                <span className="text-emerald-600 uppercase tracking-wider text-[11px]">Free</span>
               ) : (
                 `~$${carpark.estimatedCost.toFixed(2)}`
               )}

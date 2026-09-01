@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { useParkingStore } from "@/store/useParkingStore"
 import { cn } from "@/lib/utils"
-import { Clock, ChevronDown, Check, Sparkles, X } from "lucide-react"
+import { Clock, ChevronDown, Check, X } from "lucide-react"
 
 const QUICK_DURATIONS = [
   { label: "1h", value: 60 },
@@ -104,16 +104,16 @@ export default function ParkingTimeControls() {
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
           className={cn(
-            "shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-semibold tracking-tight transition-all active:scale-95 shadow-sm border select-none",
+            "shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm border select-none",
             isOpen || arrivalTime
-              ? "bg-blue-600 text-white border-blue-600 shadow-blue-500/20"
-              : "bg-white text-neutral-800 border-neutral-200/80 hover:bg-neutral-50",
+              ? "bg-neutral-900 text-white border-neutral-900"
+              : "bg-white/95 text-neutral-800 border-neutral-200/80 hover:bg-neutral-100",
           )}
         >
           <Clock
             className={cn(
               "h-3.5 w-3.5",
-              isOpen || arrivalTime ? "text-white" : "text-blue-600",
+              isOpen || arrivalTime ? "text-white" : "text-neutral-500",
             )}
           />
           <span>
@@ -138,10 +138,10 @@ export default function ParkingTimeControls() {
                 type="button"
                 onClick={() => setParkingDurationMinutes(item.value)}
                 className={cn(
-                  "shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold tracking-tight transition-all active:scale-95 border",
+                  "shrink-0 px-2.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 border",
                   isSelected
-                    ? "bg-blue-50 text-blue-700 border-blue-300 font-bold"
-                    : "bg-white text-neutral-600 border-neutral-200/80 hover:bg-neutral-50 hover:text-neutral-900",
+                    ? "bg-neutral-900 text-white border-neutral-900"
+                    : "bg-white/95 text-neutral-600 border-neutral-200/80 hover:bg-neutral-100 hover:text-neutral-900",
                 )}
               >
                 {item.label}
@@ -151,17 +151,17 @@ export default function ParkingTimeControls() {
         </div>
       </div>
 
-      {/* Floating Anchored Cupertino Dropdown Popover */}
+      {/* Floating Anchored Tesla-style Dropdown Popover */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-full max-w-[360px] bg-white/95 backdrop-blur-3xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.16)] border-[0.5px] border-black/10 p-4 z-50 animate-in zoom-in-95 fade-in duration-150">
+        <div className="absolute top-full left-0 mt-2 w-full max-w-[360px] bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-neutral-200/80 p-4 z-50 animate-in zoom-in-95 fade-in duration-150">
           <div className="flex items-center justify-between pb-2.5 border-b border-neutral-100">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+              <div className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-800">
                 <Clock className="h-3.5 w-3.5" />
               </div>
               <div>
                 <h3 className="text-[13px] font-bold text-neutral-900 tracking-tight">
-                  Parking Duration & Time
+                  Parking Duration & Schedule
                 </h3>
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function ParkingTimeControls() {
 
           {/* Arrival Selection Segment */}
           <div className="mt-3">
-            <label className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider block mb-1.5">
+            <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-1.5">
               Arrival Time
             </label>
             <div className="grid grid-cols-2 gap-1 p-1 bg-neutral-100 rounded-xl">
@@ -184,13 +184,13 @@ export default function ParkingTimeControls() {
                 type="button"
                 onClick={handleNowClick}
                 className={cn(
-                  "py-1.5 rounded-lg text-[12px] font-semibold tracking-tight transition-all",
+                  "py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all",
                   !isCustomMode
                     ? "bg-white text-neutral-900 shadow-sm"
                     : "text-neutral-500 hover:text-neutral-800",
                 )}
               >
-                🚗 Arrive Now
+                Arrive Now
               </button>
               <button
                 type="button"
@@ -199,26 +199,26 @@ export default function ParkingTimeControls() {
                   handleCustomTimeSubmit(customTimeVal)
                 }}
                 className={cn(
-                  "py-1.5 rounded-lg text-[12px] font-semibold tracking-tight transition-all",
+                  "py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all",
                   isCustomMode
                     ? "bg-white text-neutral-900 shadow-sm"
                     : "text-neutral-500 hover:text-neutral-800",
                 )}
               >
-                🕒 Custom Time
+                Custom Time
               </button>
             </div>
 
             {isCustomMode && (
-              <div className="mt-2.5 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50/60 border border-blue-100">
-                <span className="text-[12px] font-medium text-neutral-600 flex-1">
+              <div className="mt-2.5 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-50 border border-neutral-200">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 flex-1">
                   Time:
                 </span>
                 <input
                   type="time"
                   value={customTimeVal}
                   onChange={(e) => handleCustomTimeSubmit(e.target.value)}
-                  className="px-2 py-0.5 rounded-lg bg-white border border-blue-200 text-[13px] font-bold text-blue-700 tracking-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-2 py-0.5 rounded-lg bg-white border border-neutral-300 text-[13px] font-bold text-neutral-900 tracking-tight focus:outline-none focus:ring-2 focus:ring-neutral-900"
                 />
               </div>
             )}
@@ -227,10 +227,10 @@ export default function ParkingTimeControls() {
           {/* Dwell Duration Selection */}
           <div className="mt-3.5">
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">
-                Parking Duration
+              <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                Duration
               </label>
-              <span className="text-[12px] font-bold text-blue-600">
+              <span className="text-[12px] font-bold text-neutral-900">
                 {formatDurationLabel(parkingDurationMinutes)}
               </span>
             </div>
@@ -244,9 +244,9 @@ export default function ParkingTimeControls() {
                     type="button"
                     onClick={() => setParkingDurationMinutes(step.value)}
                     className={cn(
-                      "py-1.5 rounded-lg text-[11px] font-semibold tracking-tight transition-all active:scale-95 border",
+                      "py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 border",
                       isSelected
-                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                        ? "bg-neutral-900 text-white border-neutral-900 shadow-sm"
                         : "bg-neutral-50 text-neutral-700 border-neutral-200/60 hover:bg-neutral-100",
                     )}
                   >
@@ -260,7 +260,7 @@ export default function ParkingTimeControls() {
           {/* Stay Summary Window */}
           <div className="mt-3 p-2.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+              <span className="w-1.5 h-1.5 rounded-full bg-tesla-blue" />
               <span className="text-[11px] font-semibold text-neutral-700">
                 {formatTimeString(effectiveArrivalDate)} &rarr;{" "}
                 {formatTimeString(departureDate)}
@@ -275,7 +275,7 @@ export default function ParkingTimeControls() {
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="mt-3 w-full py-2.5 rounded-xl bg-blue-600 text-white text-[13px] font-semibold tracking-tight shadow-[0_4px_16px_rgba(29,112,236,0.3)] hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
+            className="mt-3 w-full py-2.5 rounded-xl bg-neutral-900 text-white text-[12px] font-bold uppercase tracking-wider shadow-sm hover:bg-neutral-800 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
           >
             <Check className="h-3.5 w-3.5" />
             Done
