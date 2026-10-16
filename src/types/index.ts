@@ -63,3 +63,16 @@ export interface UserLocation {
 }
 
 export type LocationPermission = "prompt" | "granted" | "denied" | "error"
+
+export interface ParkedCarSession {
+  carparkNo: string
+  address: string
+  lat: number
+  lng: number
+  agency?: string
+  parkedAt: string // ISO timestamp
+  deck?: string
+  lotNumber?: string
+  photoUrl?: string
+  notes?: string
+}

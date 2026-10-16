@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { useParkingStore } from "@/store/useParkingStore"
 import { getAvailabilityStatus } from "@/lib/carpark-utils"
 import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
-import { ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
+import { Car, ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
 import { trackEvent } from "@/lib/analytics"
 import HeartAnimation from "./HeartAnimation"
 
@@ -29,8 +29,15 @@ const statusColor: Record<string, string> = {
 }
 
 export default function CarparkDetail() {
-  const { selectedCarpark, setSelectedCarpark, favorites, toggleFavorite } =
-    useParkingStore()
+  const {
+    selectedCarpark,
+    setSelectedCarpark,
+    favorites,
+    toggleFavorite,
+    parkedCar,
+    setIsParkedCaptureOpen,
+    setIsParkedPassOpen,
+  } = useParkingStore()
   const [showNavMenu, setShowNavMenu] = useState(false)
   const [showHeartAnim, setShowHeartAnim] = useState(false)
 
@@ -200,71 +207,98 @@ export default function CarparkDetail() {
       )}
 
       {/* Navigation & Favorite Action Buttons */}
-      <div className="flex items-center gap-2 mt-3.5 relative">
-        {showNavMenu && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowNavMenu(false)}
-            />
-            <div className="absolute bottom-full mb-2 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-neutral-200/80 p-2 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
-              <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                Choose Navigation App
+      <div className="flex flex-col gap-2 mt-3.5">
+        <div className="flex items-center gap-2 relative">
+          {showNavMenu && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowNavMenu(false)}
+              />
+              <div className="absolute bottom-full mb-2 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-neutral-200/80 p-2 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                  Choose Navigation App
+                </div>
+                <button
+                  onClick={() => handleNavigate("google")}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
+                >
+                  <GoogleMapsIcon className="w-5 h-5 text-[#4285F4]" />
+                  Google Maps
+                </button>
+                <button
+                  onClick={() => handleNavigate("apple")}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
+                >
+                  <AppleIcon className="w-5 h-5 text-black" />
+                  Apple Maps
+                </button>
+                <button
+                  onClick={() => handleNavigate("waze")}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
+                >
+                  <WazeIcon className="w-5 h-5 text-[#33CCFF]" />
+                  Waze
+                </button>
               </div>
-              <button
-                onClick={() => handleNavigate("google")}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
-              >
-                <GoogleMapsIcon className="w-5 h-5 text-[#4285F4]" />
-                Google Maps
-              </button>
-              <button
-                onClick={() => handleNavigate("apple")}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
-              >
-                <AppleIcon className="w-5 h-5 text-black" />
-                Apple Maps
-              </button>
-              <button
-                onClick={() => handleNavigate("waze")}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
-              >
-                <WazeIcon className="w-5 h-5 text-[#33CCFF]" />
-                Waze
-              </button>
-            </div>
-          </>
-        )}
-
-        <button
-          type="button"
-          onClick={() => setShowNavMenu((v) => !v)}
-          className="relative overflow-hidden flex-1 h-12 rounded-xl bg-tesla-blue text-white text-[14px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(62,106,225,0.3)] hover:bg-tesla-blue-hover active:scale-[0.98] transition-all"
-        >
-          <Navigation className="h-4 w-4 fill-current" />
-          <span>Start Navigation</span>
-        </button>
-
-        <div className="relative h-12 w-12 shrink-0">
-          {showHeartAnim && (
-            <HeartAnimation onComplete={() => setShowHeartAnim(false)} />
+            </>
           )}
+
           <button
             type="button"
-            onClick={handleFavouriteToggle}
-            aria-label="Save carpark"
-            className={cn(
-              "h-12 w-12 rounded-xl border flex items-center justify-center transition-all active:scale-90",
-              isFav
-                ? "bg-red-50 border-red-200 text-red-600"
-                : "bg-neutral-50 border-neutral-200/80 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100",
-            )}
+            onClick={() => setShowNavMenu((v) => !v)}
+            className="relative overflow-hidden flex-1 h-12 rounded-xl bg-tesla-blue text-white text-[14px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(62,106,225,0.3)] hover:bg-tesla-blue-hover active:scale-[0.98] transition-all"
           >
-            <Heart
-              className={cn("h-5 w-5 transition-all", isFav && "fill-current scale-110")}
-            />
+            <Navigation className="h-4 w-4 fill-current" />
+            <span>Start Navigation</span>
           </button>
+
+          <div className="relative h-12 w-12 shrink-0">
+            {showHeartAnim && (
+              <HeartAnimation onComplete={() => setShowHeartAnim(false)} />
+            )}
+            <button
+              type="button"
+              onClick={handleFavouriteToggle}
+              aria-label="Save carpark"
+              className={cn(
+                "h-12 w-12 rounded-xl border flex items-center justify-center transition-all active:scale-90",
+                isFav
+                  ? "bg-red-50 border-red-200 text-red-600"
+                  : "bg-neutral-50 border-neutral-200/80 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100",
+              )}
+            >
+              <Heart
+                className={cn("h-5 w-5 transition-all", isFav && "fill-current scale-110")}
+              />
+            </button>
+          </div>
         </div>
+
+        {/* Parked Car 1-Tap Trigger */}
+        <button
+          type="button"
+          onClick={() => {
+            if (parkedCar?.carparkNo === cp.carparkNo) {
+              setIsParkedPassOpen(true)
+            } else {
+              setIsParkedCaptureOpen(true)
+            }
+          }}
+          className={cn(
+            "w-full h-11 rounded-xl text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 border transition-all active:scale-[0.98]",
+            parkedCar?.carparkNo === cp.carparkNo
+              ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100/70"
+              : "bg-neutral-50 hover:bg-neutral-100 border-neutral-200/80 text-neutral-800",
+          )}
+        >
+          <Car className="w-4 h-4 text-blue-600" />
+          <span>
+            {parkedCar?.carparkNo === cp.carparkNo
+              ? `Car Parked Here ${parkedCar.deck ? `(${parkedCar.deck})` : ""} · View Pass`
+              : "I'm Parked Here"}
+          </span>
+        </button>
       </div>
     </div>
   )

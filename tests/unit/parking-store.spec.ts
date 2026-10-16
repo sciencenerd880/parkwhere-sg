@@ -123,3 +123,41 @@ describe("toggleFavorite — unauthenticated", () => {
     expect(useParkingStore.getState().favorites).toEqual([])
   })
 })
+
+describe("parkedCar session", () => {
+  it("sets and clears parkedCar session", () => {
+    expect(useParkingStore.getState().parkedCar).toBeNull()
+
+    const session = {
+      carparkNo: "TM21",
+      address: "Blk 245A Tampines St 21",
+      lat: 1.352,
+      lng: 103.84,
+      agency: "HDB",
+      parkedAt: new Date().toISOString(),
+      deck: "3A",
+      lotNumber: "142",
+      photoUrl: "data:image/jpeg;base64,mock",
+    }
+
+    useParkingStore.getState().setParkedCar(session)
+    expect(useParkingStore.getState().parkedCar).toEqual(session)
+
+    useParkingStore.getState().clearParkedCar()
+    expect(useParkingStore.getState().parkedCar).toBeNull()
+  })
+
+  it("controls pass and capture modal visibility", () => {
+    expect(useParkingStore.getState().isParkedPassOpen).toBe(false)
+    expect(useParkingStore.getState().isParkedCaptureOpen).toBe(false)
+
+    useParkingStore.getState().setIsParkedCaptureOpen(true)
+    expect(useParkingStore.getState().isParkedCaptureOpen).toBe(true)
+
+    useParkingStore.getState().setIsParkedPassOpen(true)
+    expect(useParkingStore.getState().isParkedPassOpen).toBe(true)
+
+    useParkingStore.getState().clearParkedCar()
+    expect(useParkingStore.getState().isParkedPassOpen).toBe(false)
+  })
+})

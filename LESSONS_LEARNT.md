@@ -13,6 +13,21 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-16 — Find My Car & Live Parking Pass with Dynamic Island & 3-Second MSCP Capture
+
+- **Symptom:** Drivers frequently experience parking amnesia in Singapore multi-storey carparks (MSCPs) and shopping mall basements where indoor GPS signal drifts or fails completely and photos get lost in camera rolls.
+- **Root Cause:** Standard navigation tools drop 2D GPS coordinates without vertical (Z-axis) floor data (e.g. Deck 3A vs 3B), pillar/lot landmarks, or running duration/fee tracking.
+- **Fix:**
+  - Added `ParkedCarSession` in `src/types/index.ts` and persisted state in `src/store/useParkingStore.ts` via Zustand with safe `localStorage` synchronization.
+  - Built `src/components/parked/ParkedCarCaptureModal.tsx` for a 3-second micro-capture flow with 1-tap deck chips (`B2`, `B1`, `L1`, `L2`, `L3A`, `Roof`), lot/pillar input, and client-compressed pillar photo capture.
+  - Built `src/components/parked/ParkedCarBanner.tsx` as a floating Cupertino Dynamic Island capsule displaying elapsed parking duration and real-time estimated fees.
+  - Built `src/components/parked/ParkedCarPassModal.tsx` featuring an Apple Wallet-style digital parking pass with 1-tap walking directions back to the vehicle (Google Maps & Apple Maps), spot sharing, and fee ticker.
+  - Integrated dedicated pulsing parked car beacon in `src/components/map/MapView.tsx` and seamless 1-tap "I'm Parked Here" / "View Pass" triggers in `src/components/carpark/CarparkDetail.tsx`.
+- **Verification:** 84 unit tests passing (`npm run test`), `npx tsc --noEmit` (0 errors), `npm run lint` clean (0 errors, 0 warnings).
+- **Lesson:** For indoor spatial memory problems where satellite GPS degrades (such as concrete MSCPs), prioritize sub-3-second micro-tagging (deck chips + quick photo) and pair with persistent client-side live activities so the session survives browser restarts without high-friction forms.
+
+---
+
 ## 2026-09-01 — Vector Map Styling Upgrade (CARTO Positron Vector GL)
 
 - **Symptom:** The default Singapore Land Authority (OneMap Default) raster tile basemap displayed dated topographic survey lines, bold orange/yellow highway lines, and restricted area hatching that conflicted with the clean, minimalist automotive UI.

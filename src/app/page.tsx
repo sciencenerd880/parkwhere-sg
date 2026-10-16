@@ -13,6 +13,9 @@ import CarparkDetail from "@/components/carpark/CarparkDetail"
 import FavouriteList from "@/components/carpark/FavouriteList"
 import AuthButton from "@/components/auth/AuthButton"
 import OnboardingModal from "@/components/onboarding/OnboardingModal"
+import ParkedCarBanner from "@/components/parked/ParkedCarBanner"
+import ParkedCarCaptureModal from "@/components/parked/ParkedCarCaptureModal"
+import ParkedCarPassModal from "@/components/parked/ParkedCarPassModal"
 import { useAuthStore } from "@/store/useAuthStore"
 import { RadarTelemetryIcon, ParkWhereAppIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
@@ -107,9 +110,12 @@ export default function Home() {
   return (
     <div className="h-dvh w-full flex flex-col bg-white overflow-hidden">
       <OnboardingModal />
+      <ParkedCarCaptureModal />
+      <ParkedCarPassModal />
       <header className="h-14 shrink-0 bg-white border-b border-neutral-100 flex items-center justify-between px-4 md:px-5 z-30">
         <Logo />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
+          <ParkedCarBanner />
           <AuthButton />
         </div>
       </header>

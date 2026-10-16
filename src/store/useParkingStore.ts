@@ -1,10 +1,12 @@
 import { create } from "zustand"
+import { persist, createJSONStorage } from "zustand/middleware"
 import type {
   Destination,
   CarparkWithDistance,
   MapViewState,
   UserLocation,
   LocationPermission,
+  ParkedCarSession,
 } from "@/types"
 import { useAuthStore } from "@/store/useAuthStore"
 import { addFavorite, removeFavorite } from "@/lib/favorites"
@@ -17,6 +19,29 @@ import { enrichCarparksWithRates } from "@/lib/carpark-utils"
 // where two synchronous taps both read the same `wasFavorite` and both
 // issue a (now-duplicate) insert that would unique-violate.
 const inFlightFavorites = new Set<string>()
+
+const safeStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === "undefined") return null
+    try {
+      return window.localStorage.getItem(name)
+    } catch {
+      return null
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === "undefined") return
+    try {
+      window.localStorage.setItem(name, value)
+    } catch {}
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === "undefined") return
+    try {
+      window.localStorage.removeItem(name)
+    } catch {}
+  },
+}
 
 interface ParkingStore {
   destination: Destination | null
@@ -33,6 +58,9 @@ interface ParkingStore {
   searchQuery: string
   arrivalTime: string | null
   parkingDurationMinutes: number
+  parkedCar: ParkedCarSession | null
+  isParkedPassOpen: boolean
+  isParkedCaptureOpen: boolean
 
   setDestination: (dest: Destination | null) => void
   setSelectedCarpark: (cp: CarparkWithDistance | null) => void
@@ -50,9 +78,15 @@ interface ParkingStore {
   setArrivalTime: (time: string | null) => void
   setParkingDurationMinutes: (minutes: number) => void
   clearDestination: () => void
+  setParkedCar: (session: ParkedCarSession | null) => void
+  clearParkedCar: () => void
+  setIsParkedPassOpen: (open: boolean) => void
+  setIsParkedCaptureOpen: (open: boolean) => void
 }
 
-export const useParkingStore = create<ParkingStore>()((set, get) => ({
+export const useParkingStore = create<ParkingStore>()(
+  persist(
+    (set, get) => ({
   destination: null,
   selectedCarpark: null,
   carparks: [],
@@ -163,6 +197,24 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
   },
   setFavorites: (favorites) => set({ favorites }),
   setSearchQuery: (q) => set({ searchQuery: q }),
+  parkedCar: null,
+  isParkedPassOpen: false,
+  isParkedCaptureOpen: false,
+  setParkedCar: (session) => {
+    if (session) {
+      trackEvent("carpark_saved_parked", {
+        carparkNo: session.carparkNo,
+        deck: session.deck,
+      })
+    }
+    set({ parkedCar: session })
+  },
+  clearParkedCar: () => {
+    trackEvent("carpark_ended_parked")
+    set({ parkedCar: null, isParkedPassOpen: false })
+  },
+  setIsParkedPassOpen: (open) => set({ isParkedPassOpen: open }),
+  setIsParkedCaptureOpen: (open) => set({ isParkedCaptureOpen: open }),
   clearDestination: () =>
     set({
       destination: null,
@@ -170,4 +222,13 @@ export const useParkingStore = create<ParkingStore>()((set, get) => ({
       carparks: [],
       error: null,
     }),
-}))
+    }),
+    {
+      name: "parkwhere-session",
+      storage: createJSONStorage(() => safeStorage),
+      partialize: (state) => ({
+        parkedCar: state.parkedCar,
+      }),
+    },
+  ),
+)

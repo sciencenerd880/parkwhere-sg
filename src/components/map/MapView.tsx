@@ -53,9 +53,18 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
   const markerElementsRef = useRef<Map<string, HTMLElement>>(new Map())
   const destMarkerRef = useRef<maplibregl.Marker | null>(null)
   const userMarkerRef = useRef<maplibregl.Marker | null>(null)
+  const parkedMarkerRef = useRef<maplibregl.Marker | null>(null)
 
-  const { destination, carparks, selectedCarpark, setSelectedCarpark, setMapView, userLocation } =
-    useParkingStore()
+  const {
+    destination,
+    carparks,
+    selectedCarpark,
+    setSelectedCarpark,
+    setMapView,
+    userLocation,
+    parkedCar,
+    setIsParkedPassOpen,
+  } = useParkingStore()
 
   const clearMarkers = useCallback(() => {
     markersRef.current.forEach((m) => m.remove())
@@ -74,6 +83,13 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
     if (userMarkerRef.current) {
       userMarkerRef.current.remove()
       userMarkerRef.current = null
+    }
+  }, [])
+
+  const clearParkedCarMarker = useCallback(() => {
+    if (parkedMarkerRef.current) {
+      parkedMarkerRef.current.remove()
+      parkedMarkerRef.current = null
     }
   }, [])
 
@@ -178,6 +194,45 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
 
     return clearUserLocationMarker
   }, [userLocation, clearUserLocationMarker, destination, selectedCarpark, drawerExpanded])
+
+  // Handle Parked Car Marker
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !parkedCar) {
+      clearParkedCarMarker()
+      return
+    }
+
+    clearParkedCarMarker()
+
+    const el = document.createElement("div")
+    el.className = "flex items-center justify-center cursor-pointer"
+    el.innerHTML = `
+      <div class="relative flex items-center justify-center w-[34px] h-[34px] group">
+        <div class="absolute inset-0 rounded-full bg-blue-500/25 animate-ping"></div>
+        <div class="relative w-[30px] h-[30px] rounded-full bg-blue-600 border-[2.5px] border-white shadow-[0_4px_14px_rgba(37,99,235,0.4)] flex items-center justify-center text-white transition-transform active:scale-90">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11 2 11.5 2 12v4c0 .6.4 1 1 1h2"/>
+            <circle cx="7" cy="17" r="2"/>
+            <path d="M9 17h6"/>
+            <circle cx="17" cy="17" r="2"/>
+          </svg>
+        </div>
+      </div>
+    `
+    const child = el.firstElementChild as HTMLElement
+    child.addEventListener("click", () => {
+      setIsParkedPassOpen(true)
+    })
+
+    const marker = new maplibregl.Marker({ element: child })
+      .setLngLat([parkedCar.lng, parkedCar.lat])
+      .addTo(map)
+
+    parkedMarkerRef.current = marker
+
+    return clearParkedCarMarker
+  }, [parkedCar, clearParkedCarMarker, setIsParkedPassOpen])
 
   // Fly to selected carpark
   useEffect(() => {
