@@ -141,7 +141,7 @@ export default function SearchBar() {
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="shrink-0 h-12 w-12 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-xl border border-neutral-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.06)] text-neutral-600 hover:text-neutral-900 transition-all disabled:opacity-50 active:scale-95"
-            title="Refresh availability telemetry"
+            title="Refresh availability"
           >
             <RotateCcw
               className={`h-4 w-4 ${

@@ -28,7 +28,13 @@ export const ParkWhereAppIcon = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <rect width="100" height="100" rx="28" fill="#171A20" />
+    <defs>
+      <linearGradient id="pw-gradient" x1="0" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#007AFF" />
+        <stop offset="1" stopColor="#0056C6" />
+      </linearGradient>
+    </defs>
+    <rect width="100" height="100" rx="26" fill="url(#pw-gradient)" />
     <path
       d="M36 74V26H53C61.2 26 67 31.2 67 39C67 46.8 61.2 52 53 52H46.5V74H36ZM46.5 42.5H52.2C55.8 42.5 57.8 40.9 57.8 39C57.8 37.1 55.8 35.5 52.2 35.5H46.5V42.5Z"
       fill="#FFFFFF"
@@ -36,30 +42,22 @@ export const ParkWhereAppIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export const RadarTelemetryIcon = ({ className }: { className?: string }) => (
+export const CompassBeaconIcon = ({ className }: { className?: string }) => (
   <svg
-    viewBox="0 0 100 100"
+    viewBox="0 0 80 80"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <circle cx="50" cy="50" r="44" stroke="#E2E8F0" strokeWidth="2" strokeDasharray="4 4" />
-    <circle cx="50" cy="50" r="32" stroke="#CBD5E1" strokeWidth="2" />
-    <circle cx="50" cy="50" r="20" stroke="#94A3B8" strokeWidth="2" />
-    <circle cx="50" cy="50" r="8" fill="#3E6AE1" />
-    <path d="M50 50L78 22" stroke="#3E6AE1" strokeWidth="2.5" strokeLinecap="round" />
-    <circle cx="78" cy="22" r="3.5" fill="#3E6AE1" />
+    <circle cx="40" cy="40" r="36" fill="#F0F6FF" stroke="#D0E2FF" strokeWidth="1.5" />
+    <circle cx="40" cy="40" r="24" stroke="#007AFF" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+    <circle cx="40" cy="40" r="6" fill="#007AFF" />
+    <path d="M40 23V27M40 53V57M23 40H27M53 40H57" stroke="#007AFF" strokeWidth="2" strokeLinecap="round" />
   </svg>
 )
 
-export const MascotIcon = ({
-  className,
-}: {
-  className?: string
-  withBadge?: boolean
-}) => (
-  <RadarTelemetryIcon className={className} />
-)
+export const RadarTelemetryIcon = CompassBeaconIcon
+export const MascotIcon = CompassBeaconIcon
 
 export const GoogleIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

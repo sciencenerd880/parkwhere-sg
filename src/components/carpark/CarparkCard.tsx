@@ -23,22 +23,22 @@ const statusConfig: Record<
     dot: "bg-emerald-500",
   },
   limited: {
-    label: "Limited",
+    label: "Filling Fast",
     badge: "bg-amber-500/10 text-amber-700 border border-amber-500/20",
     text: "text-amber-600",
     dot: "bg-amber-500",
   },
   very_limited: {
-    label: "Very Limited",
-    badge: "bg-orange-500/10 text-orange-700 border border-orange-500/20",
-    text: "text-orange-600",
-    dot: "bg-orange-500",
+    label: "Filling Fast",
+    badge: "bg-amber-500/10 text-amber-700 border border-amber-500/20",
+    text: "text-amber-600",
+    dot: "bg-amber-500",
   },
   full: {
     label: "Full",
-    badge: "bg-red-500/10 text-red-700 border border-red-500/20",
-    text: "text-red-600",
-    dot: "bg-red-500",
+    badge: "bg-rose-500/10 text-rose-700 border border-rose-500/20",
+    text: "text-rose-600",
+    dot: "bg-rose-500",
   },
   unknown: {
     label: "Unknown",
@@ -62,9 +62,9 @@ export default function CarparkCard({
       type="button"
       onClick={() => onSelect(carpark)}
       className={cn(
-        "w-full text-left px-4 py-3.5 flex items-center justify-between gap-3 transition-all duration-150 animate-card-enter border-b border-neutral-100 last:border-b-0 active:scale-[0.99]",
+        "w-full text-left px-4 py-3 flex items-center justify-between gap-3 transition-all duration-150 animate-card-enter border-b border-neutral-100 last:border-b-0 active:scale-[0.99]",
         isSelected
-          ? "bg-neutral-100/90 relative after:absolute after:left-0 after:top-2 after:bottom-2 after:w-1 after:bg-tesla-blue after:rounded-r"
+          ? "bg-blue-50/40 relative after:absolute after:left-0 after:top-2 after:bottom-2 after:w-1 after:bg-[#007AFF] after:rounded-r"
           : "bg-white hover:bg-neutral-50/80",
       )}
       style={{ animationDelay: `${index * 30}ms` }}
@@ -77,13 +77,13 @@ export default function CarparkCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-1">
-          <span className="flex items-center gap-1 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+          <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-400">
             <MapPin className="h-3 w-3 text-neutral-400" />
             {carpark.distance.toFixed(2)} km
           </span>
           <span
             className={cn(
-              "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider inline-flex items-center gap-1",
+              "px-1.5 py-0.5 rounded text-[9.5px] font-semibold inline-flex items-center gap-1",
               config.badge,
             )}
           >
@@ -91,12 +91,12 @@ export default function CarparkCard({
             {config.label}
           </span>
           {carpark.agency && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-neutral-100 text-neutral-600 border border-neutral-200/50">
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase bg-neutral-100 text-neutral-600 border border-neutral-200/50">
               {carpark.agency}
             </span>
           )}
           {carpark.savingsVsNearbyMall && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-tight bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="px-1.5 py-0.5 rounded text-[9.5px] font-semibold tracking-tight bg-emerald-50 text-emerald-700 border border-emerald-200">
               Save ${carpark.savingsVsNearbyMall.toFixed(2)}
             </span>
           )}
@@ -107,7 +107,7 @@ export default function CarparkCard({
         <div className="flex items-baseline gap-1">
           <span
             className={cn(
-              "text-[18px] leading-none font-bold tracking-tight",
+              "text-[17px] leading-none font-bold tracking-tight",
               config.text,
             )}
           >
@@ -124,7 +124,7 @@ export default function CarparkCard({
           <div className="mt-1 flex flex-col items-end">
             <span className="text-[12px] font-bold text-neutral-900 tracking-tight leading-none">
               {carpark.estimatedCost === 0 ? (
-                <span className="text-emerald-600 uppercase tracking-wider text-[11px]">Free</span>
+                <span className="text-emerald-600 font-semibold text-[11px]">Free</span>
               ) : (
                 `~$${carpark.estimatedCost.toFixed(2)}`
               )}

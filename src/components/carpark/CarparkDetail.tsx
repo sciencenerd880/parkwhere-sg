@@ -8,6 +8,7 @@ import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
 import { Car, ChevronDown, ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
 import { trackEvent } from "@/lib/analytics"
 import HeartAnimation from "./HeartAnimation"
+import Odometer from "@/components/ui/Odometer"
 
 function formatTimeAgo(timestamp: string): string {
   const now = Date.now()
@@ -23,8 +24,8 @@ function formatTimeAgo(timestamp: string): string {
 const statusColor: Record<string, string> = {
   healthy: "text-neutral-900",
   limited: "text-amber-600",
-  very_limited: "text-orange-600",
-  full: "text-red-600",
+  very_limited: "text-amber-600",
+  full: "text-rose-600",
   unknown: "text-neutral-400",
 }
 
@@ -87,7 +88,7 @@ export default function CarparkDetail() {
         <button
           type="button"
           onClick={() => setSelectedCarpark(null)}
-          className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 active:scale-95 transition-all"
+          className="flex items-center gap-1 text-[12px] font-medium text-neutral-500 hover:text-neutral-900 active:scale-95 transition-all"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           Back to list
@@ -117,23 +118,22 @@ export default function CarparkDetail() {
         </p>
       )}
 
-      {/* Supercharger-style Telemetry Metric */}
-      <div className="mt-2.5 p-3 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between">
+      {/* Cupertino-style Availability Metric */}
+      <div className="mt-2.5 p-3 rounded-xl bg-neutral-50/80 border border-neutral-100 flex items-center justify-between">
         <div>
-          <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
-            Available Spots
+          <span className="text-[10px] font-semibold text-neutral-400 block mb-0.5">
+            Available Lots
           </span>
           <div className="flex items-baseline gap-1.5">
-            <span
+            <Odometer
+              value={cp.lotsAvailable}
               className={cn(
-                "text-[28px] leading-none font-black tracking-tight",
+                "text-[28px] leading-none font-bold tracking-tight",
                 statusColor[status],
               )}
-            >
-              {cp.lotsAvailable !== null ? cp.lotsAvailable : "—"}
-            </span>
+            />
             {cp.totalLots !== null && (
-              <span className="text-[12px] font-semibold text-neutral-400">
+              <span className="text-[12px] font-medium text-neutral-400">
                 / {cp.totalLots} total
               </span>
             )}
@@ -143,11 +143,10 @@ export default function CarparkDetail() {
         <div className="text-right">
           <span
             className={cn(
-              "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5",
+              "px-2.5 py-1 rounded-full text-[10px] font-semibold inline-flex items-center gap-1.5",
               status === "healthy" && "bg-emerald-500/10 text-emerald-700 border border-emerald-500/20",
-              status === "limited" && "bg-amber-500/10 text-amber-700 border border-amber-500/20",
-              status === "very_limited" && "bg-orange-500/10 text-orange-700 border border-orange-500/20",
-              status === "full" && "bg-red-500/10 text-red-700 border border-red-500/20",
+              (status === "limited" || status === "very_limited") && "bg-amber-500/10 text-amber-700 border border-amber-500/20",
+              status === "full" && "bg-rose-500/10 text-rose-700 border border-rose-500/20",
               status === "unknown" && "bg-neutral-100 text-neutral-500",
             )}
           >
@@ -155,13 +154,12 @@ export default function CarparkDetail() {
               className={cn(
                 "w-1.5 h-1.5 rounded-full",
                 status === "healthy" && "bg-emerald-500",
-                status === "limited" && "bg-amber-500",
-                status === "very_limited" && "bg-orange-500",
-                status === "full" && "bg-red-500",
+                (status === "limited" || status === "very_limited") && "bg-amber-500",
+                status === "full" && "bg-rose-500",
                 status === "unknown" && "bg-neutral-400",
               )}
             />
-            {status === "healthy" ? "Available" : status.replace("_", " ")}
+            {status === "healthy" ? "Available" : (status === "limited" || status === "very_limited") ? "Filling Fast" : status === "full" ? "Full" : "Unknown"}
           </span>
         </div>
       </div>
@@ -193,7 +191,7 @@ export default function CarparkDetail() {
               <button
                 type="button"
                 onClick={() => setShowRateDetails((v) => !v)}
-                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 px-1.5 py-0.5 rounded-md hover:bg-neutral-200/60 transition-all shrink-0 ml-1.5"
+                className="flex items-center gap-1 text-[11px] font-medium text-neutral-500 hover:text-neutral-900 px-1.5 py-0.5 rounded-md hover:bg-neutral-200/60 transition-all shrink-0 ml-1.5"
               >
                 <span>{showRateDetails ? "Hide" : "Details"}</span>
                 <ChevronDown
@@ -300,7 +298,7 @@ export default function CarparkDetail() {
             <button
               type="button"
               onClick={() => setShowNavMenu((v) => !v)}
-              className="flex-1 h-11 rounded-xl bg-tesla-blue text-white text-[13px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(62,106,225,0.25)] hover:bg-tesla-blue-hover active:scale-[0.98] transition-all"
+              className="flex-1 h-11 rounded-xl bg-[#007AFF] text-white text-[13px] font-semibold tracking-tight flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,122,255,0.25)] hover:bg-[#0056C6] active:scale-[0.98] transition-all"
             >
               <Navigation className="h-4 w-4 fill-current" />
               <span>Navigate</span>
@@ -311,9 +309,9 @@ export default function CarparkDetail() {
               type="button"
               onClick={() => setIsParkedCaptureOpen(true)}
               title="Save parking spot"
-              className="h-11 px-3.5 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200/70 text-neutral-800 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all shrink-0"
+              className="h-11 px-3.5 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200/70 text-neutral-800 text-[12px] font-semibold tracking-tight flex items-center justify-center gap-1.5 active:scale-95 transition-all shrink-0"
             >
-              <Car className="h-3.5 w-3.5 text-blue-600" />
+              <Car className="h-3.5 w-3.5 text-neutral-700" />
               <span>Park</span>
             </button>
           </>

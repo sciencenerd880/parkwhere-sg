@@ -17,9 +17,16 @@ import ParkedCarBanner from "@/components/parked/ParkedCarBanner"
 import ParkedCarCaptureModal from "@/components/parked/ParkedCarCaptureModal"
 import ParkedCarPassModal from "@/components/parked/ParkedCarPassModal"
 import { useAuthStore } from "@/store/useAuthStore"
-import { RadarTelemetryIcon, ParkWhereAppIcon } from "@/components/icons"
+import { CompassBeaconIcon, ParkWhereAppIcon } from "@/components/icons"
 import { cn } from "@/lib/utils"
 import { ChevronUp } from "lucide-react"
+
+const POPULAR_DESTINATIONS = [
+  { name: "Orchard Road", address: "ION Orchard, 2 Orchard Turn", lat: 1.304, lng: 103.8318 },
+  { name: "Marina Bay Sands", address: "10 Bayfront Ave", lat: 1.2838, lng: 103.8591 },
+  { name: "Jewel Changi", address: "78 Airport Blvd", lat: 1.3602, lng: 103.9897 },
+  { name: "Bugis Junction", address: "200 Victoria St", lat: 1.2998, lng: 103.8554 },
+]
 
 function Logo() {
   const clearDestination = useParkingStore((s) => s.clearDestination)
@@ -50,21 +57,46 @@ function Logo() {
 
 function SidebarEmptyState() {
   const { user, isAuthLoading, signInWithGoogle } = useAuthStore()
+  const { setDestination, setSearchQuery } = useParkingStore()
+
+  const handleQuickSelect = (item: (typeof POPULAR_DESTINATIONS)[number]) => {
+    setSearchQuery(item.name)
+    setDestination(item)
+  }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-      <RadarTelemetryIcon className="h-20 w-20 mb-5 animate-radar text-neutral-300" />
-      <p className="text-[16px] font-bold uppercase tracking-wider text-neutral-900 mb-1.5">
+    <div className="flex-1 flex flex-col items-center justify-center text-center px-8 py-6">
+      <CompassBeaconIcon className="h-12 w-12 mb-4 text-neutral-400" />
+      <p className="text-[15px] font-semibold text-neutral-900 mb-1">
         Where are you heading?
       </p>
-      <p className="text-xs font-normal text-neutral-500 max-w-[240px] leading-relaxed">
-        Search any destination or postal code to view real-time parking telemetry.
+      <p className="text-xs font-normal text-neutral-500 max-w-[260px] leading-relaxed mb-5">
+        Search any destination or postal code for live lot counts and pricing.
       </p>
+
+      <div className="w-full max-w-[280px]">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-2">
+          Popular Destinations
+        </p>
+        <div className="flex flex-wrap gap-1.5 justify-center">
+          {POPULAR_DESTINATIONS.map((dest) => (
+            <button
+              key={dest.name}
+              type="button"
+              onClick={() => handleQuickSelect(dest)}
+              className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-neutral-100 hover:bg-neutral-200/80 text-neutral-700 active:scale-95 transition-all"
+            >
+              {dest.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {!isAuthLoading && !user && (
         <button
           type="button"
           onClick={() => signInWithGoogle()}
-          className="mt-5 text-[11px] font-bold uppercase tracking-wider text-tesla-blue hover:text-tesla-blue-hover active:scale-95 transition-all"
+          className="mt-6 text-[12px] font-medium text-[#007AFF] hover:text-[#0056C6] active:scale-95 transition-all"
         >
           Sign in to sync saved places
         </button>
@@ -78,12 +110,12 @@ function PanelHeader({ count }: { count: number }) {
   return (
     <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-neutral-100">
       <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-400">
-        {count} Carparks Telemetry
+        Nearby Carparks ({count})
       </p>
       <button
         type="button"
         onClick={clearDestination}
-        className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 active:scale-95 transition-all"
+        className="text-[11px] font-semibold text-neutral-500 hover:text-neutral-900 active:scale-95 transition-all"
       >
         Clear
       </button>
@@ -141,12 +173,12 @@ export default function Home() {
           {!destination && !error && (
             <div className="md:hidden absolute inset-0 z-10 flex items-center justify-center pointer-events-none px-4">
               <div className="w-full max-w-xs px-6 py-6 rounded-3xl bg-white/90 backdrop-blur-2xl border border-neutral-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.08)] text-center">
-                <RadarTelemetryIcon className="h-16 w-16 mx-auto mb-3 animate-radar text-neutral-400" />
-                <p className="text-[15px] font-bold uppercase tracking-wider text-neutral-900 mb-1">
+                <CompassBeaconIcon className="h-12 w-12 mx-auto mb-3 text-neutral-400" />
+                <p className="text-[15px] font-semibold text-neutral-900 mb-1">
                   Where are you heading?
                 </p>
                 <p className="text-xs font-normal text-neutral-500 max-w-xs mx-auto leading-relaxed">
-                  Search destination to view real-time parking telemetry.
+                  Search any destination or postal code for live lot counts and pricing.
                 </p>
               </div>
             </div>
@@ -187,10 +219,10 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => setDrawerExpanded(true)}
-                      className="flex items-center justify-center gap-1 py-2.5 shrink-0 text-neutral-800 text-[12px] font-bold uppercase tracking-wider w-full active:scale-95 transition-all"
+                      className="flex items-center justify-center gap-1.5 py-2.5 shrink-0 text-neutral-800 text-[13px] font-semibold w-full active:scale-95 transition-all"
                     >
-                      <span>Show All Carparks</span>
-                      <ChevronUp className="h-4 w-4" />
+                      <span>Show all carparks</span>
+                      <ChevronUp className="h-4 w-4 text-neutral-500" />
                     </button>
                     <div className="flex-1 overflow-y-auto scrollbar-hide px-2 pb-2">
                       <CarparkDetail />

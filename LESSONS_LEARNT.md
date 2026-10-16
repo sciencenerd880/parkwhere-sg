@@ -13,6 +13,35 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-16 — Rolling Odometer Lot Counter & Apple "Find My" Radial Marker Ping
+
+- **Symptom:** Availability numbers switched abruptly without giving visual feedback that data had been freshly loaded, and selecting a carpark in dense urban areas (e.g. Orchard Road or Yishun) required drivers to visually search which dot on the map was selected.
+- **Root Cause:** Raw numeric text replacement lacked spatial transition continuity, and unselected/selected map markers only differed in static circle diameter without an attention-directing motion pulse.
+- **Fix:**
+  - Built `src/components/ui/Odometer.tsx`: GPU-accelerated mechanical digit slot reels (`translateY(-N * 10%)`) with tabular numbers, staggered column cascades (`(len - 1 - i) * 35ms`), and spring easing (`cubic-bezier(0.16, 1, 0.3, 1)`). Integrated into `src/components/carpark/CarparkDetail.tsx`.
+  - Added `.marker-ping` in `src/components/map/MapView.tsx` and `.animate-sonic-ping` in `src/app/globals.css`: emits a 2.4x expanding translucent hairline ring in the carpark's stoplight color upon selection without triggering layout reflow or interfering with MapLibre's root element inline transforms.
+- **Verification:** 84/84 unit tests passed, `npx tsc --noEmit` clean (0 errors), `npm run lint` clean, and verified via Chrome DevTools DOM evaluation (`totalMarkersWithPing: 10`, `activeAnimatedPingFound: true`).
+- **Lesson:** Use motion strictly for telemetry validation and peripheral guidance. Mechanical digit reels prove data freshness in <300ms, while expanding hairline sonic rings instantly orient the driver's eyes on the road grid.
+
+---
+
+## 2026-10-16 — AI Slop Removal & Cupertino Automotive UI Polish (Icons, Colors & Shimmer Skeletons)
+
+- **Symptom:** App contained generic AI tropes (pulsing fake radar SVGs, Lottie map loading animation delay, overuse of "telemetry" buzzwords, ambiguous 4-tier color states, and shouting all-caps typography) causing visual fatigue.
+- **Root Cause:** Early generative scaffolding introduced pseudo-tech decoration ("telemetry", radar sweeps) and nuanced availability buckets (`limited` vs `very_limited` in orange vs amber) that created cognitive friction for drivers requiring glanceable clarity.
+- **Fix:**
+  - Replaced `RadarTelemetryIcon` and zombie mascot with clean Apple-inspired `CompassBeaconIcon` and upgraded app icon gradient to Apple System Blue (`#007AFF`) in `src/components/icons.tsx`.
+  - Replaced heavy Lottie map animation in `src/components/carpark/CarparkList.tsx` with native 4-card shimmer skeletons, reducing bundle overhead and rendering latency.
+  - Eradicated all user-facing "telemetry" buzzwords across `src/app/page.tsx`, `src/components/onboarding/OnboardingModal.tsx`, and `src/components/search/SearchBar.tsx`, replacing with driver-friendly copy ("live lot counts", "availability", "pricing").
+  - Standardized on a clear 3-color traffic stoplight palette (Green: Available, Amber: Filling Fast, Red: Full) across `CarparkCard.tsx`, `CarparkDetail.tsx`, and `MapView.tsx`.
+  - Softened shouting all-caps labels to clean Cupertino title/sentence case typography and unified CTA actions on Apple System Blue (`#007AFF`).
+  - Replaced dead-end desktop empty state with an actionable springboard featuring 4 quick destination chips (`Orchard Road`, `Marina Bay Sands`, `Jewel Changi`, `Bugis Junction`).
+  - Removed dead `.animate-radar` keyframes from `src/app/globals.css`.
+- **Verification:** 84/84 unit tests passed (`npm run test`), `npx tsc --noEmit` clean (0 errors), `npm run lint` clean (0 errors, 0 warnings), and validated through Chrome DevTools DOM snapshot across live destinations (e.g. Fern Grove @ Yishun with 10 nearby HDB carparks).
+- **Lesson:** High-utility driving applications demand radical subtraction. Replace decorative AI filler (radar sweeps, Lottie bloat, buzzword stuffing) with instant native shimmer skeletons, high-contrast 3-color stoplights, and interactive springboard chips that take the user straight to action. When running local dev servers that rely on upstream government APIs (LTA DataMall), ensure background task is run with network permission so it doesn't silently fall back to the 11 mock HarbourFront lots.
+
+---
+
 ## 2026-10-16 — Adaptive Split-Pill Action Bar & Glanceable Rate Decluttering (Concept A)
 
 - **Symptom:** On mobile peek mode, carpark detail cards experienced severe viewport clipping and scroll-jumping where primary navigation and parked car CTAs were pushed off-screen. Additionally, pricing information presented triple redundancy ($5.00 repeated across header, bullets, and remarks) creating excessive visual noise.

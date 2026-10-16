@@ -197,16 +197,22 @@
   100% { background-position: 400px 0; }
 }
 
-/* ── Radar pulse ── */
 
-@keyframes radar-pulse {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 0.3; }
-  100% { transform: scale(0.95); opacity: 0.8; }
+/* ── Apple Find My radial marker ping ── */
+
+@keyframes sonic-ping {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
 }
 
-.animate-radar {
-  animation: radar-pulse 2.5s ease-in-out infinite;
+.animate-sonic-ping {
+  animation: sonic-ping 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-shimmer {

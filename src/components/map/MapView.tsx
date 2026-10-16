@@ -41,8 +41,8 @@ const getMapPadding = (opts: { hasDestination: boolean; hasSelectedCarpark: bool
 const STATUS_MUTED: Record<string, { bg: string; shadow: string }> = {
   healthy: { bg: "#10B981", shadow: "rgba(16, 185, 129, 0.4)" },
   limited: { bg: "#F59E0B", shadow: "rgba(245, 158, 11, 0.4)" },
-  very_limited: { bg: "#F97316", shadow: "rgba(249, 115, 22, 0.4)" },
-  full: { bg: "#E82127", shadow: "rgba(232, 33, 39, 0.4)" },
+  very_limited: { bg: "#F59E0B", shadow: "rgba(245, 158, 11, 0.4)" },
+  full: { bg: "#EF4444", shadow: "rgba(239, 68, 68, 0.4)" },
   unknown: { bg: "#94A3B8", shadow: "rgba(148, 163, 184, 0.2)" },
 }
 
@@ -259,9 +259,10 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
       const el = document.createElement("div")
       // Start with neutral style
       el.innerHTML = `
-        <div class="flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 animate-marker-in overflow-hidden"
+        <div class="relative flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 animate-marker-in"
              style="animation-delay: ${i * 30}ms;">
-          <div class="marker-shimmer absolute inset-0 bg-white/40 pointer-events-none opacity-0"></div>
+          <div class="marker-ping absolute -inset-1 rounded-full pointer-events-none opacity-0"></div>
+          <div class="marker-shimmer absolute inset-0 rounded-full bg-white/40 pointer-events-none opacity-0 overflow-hidden"></div>
           <span class="marker-label font-bold text-white z-10 transition-colors duration-300"></span>
         </div>
       `
@@ -294,11 +295,12 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
       
       const span = el.querySelector(".marker-label") as HTMLElement
       const shimmer = el.querySelector(".marker-shimmer") as HTMLElement
+      const ping = el.querySelector(".marker-ping") as HTMLElement | null
 
       span.innerText = isUnknown ? "" : labelText
 
       if (isSelected) {
-        // Selected marker: bigger circle, bright colors, shimmering glow
+        // Selected marker: bigger circle, bright colors, shimmering glow, radial sonic ping
         el.classList.remove("scale-100", "hover:scale-110")
         el.classList.add("scale-110", "z-20")
         el.classList.remove("z-10")
@@ -314,6 +316,15 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
         span.style.color = "white"
         shimmer.classList.add("animate-shimmer")
         shimmer.classList.remove("opacity-0")
+
+        if (ping) {
+          ping.style.borderColor = c.bg
+          ping.style.borderWidth = "2px"
+          ping.style.borderStyle = "solid"
+          ping.classList.remove("animate-sonic-ping")
+          void ping.offsetWidth // force reflow to restart animation on re-selection
+          ping.classList.add("animate-sonic-ping")
+        }
       } else {
         // Unselected nearby markers: retain color but dim if another is selected
         el.classList.remove("scale-110", "z-20")
@@ -330,6 +341,11 @@ export default function MapView({ drawerExpanded = false }: { drawerExpanded?: b
         span.style.color = "white"
         shimmer.classList.remove("animate-shimmer")
         shimmer.classList.add("opacity-0")
+
+        if (ping) {
+          ping.classList.remove("animate-sonic-ping")
+          ping.style.opacity = "0"
+        }
       }
     })
   }, [selectedCarpark, carparks])

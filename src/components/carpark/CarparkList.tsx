@@ -3,7 +3,6 @@
 import { useParkingStore } from "@/store/useParkingStore"
 import { filterCarparks } from "@/lib/carpark-utils"
 import CarparkCard from "./CarparkCard"
-import MapLoadingAnimation from "@/components/map/MapLoadingAnimation"
 import type { CarparkWithDistance } from "@/types"
 
 export default function CarparkList({
@@ -29,11 +28,25 @@ export default function CarparkList({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 text-center">
-        <MapLoadingAnimation className="h-32 w-32" />
-        <p className="text-[12px] font-bold uppercase tracking-widest text-neutral-400 -mt-2">
-          Retrieving Parking Telemetry...
-        </p>
+      <div className="flex flex-col gap-2 p-3 animate-in fade-in duration-200">
+        {[1, 2, 3, 4].map((n) => (
+          <div
+            key={n}
+            className="p-3.5 rounded-2xl bg-neutral-50/80 border border-neutral-100 flex items-center justify-between gap-3 animate-pulse"
+          >
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-neutral-200/80 rounded-md w-3/4" />
+              <div className="flex items-center gap-2">
+                <div className="h-3 bg-neutral-200/70 rounded w-16" />
+                <div className="h-3 bg-neutral-200/70 rounded w-12" />
+              </div>
+            </div>
+            <div className="space-y-1.5 flex flex-col items-end">
+              <div className="h-5 bg-neutral-200/80 rounded w-10" />
+              <div className="h-3 bg-neutral-200/70 rounded w-14" />
+            </div>
+          </div>
+        ))}
       </div>
     )
   }
