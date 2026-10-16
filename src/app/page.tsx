@@ -126,7 +126,7 @@ export default function Home() {
             <MapView drawerExpanded={drawerExpanded} />
           </div>
 
-          <div className="absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-2xl md:bg-transparent border-b border-neutral-100 md:border-b-0 px-4 py-3 md:p-0 md:top-4 md:left-4 md:right-auto md:w-[400px]">
+          <div className="absolute top-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-2xl md:bg-transparent border-b border-neutral-100 md:border-b-0 px-4 py-3 md:p-0 md:top-4 md:left-4 md:right-auto md:w-[400px]">
             <SearchBar />
             <ParkingTimeControls />
             <LocationBanner />
@@ -176,7 +176,7 @@ export default function Home() {
                 className={cn(
                   "bg-white rounded-[28px] shadow-[0_12px_48px_rgba(0,0,0,0.14)] overflow-hidden border-[0.5px] border-black/5 flex flex-col transition-[max-height] duration-300 ease-out",
                   isPeek
-                    ? "max-h-[36vh]"
+                    ? "max-h-[38vh]"
                     : drawerExpanded
                       ? "max-h-[78vh]"
                       : "max-h-[46vh]",
@@ -236,7 +236,7 @@ export default function Home() {
               <PanelHeader count={visibleCount} />
               {selectedCarpark && <CarparkDetail />}
               <div className="flex-1 overflow-y-auto scrollbar-hide">
-                <CarparkList />
+                <CarparkList excludeCarparkNo={selectedCarpark?.carparkNo} />
               </div>
             </div>
           )}

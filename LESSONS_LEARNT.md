@@ -13,6 +13,20 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-16 — Adaptive Split-Pill Action Bar & Glanceable Rate Decluttering (Concept A)
+
+- **Symptom:** On mobile peek mode, carpark detail cards experienced severe viewport clipping and scroll-jumping where primary navigation and parked car CTAs were pushed off-screen. Additionally, pricing information presented triple redundancy ($5.00 repeated across header, bullets, and remarks) creating excessive visual noise.
+- **Root Cause:** Stacking two full-width button rows (`Start Navigation` + `I'm Parked Here`) coupled with uncollapsed rate breakdown and remarks tables inflated the card height to >420px within a 36vh peek container. Furthermore, `ParkingTimeControls` popover was layered under the drawer due to shared `z-20` stacking context.
+- **Fix:**
+  - Implemented Concept A "Adaptive Split-Pill" in `src/components/carpark/CarparkDetail.tsx`: merged navigation, 1-tap park capture, and favorite toggle into a single 44px horizontal row (`[ 🧭 Navigate (60%) ]` + `[ 🚗 Park (25%) ]` + `[ ♡ (15%) ]`), which dynamically morphs into an active session pass pill when parked.
+  - Decluttered pricing telemetry into a single-line glanceable summary (`~$5.00 • $5.00/entry [MALL]`) with a smooth on-demand `[Details ▾]` drawer for detailed breakdown and concession remarks.
+  - Elevated top search container to `z-30` in `src/app/page.tsx` resolving dropdown layering conflicts.
+  - Added `excludeCarparkNo` to desktop `CarparkList` in `src/app/page.tsx`, eliminating double-card repetition in the desktop sidebar.
+- **Verification:** 84/84 unit tests passed (`npm run test`), `npx tsc --noEmit` clean (0 errors), `npm run lint` clean, and automated Chrome DevTools browser verification across mobile (iPhone 390x844) and desktop (1280x800).
+- **Lesson:** In automotive/driver mobile interfaces, never stack multiple full-width CTAs in constrained sheet viewports. Use unified segmented horizontal action bars with adaptive state morphing, and tuck secondary terms/conditions into progressive disclosure drawers.
+
+---
+
 ## 2026-10-16 — Find My Car & Live Parking Pass with Dynamic Island & 3-Second MSCP Capture
 
 - **Symptom:** Drivers frequently experience parking amnesia in Singapore multi-storey carparks (MSCPs) and shopping mall basements where indoor GPS signal drifts or fails completely and photos get lost in camera rolls.

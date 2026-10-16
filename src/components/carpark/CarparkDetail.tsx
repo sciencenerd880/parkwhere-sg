@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { useParkingStore } from "@/store/useParkingStore"
 import { getAvailabilityStatus } from "@/lib/carpark-utils"
 import { AppleIcon, GoogleMapsIcon, WazeIcon } from "@/components/icons"
-import { Car, ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
+import { Car, ChevronDown, ChevronLeft, Clock, Heart, MapPin, Navigation } from "lucide-react"
 import { trackEvent } from "@/lib/analytics"
 import HeartAnimation from "./HeartAnimation"
 
@@ -40,6 +40,7 @@ export default function CarparkDetail() {
   } = useParkingStore()
   const [showNavMenu, setShowNavMenu] = useState(false)
   const [showHeartAnim, setShowHeartAnim] = useState(false)
+  const [showRateDetails, setShowRateDetails] = useState(false)
 
   const handleFavouriteToggle = useCallback(() => {
     const isCurrentlyFav = favorites.includes(selectedCarpark?.carparkNo ?? "")
@@ -56,6 +57,7 @@ export default function CarparkDetail() {
   const cp = selectedCarpark
   const status = getAvailabilityStatus(cp.lotsAvailable)
   const isFav = favorites.includes(cp.carparkNo)
+  const isParkedHere = parkedCar?.carparkNo === cp.carparkNo
 
   const handleNavigate = (app: "google" | "apple" | "waze") => {
     const { lat, lng } = cp
@@ -76,9 +78,12 @@ export default function CarparkDetail() {
     setShowNavMenu(false)
   }
 
+  const hasExtraRateDetails =
+    Boolean(cp.remarks) || (Boolean(cp.rateBreakdown) && (cp.rateBreakdown?.length ?? 0) > 0)
+
   return (
-    <div className="m-3 mb-0 rounded-2xl bg-white border border-neutral-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-4 animate-card-enter relative">
-      <div className="flex items-center justify-between mb-2.5">
+    <div className="m-3 mb-0 rounded-2xl bg-white border border-neutral-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-3.5 animate-card-enter relative">
+      <div className="flex items-center justify-between mb-2">
         <button
           type="button"
           onClick={() => setSelectedCarpark(null)}
@@ -101,34 +106,34 @@ export default function CarparkDetail() {
         </div>
       </div>
 
-      <h2 className="text-[16px] font-bold tracking-tight text-neutral-900 leading-snug">
+      <h2 className="text-[15px] font-bold tracking-tight text-neutral-900 leading-snug">
         {cp.address}
       </h2>
 
       {cp.lastUpdated && (
-        <p className="text-[11px] font-medium text-neutral-400 mt-1 flex items-center gap-1.5">
+        <p className="text-[10px] font-medium text-neutral-400 mt-0.5 flex items-center gap-1.5">
           <Clock className="h-3 w-3" />
           Updated {formatTimeAgo(cp.lastUpdated)}
         </p>
       )}
 
       {/* Supercharger-style Telemetry Metric */}
-      <div className="mt-3.5 p-3.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between">
+      <div className="mt-2.5 p-3 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
             Available Spots
           </span>
           <div className="flex items-baseline gap-1.5">
             <span
               className={cn(
-                "text-[32px] leading-none font-black tracking-tight",
+                "text-[28px] leading-none font-black tracking-tight",
                 statusColor[status],
               )}
             >
               {cp.lotsAvailable !== null ? cp.lotsAvailable : "—"}
             </span>
             {cp.totalLots !== null && (
-              <span className="text-[13px] font-semibold text-neutral-400">
+              <span className="text-[12px] font-semibold text-neutral-400">
                 / {cp.totalLots} total
               </span>
             )}
@@ -161,144 +166,180 @@ export default function CarparkDetail() {
         </div>
       </div>
 
-      {/* Pricing and Rates Breakdown Card */}
+      {/* Glanceable Decluttered Pricing Pill */}
       {cp.estimatedCost !== undefined && cp.estimatedCost !== null && (
-        <div className="mt-3 p-3.5 rounded-xl bg-white border border-neutral-200/70 shadow-sm">
+        <div className="mt-2 rounded-xl bg-neutral-50/80 border border-neutral-200/60 p-2.5 transition-all">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                Estimated Parking Rate
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-[14px] font-black text-neutral-900 tracking-tight shrink-0">
+                {cp.estimatedCost === 0 ? (
+                  <span className="text-emerald-600">Free</span>
+                ) : (
+                  `~$${cp.estimatedCost.toFixed(2)}`
+                )}
+              </span>
+              <span className="text-neutral-300 text-xs">•</span>
+              <span className="text-[11px] font-medium text-neutral-600 truncate">
+                {cp.rateSummary || (cp.isMall ? "Mall Evening / Per Entry" : "HDB Standard ($1.20/hr)")}
               </span>
               {cp.isMall && (
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60">
+                <span className="px-1.5 py-0.2 rounded text-[8px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60 shrink-0">
                   Mall
                 </span>
               )}
             </div>
-            <span className="text-[16px] font-black text-neutral-900 tracking-tight">
-              {cp.estimatedCost === 0 ? (
-                <span className="text-emerald-600">Free</span>
-              ) : (
-                `~$${cp.estimatedCost.toFixed(2)}`
-              )}
-            </span>
+
+            {hasExtraRateDetails && (
+              <button
+                type="button"
+                onClick={() => setShowRateDetails((v) => !v)}
+                className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 px-1.5 py-0.5 rounded-md hover:bg-neutral-200/60 transition-all shrink-0 ml-1.5"
+              >
+                <span>{showRateDetails ? "Hide" : "Details"}</span>
+                <ChevronDown
+                  className={cn(
+                    "h-3 w-3 transition-transform duration-200",
+                    showRateDetails && "rotate-180",
+                  )}
+                />
+              </button>
+            )}
           </div>
 
-          {cp.rateBreakdown && cp.rateBreakdown.length > 0 && (
-            <div className="mt-2.5 pt-2 border-t border-neutral-100 flex flex-col gap-1">
-              {cp.rateBreakdown.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center text-[11px] font-medium text-neutral-600 leading-tight"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 mr-2 shrink-0" />
-                  {item}
+          {/* On-Demand Rate Breakdown Drawer */}
+          {showRateDetails && (
+            <div className="mt-2 pt-2 border-t border-neutral-200/60 flex flex-col gap-1.5 animate-in fade-in duration-150">
+              {cp.rateBreakdown && cp.rateBreakdown.length > 0 && (
+                <div className="flex flex-col gap-1">
+                  {cp.rateBreakdown.map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center text-[11px] font-medium text-neutral-600 leading-tight"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 mr-2 shrink-0" />
+                      {item}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-
-          {cp.remarks && (
-            <div className="mt-2 pt-2 border-t border-neutral-100 text-[11px] font-medium text-neutral-500 leading-normal">
-              ℹ️ {cp.remarks}
+              )}
+              {cp.remarks && (
+                <p className="text-[10px] text-neutral-500 leading-relaxed bg-white/70 p-2 rounded-lg border border-neutral-100">
+                  ℹ️ {cp.remarks}
+                </p>
+              )}
             </div>
           )}
         </div>
       )}
 
-      {/* Navigation & Favorite Action Buttons */}
-      <div className="flex flex-col gap-2 mt-3.5">
-        <div className="flex items-center gap-2 relative">
-          {showNavMenu && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setShowNavMenu(false)}
-              />
-              <div className="absolute bottom-full mb-2 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-neutral-200/80 p-2 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-                  Choose Navigation App
-                </div>
-                <button
-                  onClick={() => handleNavigate("google")}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
-                >
-                  <GoogleMapsIcon className="w-5 h-5 text-[#4285F4]" />
-                  Google Maps
-                </button>
-                <button
-                  onClick={() => handleNavigate("apple")}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
-                >
-                  <AppleIcon className="w-5 h-5 text-black" />
-                  Apple Maps
-                </button>
-                <button
-                  onClick={() => handleNavigate("waze")}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
-                >
-                  <WazeIcon className="w-5 h-5 text-[#33CCFF]" />
-                  Waze
-                </button>
+      {/* Adaptive Unified Action Bar (Concept A: Split-Pill) */}
+      <div className="flex items-center gap-2 mt-2.5 relative">
+        {showNavMenu && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowNavMenu(false)}
+            />
+            <div className="absolute bottom-full mb-2 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-neutral-200/80 p-2 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                Choose Navigation App
               </div>
-            </>
-          )}
+              <button
+                onClick={() => handleNavigate("google")}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
+              >
+                <GoogleMapsIcon className="w-5 h-5 text-[#4285F4]" />
+                Google Maps
+              </button>
+              <button
+                onClick={() => handleNavigate("apple")}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
+              >
+                <AppleIcon className="w-5 h-5 text-black" />
+                Apple Maps
+              </button>
+              <button
+                onClick={() => handleNavigate("waze")}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all text-sm font-semibold text-neutral-800 w-full text-left"
+              >
+                <WazeIcon className="w-5 h-5 text-[#33CCFF]" />
+                Waze
+              </button>
+            </div>
+          </>
+        )}
 
-          <button
-            type="button"
-            onClick={() => setShowNavMenu((v) => !v)}
-            className="relative overflow-hidden flex-1 h-12 rounded-xl bg-tesla-blue text-white text-[14px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(62,106,225,0.3)] hover:bg-tesla-blue-hover active:scale-[0.98] transition-all"
-          >
-            <Navigation className="h-4 w-4 fill-current" />
-            <span>Start Navigation</span>
-          </button>
-
-          <div className="relative h-12 w-12 shrink-0">
-            {showHeartAnim && (
-              <HeartAnimation onComplete={() => setShowHeartAnim(false)} />
-            )}
+        {isParkedHere ? (
+          <>
+            {/* Active Session Pass Pill */}
             <button
               type="button"
-              onClick={handleFavouriteToggle}
-              aria-label="Save carpark"
-              className={cn(
-                "h-12 w-12 rounded-xl border flex items-center justify-center transition-all active:scale-90",
-                isFav
-                  ? "bg-red-50 border-red-200 text-red-600"
-                  : "bg-neutral-50 border-neutral-200/80 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100",
-              )}
+              onClick={() => setIsParkedPassOpen(true)}
+              className="flex-1 h-11 px-3 rounded-xl bg-blue-50 border border-blue-200 hover:bg-blue-100/70 text-blue-800 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] transition-all truncate"
             >
-              <Heart
-                className={cn("h-5 w-5 transition-all", isFav && "fill-current scale-110")}
-              />
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
+              <span className="truncate">
+                Parked {parkedCar?.deck ? `Deck ${parkedCar.deck}` : "Here"} · View Pass
+              </span>
             </button>
-          </div>
-        </div>
 
-        {/* Parked Car 1-Tap Trigger */}
-        <button
-          type="button"
-          onClick={() => {
-            if (parkedCar?.carparkNo === cp.carparkNo) {
-              setIsParkedPassOpen(true)
-            } else {
-              setIsParkedCaptureOpen(true)
-            }
-          }}
-          className={cn(
-            "w-full h-11 rounded-xl text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 border transition-all active:scale-[0.98]",
-            parkedCar?.carparkNo === cp.carparkNo
-              ? "bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100/70"
-              : "bg-neutral-50 hover:bg-neutral-100 border-neutral-200/80 text-neutral-800",
+            {/* Quick Directions / Nav button */}
+            <button
+              type="button"
+              onClick={() => setShowNavMenu((v) => !v)}
+              title="Navigate to carpark"
+              className="h-11 px-3 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all shrink-0"
+            >
+              <Navigation className="h-3.5 w-3.5 text-tesla-blue fill-current" />
+              <span>Nav</span>
+            </button>
+          </>
+        ) : (
+          <>
+            {/* Start Navigation Primary Button (~65% width) */}
+            <button
+              type="button"
+              onClick={() => setShowNavMenu((v) => !v)}
+              className="flex-1 h-11 rounded-xl bg-tesla-blue text-white text-[13px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(62,106,225,0.25)] hover:bg-tesla-blue-hover active:scale-[0.98] transition-all"
+            >
+              <Navigation className="h-4 w-4 fill-current" />
+              <span>Navigate</span>
+            </button>
+
+            {/* Quick Park Button (~20% width) */}
+            <button
+              type="button"
+              onClick={() => setIsParkedCaptureOpen(true)}
+              title="Save parking spot"
+              className="h-11 px-3.5 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200/70 text-neutral-800 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all shrink-0"
+            >
+              <Car className="h-3.5 w-3.5 text-blue-600" />
+              <span>Park</span>
+            </button>
+          </>
+        )}
+
+        {/* Favorite Heart Button (~15% width) */}
+        <div className="relative h-11 w-11 shrink-0">
+          {showHeartAnim && (
+            <HeartAnimation onComplete={() => setShowHeartAnim(false)} />
           )}
-        >
-          <Car className="w-4 h-4 text-blue-600" />
-          <span>
-            {parkedCar?.carparkNo === cp.carparkNo
-              ? `Car Parked Here ${parkedCar.deck ? `(${parkedCar.deck})` : ""} · View Pass`
-              : "I'm Parked Here"}
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={handleFavouriteToggle}
+            aria-label="Save carpark"
+            className={cn(
+              "h-11 w-11 rounded-xl border flex items-center justify-center transition-all active:scale-90",
+              isFav
+                ? "bg-red-50 border-red-200 text-red-600"
+                : "bg-neutral-50 border-neutral-200/80 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100",
+            )}
+          >
+            <Heart
+              className={cn("h-4 w-4 transition-all", isFav && "fill-current scale-110")}
+            />
+          </button>
+        </div>
       </div>
     </div>
   )
