@@ -29,6 +29,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **FAB (Navigate Button):** Positioned dynamically (e.g., `bottom-[52vh]` on mobile, left of the panel on desktop) to float cleanly over the map without overlapping the results panel.
 - **Marker Hierarchy:** When a carpark is selected, it grows and shimmers. All *unselected* markers keep their actual availability colors (Green/Orange/Red) but fade to `opacity: 0.4` to reduce visual noise while remaining visible on the light map.
 
+## Design Language Playbook & Second Brain References
+- **Rare UI Design Playbook:** Refer to `/Users/taijingshen/Documents/rare-ui-playbook/README.md` (and the live interactive catalog at `http://localhost:3002`) for specialized animated micro-interactions, AI status indicators, morphing drawers, and inputs. When introducing new tactile components or motion-rich UI patterns, consult this playbook first for established conventions, optimal UX use-cases, and shadcn CLI commands before reinventing custom components.
+- **Central Knowledge / Second Brain:** When architectural guidelines, design playbooks, or shared components are referenced, inspect the parent workspace (`/Users/taijingshen/Documents/...`) for existing centralized playbooks and repositories to maintain consistency across all projects without repeating instructions.
+
+
 ## Agent Workflow & Git Operations
 - **Confirmation Required:** Whenever a feature or enhancement is implemented, you must stop and get confirmation from the user before taking further major actions.
 - **Pushing to Vercel:** The user will typically use a prompt like `push` to trigger a GitHub push. When requested, automatically stage all changes, commit them with a descriptive message, and push to GitHub to trigger the Vercel deployment.

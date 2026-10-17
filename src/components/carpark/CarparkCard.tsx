@@ -104,25 +104,20 @@ export default function CarparkCard({
       </div>
 
       <div className="flex flex-col items-end shrink-0 pl-2">
-        <div className="flex items-baseline gap-1">
-          <span
-            className={cn(
-              "text-[17px] leading-none font-bold tracking-tight",
-              config.text,
-            )}
-          >
-            {carpark.lotsAvailable !== null ? carpark.lotsAvailable : "—"}
-          </span>
-          {carpark.totalLots !== null && (
-            <span className="text-[11px] font-medium text-neutral-400">
-              /{carpark.totalLots}
-            </span>
+        <div
+          className={cn(
+            "px-2 py-0.5 rounded-full text-[11px] font-bold tracking-tight inline-flex items-center gap-1 border",
+            config.badge,
           )}
+        >
+          <span>
+            {carpark.lotsAvailable !== null ? `${carpark.lotsAvailable} lots` : "—"}
+          </span>
         </div>
 
         {carpark.estimatedCost !== undefined && carpark.estimatedCost !== null && (
-          <div className="mt-1 flex flex-col items-end">
-            <span className="text-[12px] font-bold text-neutral-900 tracking-tight leading-none">
+          <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-neutral-600 tracking-tight leading-none">
+            <span className="font-semibold text-neutral-900">
               {carpark.estimatedCost === 0 ? (
                 <span className="text-emerald-600 font-semibold text-[11px]">Free</span>
               ) : (
@@ -130,9 +125,12 @@ export default function CarparkCard({
               )}
             </span>
             {carpark.rateSummary && (
-              <span className="text-[10px] font-medium text-neutral-400 mt-0.5 truncate max-w-[90px]">
-                {carpark.rateSummary}
-              </span>
+              <>
+                <span className="text-neutral-300 font-normal">•</span>
+                <span className="text-[10px] text-neutral-400 truncate max-w-[85px]">
+                  {carpark.rateSummary}
+                </span>
+              </>
             )}
           </div>
         )}

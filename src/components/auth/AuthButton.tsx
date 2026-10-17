@@ -40,10 +40,10 @@ export default function AuthButton() {
       <button
         type="button"
         onClick={() => signInWithGoogle()}
-        className="flex items-center gap-2 h-8 px-3.5 rounded-full text-[12px] font-semibold uppercase tracking-wider text-neutral-800 bg-neutral-100 hover:bg-neutral-200 active:scale-95 transition-all"
+        className="flex items-center gap-1.5 sm:gap-2 h-8 px-2.5 sm:px-3.5 rounded-full text-[12px] font-semibold text-neutral-800 bg-neutral-100 hover:bg-neutral-200 active:scale-95 transition-all shrink-0"
       >
-        <GoogleIcon className="h-3.5 w-3.5" />
-        <span>Sign In</span>
+        <GoogleIcon className="h-3.5 w-3.5 shrink-0" />
+        <span className="shrink-0">Sign In</span>
       </button>
     )
   }

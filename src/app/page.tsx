@@ -210,8 +210,8 @@ export default function Home() {
                   isPeek
                     ? "max-h-[38vh]"
                     : drawerExpanded
-                      ? "max-h-[78vh]"
-                      : "max-h-[46vh]",
+                      ? "max-h-[76vh]"
+                      : "max-h-[30vh]",
                 )}
               >
                 {isPeek ? (
@@ -250,6 +250,16 @@ export default function Home() {
                         }
                       />
                     </div>
+                    {!drawerExpanded && visibleCount > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setDrawerExpanded(true)}
+                        className="py-2 text-[11px] font-medium text-neutral-500 hover:text-neutral-900 border-t border-neutral-100 bg-neutral-50/80 hover:bg-neutral-100 flex items-center justify-center gap-1 active:scale-[0.99] transition-all shrink-0"
+                      >
+                        <span>Swipe up or tap for all {visibleCount} carparks</span>
+                        <ChevronUp className="h-3 w-3 text-neutral-400" />
+                      </button>
+                    )}
                   </>
                 )}
               </div>

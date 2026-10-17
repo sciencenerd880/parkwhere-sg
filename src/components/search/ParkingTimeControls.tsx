@@ -117,8 +117,7 @@ export default function ParkingTimeControls() {
             )}
           />
           <span>
-            {arrivalTime ? formatTimeString(effectiveArrivalDate) : "Now"} &middot;{" "}
-            {formatDurationLabel(parkingDurationMinutes)}
+            {arrivalTime ? formatTimeString(effectiveArrivalDate) : "Now"}
           </span>
           <ChevronDown
             className={cn(

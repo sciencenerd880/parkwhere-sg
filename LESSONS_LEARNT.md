@@ -13,6 +13,36 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-17 — Parking Spot 5-Step Animated Journey & AI Slop Eradication
+
+- **Symptom:** The parking spot capture sheet suffered from cognitive overload, lifelessness, and subtle "AI slop": an artificial letter "P" square badge mismatched with outline icons, an erroneous search magnifying glass on an input field intended for recording lot numbers, and a static 2012 desktop dashed file upload box without tactile feedback or state transitions.
+- **Root Cause:** Generative templates frequently mix mismatched icon conventions, reuse generic search inputs for text entry, and omit mobile micro-interaction feedback loops (sliding tracks, loading guards, and celebratory confirmation cards).
+- **Fix:**
+  - `src/components/parked/ParkedCarCaptureModal.tsx`: Implemented a cohesive 5-step animated parking spot journey:
+    1. **Open Save Parking Spot:** Bottom sheet glides upward (`animate-in slide-in-from-bottom duration-300 ease-out`) with frosted glass backdrop keeping the live map and traffic markers visible.
+    2. **Segmented Control & Level Selection:** Native iOS segmented control with an animated sliding white pill track (`transition-all duration-200`) pairing `<Building2 />` (Upper Decks) with `<Layers />` (Basements) with zero synthetic "P" badges; floor pills (`L1`, `L2`, `L3`, `L4`, `Others`) bounce on tap (`active:scale-95`) and dynamically update the active label and CTA.
+    3. **Landmark Tagging & Camera Viewfinder:** Replaced search glass with an Apple Blue location beacon (`MapPin`); replaced desktop dashed upload box with an iOS camera viewfinder card with 4 corner focus brackets `[ ]` and a soft ambient breathing pulse shutter button.
+    4. **Lock in Spot:** Button shows an active loading spinner (`<Loader2 className="animate-spin" />`) and prevents accidental duplicate submissions.
+    5. **Spot Saved & Compact Card:** Seamlessly transitions into a celebration state featuring an animated checkmark ping (`CheckCircle2`), followed by a compact summary card displaying carpark address, level badge, lot tag, timer status, and photo snapshot thumbnail before gently returning to the main view where `ParkedCarBanner` stays active.
+- **Verification:** 84/84 unit tests passed (`vitest`), `npx tsc --noEmit` passed with 0 errors, `npm run lint` clean, and visually verified across the entire 5-step sequence on mobile emulation via Chrome DevTools with screenshots.
+- **Lesson:** Transform static utility forms into cohesive micro-journeys. Providing immediate tactile feedback during input, an in-flight loading guard during submission, and an explicit compact summary confirmation card eliminates user hesitation and builds confidence that data is securely stored.
+
+---
+
+## 2026-10-16 — Mobile Viewport Breathing Room, Header Overflow & Card Hierarchy Overhaul
+
+- **Symptom:** On mobile viewports (iPhone ~390px), the parked car capsule pushed the Google Sign In button completely off-screen, the bottom drawer immediately covered 46% of the screen (leaving only ~25% visible for the map), and each card had three vertically stacked numbers with confusing units (`91`, `~$2.40`, `$0.60/30m`).
+- **Root Cause:** Rigid uncollapsed desktop layouts rendered indiscriminately on mobile viewports; `ParkedCarBanner` displayed full address strings alongside logo and auth button; bottom sheet lacked a compact peek stage on initial search load; and card right-column numbers lacked explicit inventory labelling.
+- **Fix:**
+  - `src/components/parked/ParkedCarBanner.tsx`: Added responsive compact capsule for `< sm` screens (`[ 🚗 Deck • Price ]`), preserving 100% visibility for the Sign In button. Added `shrink-0` to `src/components/auth/AuthButton.tsx`.
+  - `src/app/page.tsx` & `src/components/map/MapView.tsx`: Introduced a 30vh compact peek drawer on search completion with a bottom "Swipe up or tap for all {count} carparks" affordance and adjusted map dynamic bottom padding multiplier from 0.55 to 0.32, boosting visible map area from 25% to ~70%.
+  - `src/components/carpark/CarparkCard.tsx`: Replaced 3-number vertical stack with an explicit inventory badge (`[ 91 lots ]`) and a consolidated single pricing subline (`~$2.40 • $0.60/30m`).
+  - `src/components/search/ParkingTimeControls.tsx`: Streamlined arrival time trigger to avoid redundant duration text alongside quick chips.
+- **Verification:** 84/84 unit tests passed, `npx tsc --noEmit` clean, `npm run lint` clean, verified via Chrome DevTools mobile emulation (iPhone 15 Pro 393x852) with zero header clipping and smooth drawer expansion.
+- **Lesson:** On mobile navigation interfaces, never default to half-screen modal drawers upon search completion. Always default to an information-dense compact peek stage (28-30vh) to prioritize map situational awareness, and protect top app-bar elements from flex compression using explicit breakpoints and `shrink-0`.
+
+---
+
 ## 2026-10-16 — Rolling Odometer Lot Counter & Apple "Find My" Radial Marker Ping
 
 - **Symptom:** Availability numbers switched abruptly without giving visual feedback that data had been freshly loaded, and selecting a carpark in dense urban areas (e.g. Orchard Road or Yishun) required drivers to visually search which dot on the map was selected.
