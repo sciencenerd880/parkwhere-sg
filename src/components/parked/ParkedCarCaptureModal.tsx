@@ -401,7 +401,7 @@ export default function ParkedCarCaptureModal() {
                   placeholder="Pillar or Lot Number (e.g. 3A-142)"
                   value={lotNumber}
                   onChange={(e) => setLotNumber(e.target.value)}
-                  className="w-full h-11 pl-10 pr-4 rounded-full border border-neutral-200/90 bg-white text-xs font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs transition-all"
+                  className="w-full h-11 pl-10 pr-4 rounded-xl border border-neutral-200/90 bg-white text-xs font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-2xs transition-all"
                 />
               </div>
             </div>
@@ -476,7 +476,7 @@ export default function ParkedCarCaptureModal() {
                 disabled={isSubmitting}
                 onClick={handleSave}
                 className={cn(
-                  "w-full h-12 rounded-full bg-[#007AFF] hover:bg-[#0056C6] text-white font-semibold text-[14px]",
+                  "w-full h-12 rounded-2xl bg-[#007AFF] hover:bg-[#0056C6] text-white font-semibold text-[14px]",
                   "shadow-[0_4px_16px_rgba(0,122,255,0.25)] active:scale-[0.98] transition-all flex items-center justify-center gap-2",
                   isSubmitting && "opacity-80 cursor-wait",
                 )}

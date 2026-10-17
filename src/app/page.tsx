@@ -215,19 +215,14 @@ export default function Home() {
                 )}
               >
                 {isPeek ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => setDrawerExpanded(true)}
-                      className="flex items-center justify-center gap-1.5 py-2.5 shrink-0 text-neutral-800 text-[13px] font-semibold w-full active:scale-95 transition-all"
-                    >
-                      <span>Show all carparks</span>
-                      <ChevronUp className="h-4 w-4 text-neutral-500" />
-                    </button>
+                  <div className="flex flex-col flex-1 overflow-hidden">
+                    <div className="flex items-center justify-center pt-3 pb-1 shrink-0">
+                      <div className="w-10 h-1.5 rounded-full bg-neutral-300/80" />
+                    </div>
                     <div className="flex-1 overflow-y-auto scrollbar-hide px-2 pb-2">
                       <CarparkDetail />
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <>
                     <button

@@ -13,6 +13,36 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-17 — Mobile Audit Refinements: Card De-cluttering, Clear CTAs & Touch Ergonomics
+
+- **Symptom:** Critical UI audit of the live mobile application on localhost:3001 revealed cognitive overload ("badge soup" of 4 colored pills per listing card), micro-font legibility failures under 11px, misleading duration CTA copy ("Confirm Parking" triggering false commitment anxiety), and dual competing back navigation controls in the mobile peek drawer.
+- **Root Cause:** Accumulation of redundant metadata pills (text availability badge sitting directly next to a lot count badge), sub-11px font scaling without minimum optical floor, ambiguous CTA copy, and dual vertical/horizontal navigation affordances rendered in the same view.
+- **Fix:**
+  - `src/components/carpark/CarparkCard.tsx`: De-cluttered listing cards by merging availability into the lot count badge with a dynamic colored dot (`● 301 lots`), inlining agency into distance metadata (`LTA • 0.01 km`), enforcing an 11px font floor, and adding `tabular-nums` to eliminate layout jitter during live refresh.
+  - `src/components/search/ParkingTimeControls.tsx`: Renamed duration popover CTA from `"Confirm Parking"` to **`"Apply Schedule • Depart by [Time]"`**; increased quick chips vertical padding from `py-1.5` to `py-2` (minimum 36px visual / 44px tap target) to eliminate driving mis-taps.
+  - `src/components/carpark/CarparkDetail.tsx`: Renamed ambiguous `"Park"` action button to **`"Save Spot"`**; clamped mall badge font size to 10px bold uppercase.
+  - `src/app/page.tsx`: Eliminated the conflicting "Show all carparks" button in peek mode, unifying mobile drawer wayfinding around a single, clean `‹ Back to list` affordance with standard iOS drag handle.
+  - `src/components/parked/ParkedCarPassModal.tsx`: Converted all primary action buttons from forced uppercase to sentence case (`"Walk back to car"`, `"Share spot"`).
+- **Verification:** `npx tsc --noEmit` and `npm run lint` passed with 0 errors; tested and verified live on mobile emulation (`http://localhost:3001` iPhone 15 Pro 393x852) across the entire search, schedule, listing, detail, and spot memory flow using Chrome DevTools with screenshots.
+- **Lesson:** On mobile navigation screens, eliminate redundant status badges: if a colored indicator dot already communicates availability, do not add a text badge saying the same thing. Reserve accent badges strictly for high-value differentiators (e.g., mall savings), clamp text to an 11px minimum, and ensure CTA copy accurately distinguishes between applying a search filter and committing to a session.
+
+---
+
+## 2026-10-17 — Rare UI Design Language Harmonization & Inline Hesitation Guard
+
+- **Symptom:** UI components across the parking journey suffered from design language fragmentation: the duration selector was overly monochrome and heavy, the pass ticket featured outdated skeuomorphic paper notches and destructive action vulnerability (a single-click "End Parking" button risking accidental wipeout of the user's saved spot), and radii/lighting paradigms clashed.
+- **Root Cause:** Sourcing components from disparate UI patterns without a unifying design token matrix led to mismatched surface lighting (neon cyan glows vs. dark coupons vs. clean frosted glass), disparate radii scales (`rounded-full` vs `rounded-2xl`), and absent hesitation buffers on destructive operations.
+- **Fix:**
+  - `src/components/search/ParkingTimeControls.tsx`: Replaced rigid duration chips and floating pills with a unified Cupertino Horizontal Stepper (`2h 30m` bold tabular text, ±30m tactile squircle steppers, quick preset chips `1h, 2h, 3h, 4h, 6h`, inset summary card with arrival/departure timeline and HDB rate baseline, and a prominent primary CTA: **"Confirm Parking • Depart by [Time]"**).
+  - `src/components/parked/ParkedCarPassModal.tsx`: Modernized the pass container to Apple frosted glass (`rounded-t-[32px] md:rounded-[32px]`), eliminated paper ticket notches, and integrated the Rare UI **`delete-button`** inline morphing hesitation buffer: tapping "End Parking" morphs in-place into an Apple System Red (`#FF3B30`) button with a 3-second animated countdown depletion bar (`animate-countdown-deplete`) and "Tap to Confirm End", preventing accidental deletion while eliminating intrusive alert modals.
+  - `src/components/parked/ParkedCarCaptureModal.tsx`: Standardized form inputs to `rounded-xl` and primary action buttons to `rounded-2xl` matching the master Cupertino squircle scale.
+  - `src/components/parked/ParkedCarBanner.tsx`: Replaced generic loader ping with an Apple Live Activity style gentle ambient status pulse.
+  - `src/app/globals.css`: Added keyframes for `.animate-countdown-deplete` (3s linear width countdown).
+- **Verification:** `npx tsc --noEmit` passed with 0 errors, `npm run lint` passed with 0 warnings/errors, and verified cross-component visual consistency across all three touchpoints.
+- **Lesson:** When incorporating advanced micro-interactions from external registries (like Rare UI), never adopt disparate surface or lighting models directly. Always enforce a master design token contract (Apple frosted glass, standard squircle hierarchy, `#007AFF` primary action, `#FF3B30` with 3s hesitation buffer for destructive actions) so that all micro-interactions feel like a single bespoke design system.
+
+---
+
 ## 2026-10-17 — Parking Spot 5-Step Animated Journey & AI Slop Eradication
 
 - **Symptom:** The parking spot capture sheet suffered from cognitive overload, lifelessness, and subtle "AI slop": an artificial letter "P" square badge mismatched with outline icons, an erroneous search magnifying glass on an input field intended for recording lot numbers, and a static 2012 desktop dashed file upload box without tactile feedback or state transitions.

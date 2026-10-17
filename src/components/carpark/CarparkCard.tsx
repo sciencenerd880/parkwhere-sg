@@ -71,52 +71,45 @@ export default function CarparkCard({
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <h3 className="text-[13.5px] font-semibold tracking-tight text-neutral-900 truncate leading-snug">
+          <h3 className="text-[14px] font-semibold tracking-tight text-neutral-900 truncate leading-snug">
             {carpark.address}
           </h3>
         </div>
 
+        {/* Clean, de-cluttered metadata row: Agency, Distance, and Savings */}
         <div className="flex flex-wrap items-center gap-1.5 mt-1">
-          <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-400">
-            <MapPin className="h-3 w-3 text-neutral-400" />
-            {carpark.distance.toFixed(2)} km
-          </span>
-          <span
-            className={cn(
-              "px-1.5 py-0.5 rounded text-[9.5px] font-semibold inline-flex items-center gap-1",
-              config.badge,
+          <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-500 tabular-nums">
+            <MapPin className="h-3 w-3 text-neutral-400 shrink-0" />
+            {carpark.agency && (
+              <span className="font-semibold text-neutral-700">{carpark.agency} •</span>
             )}
-          >
-            <span className={cn("w-1.5 h-1.5 rounded-full", config.dot)} />
-            {config.label}
+            <span>{carpark.distance.toFixed(2)} km</span>
           </span>
-          {carpark.agency && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase bg-neutral-100 text-neutral-600 border border-neutral-200/50">
-              {carpark.agency}
-            </span>
-          )}
+
           {carpark.savingsVsNearbyMall && (
-            <span className="px-1.5 py-0.5 rounded text-[9.5px] font-semibold tracking-tight bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-tight bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
               Save ${carpark.savingsVsNearbyMall.toFixed(2)}
             </span>
           )}
         </div>
       </div>
 
+      {/* Right Column: Hero Lot Count Badge with live status dot + Price */}
       <div className="flex flex-col items-end shrink-0 pl-2">
         <div
           className={cn(
-            "px-2 py-0.5 rounded-full text-[11px] font-bold tracking-tight inline-flex items-center gap-1 border",
+            "px-2.5 py-0.5 rounded-full text-[12px] font-bold tracking-tight inline-flex items-center gap-1.5 border tabular-nums shadow-2xs",
             config.badge,
           )}
         >
+          <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", config.dot)} />
           <span>
             {carpark.lotsAvailable !== null ? `${carpark.lotsAvailable} lots` : "—"}
           </span>
         </div>
 
         {carpark.estimatedCost !== undefined && carpark.estimatedCost !== null && (
-          <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-neutral-600 tracking-tight leading-none">
+          <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-neutral-600 tracking-tight leading-none tabular-nums">
             <span className="font-semibold text-neutral-900">
               {carpark.estimatedCost === 0 ? (
                 <span className="text-emerald-600 font-semibold text-[11px]">Free</span>
@@ -127,7 +120,7 @@ export default function CarparkCard({
             {carpark.rateSummary && (
               <>
                 <span className="text-neutral-300 font-normal">•</span>
-                <span className="text-[10px] text-neutral-400 truncate max-w-[85px]">
+                <span className="text-[11px] text-neutral-500 truncate max-w-[95px]">
                   {carpark.rateSummary}
                 </span>
               </>

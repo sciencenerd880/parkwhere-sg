@@ -181,7 +181,7 @@ export default function CarparkDetail() {
                 {cp.rateSummary || (cp.isMall ? "Mall Evening / Per Entry" : "HDB Standard ($1.20/hr)")}
               </span>
               {cp.isMall && (
-                <span className="px-1.5 py-0.2 rounded text-[8px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60 shrink-0">
+                <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200/60 shrink-0">
                   Mall
                 </span>
               )}
@@ -304,7 +304,7 @@ export default function CarparkDetail() {
               <span>Navigate</span>
             </button>
 
-            {/* Quick Park Button (~20% width) */}
+            {/* Save Spot Memory Button */}
             <button
               type="button"
               onClick={() => setIsParkedCaptureOpen(true)}
@@ -312,7 +312,7 @@ export default function CarparkDetail() {
               className="h-11 px-3.5 rounded-xl bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200/70 text-neutral-800 text-[12px] font-semibold tracking-tight flex items-center justify-center gap-1.5 active:scale-95 transition-all shrink-0"
             >
               <Car className="h-3.5 w-3.5 text-neutral-700" />
-              <span>Park</span>
+              <span>Save Spot</span>
             </button>
           </>
         )}

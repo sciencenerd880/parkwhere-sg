@@ -226,6 +226,21 @@
   background-size: 800px 100%;
 }
 
+/* ── Inline Hesitation countdown depletion ── */
+
+@keyframes countdown-deplete {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+.animate-countdown-deplete {
+  animation: countdown-deplete 3s linear forwards;
+}
+
 /* ── Maplibregl popup overrides ── */
 
 .maplibregl-popup-content {

@@ -3,34 +3,22 @@
 import { useState, useRef, useEffect } from "react"
 import { useParkingStore } from "@/store/useParkingStore"
 import { cn } from "@/lib/utils"
-import { Clock, ChevronDown, Check, X } from "lucide-react"
+import { Clock, ChevronDown, Minus, Plus, ArrowRight, X } from "lucide-react"
 
-const QUICK_DURATIONS = [
+const PRESET_DURATIONS = [
   { label: "1h", value: 60 },
   { label: "2h", value: 120 },
   { label: "3h", value: 180 },
   { label: "4h", value: 240 },
-]
-
-const DURATION_STEPS = [
-  { label: "30m", value: 30 },
-  { label: "1h", value: 60 },
-  { label: "1.5h", value: 90 },
-  { label: "2h", value: 120 },
-  { label: "2.5h", value: 150 },
-  { label: "3h", value: 180 },
-  { label: "4h", value: 240 },
-  { label: "5h", value: 300 },
   { label: "6h", value: 360 },
-  { label: "8h", value: 480 },
 ]
 
-function formatDurationLabel(mins: number): string {
+function formatDurationDisplay(mins: number): { primary: string; secondary?: string } {
   const h = Math.floor(mins / 60)
   const m = mins % 60
-  if (h > 0 && m > 0) return `${h}h ${m}m`
-  if (h > 0) return `${h}h`
-  return `${m}m`
+  if (h > 0 && m > 0) return { primary: `${h}h ${m}m` }
+  if (h > 0) return { primary: `${h}h`, secondary: "00m" }
+  return { primary: `${m}m` }
 }
 
 function formatTimeString(date: Date): string {
@@ -39,6 +27,11 @@ function formatTimeString(date: Date): string {
     minute: "2-digit",
     hour12: true,
   })
+}
+
+function calculateEstimatedCost(mins: number): string {
+  const halfHourBlocks = Math.ceil(mins / 30)
+  return `$${(halfHourBlocks * 0.6).toFixed(2)}`
 }
 
 export default function ParkingTimeControls() {
@@ -95,19 +88,27 @@ export default function ParkingTimeControls() {
     setArrivalTime(target.toISOString())
   }
 
+  const handleStep = (delta: number) => {
+    const nextVal = Math.min(720, Math.max(30, parkingDurationMinutes + delta))
+    setParkingDurationMinutes(nextVal)
+  }
+
+  const durationDisplay = formatDurationDisplay(parkingDurationMinutes)
+  const estimatedCost = calculateEstimatedCost(parkingDurationMinutes)
+
   return (
     <div ref={containerRef} className="relative mt-2 z-30 animate-card-enter">
-      {/* Pill and Chips Container */}
+      {/* Pill and Chips Trigger Container */}
       <div className="flex items-center gap-1.5 w-full">
-        {/* Primary Dropdown Trigger */}
+        {/* Primary Schedule Trigger Pill */}
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
           className={cn(
-            "shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm border select-none",
+            "shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold tracking-tight transition-all active:scale-95 shadow-xs border select-none",
             isOpen || arrivalTime
               ? "bg-neutral-900 text-white border-neutral-900"
-              : "bg-white/95 text-neutral-800 border-neutral-200/80 hover:bg-neutral-100",
+              : "bg-white/95 backdrop-blur-xl text-neutral-800 border-neutral-200/80 hover:bg-neutral-100",
           )}
         >
           <Clock
@@ -117,7 +118,7 @@ export default function ParkingTimeControls() {
             )}
           />
           <span>
-            {arrivalTime ? formatTimeString(effectiveArrivalDate) : "Now"}
+            {arrivalTime ? formatTimeString(effectiveArrivalDate) : "Now"} • {durationDisplay.primary}
           </span>
           <ChevronDown
             className={cn(
@@ -127,9 +128,9 @@ export default function ParkingTimeControls() {
           />
         </button>
 
-        {/* Quick Chips */}
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-0.5">
-          {QUICK_DURATIONS.map((item) => {
+        {/* Quick Chips Row */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-0.5">
+          {PRESET_DURATIONS.map((item) => {
             const isSelected = parkingDurationMinutes === item.value
             return (
               <button
@@ -137,10 +138,10 @@ export default function ParkingTimeControls() {
                 type="button"
                 onClick={() => setParkingDurationMinutes(item.value)}
                 className={cn(
-                  "shrink-0 px-2.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 border",
+                  "shrink-0 px-3 py-2 rounded-full text-[12px] font-semibold transition-all active:scale-95 border shadow-2xs",
                   isSelected
-                    ? "bg-neutral-900 text-white border-neutral-900"
-                    : "bg-white/95 text-neutral-600 border-neutral-200/80 hover:bg-neutral-100 hover:text-neutral-900",
+                    ? "bg-[#007AFF] text-white border-[#007AFF]"
+                    : "bg-white/95 backdrop-blur-md text-neutral-600 border-neutral-200/80 hover:bg-neutral-100 hover:text-neutral-900",
                 )}
               >
                 {item.label}
@@ -150,42 +151,41 @@ export default function ParkingTimeControls() {
         </div>
       </div>
 
-      {/* Floating Anchored Tesla-style Dropdown Popover */}
+      {/* Unified Cupertino Popover Sheet */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-full max-w-[360px] bg-white/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-neutral-200/80 p-4 z-50 animate-in zoom-in-95 fade-in duration-150">
-          <div className="flex items-center justify-between pb-2.5 border-b border-neutral-100">
+        <div className="absolute top-full left-0 mt-2 w-full max-w-[360px] bg-white/95 backdrop-blur-3xl rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.14)] border border-black/5 p-4 z-50 animate-in zoom-in-95 fade-in duration-150">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-800">
-                <Clock className="h-3.5 w-3.5" />
+              <div className="w-7 h-7 rounded-full bg-blue-50 text-[#007AFF] flex items-center justify-center">
+                <Clock className="h-4 w-4" />
               </div>
-              <div>
-                <h3 className="text-[13px] font-bold text-neutral-900 tracking-tight">
-                  Parking Duration & Schedule
-                </h3>
-              </div>
+              <h3 className="text-[13px] font-bold text-neutral-900 tracking-tight">
+                Parking Duration & Schedule
+              </h3>
             </div>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-500 hover:bg-neutral-200 transition-colors"
+              className="w-7 h-7 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-500 transition-colors"
             >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
 
-          {/* Arrival Selection Segment */}
-          <div className="mt-3">
-            <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-1.5">
+          {/* Arrival Selection: Segmented Control */}
+          <div className="mt-3.5">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-1.5">
               Arrival Time
             </label>
-            <div className="grid grid-cols-2 gap-1 p-1 bg-neutral-100 rounded-xl">
+            <div className="grid grid-cols-2 gap-1 p-1 bg-neutral-100/80 rounded-xl border border-neutral-200/50">
               <button
                 type="button"
                 onClick={handleNowClick}
                 className={cn(
-                  "py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all",
+                  "py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-95",
                   !isCustomMode
-                    ? "bg-white text-neutral-900 shadow-sm"
+                    ? "bg-white text-neutral-900 shadow-xs"
                     : "text-neutral-500 hover:text-neutral-800",
                 )}
               >
@@ -198,9 +198,9 @@ export default function ParkingTimeControls() {
                   handleCustomTimeSubmit(customTimeVal)
                 }}
                 className={cn(
-                  "py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all",
+                  "py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-95",
                   isCustomMode
-                    ? "bg-white text-neutral-900 shadow-sm"
+                    ? "bg-white text-neutral-900 shadow-xs"
                     : "text-neutral-500 hover:text-neutral-800",
                 )}
               >
@@ -209,75 +209,117 @@ export default function ParkingTimeControls() {
             </div>
 
             {isCustomMode && (
-              <div className="mt-2.5 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-50 border border-neutral-200">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 flex-1">
-                  Time:
+              <div className="mt-2.5 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-50 border border-neutral-200/80 animate-in fade-in duration-150">
+                <span className="text-xs font-medium text-neutral-500 flex-1">
+                  Arrive at:
                 </span>
                 <input
                   type="time"
                   value={customTimeVal}
                   onChange={(e) => handleCustomTimeSubmit(e.target.value)}
-                  className="px-2 py-0.5 rounded-lg bg-white border border-neutral-300 text-[13px] font-bold text-neutral-900 tracking-tight focus:outline-none focus:ring-2 focus:ring-neutral-900"
+                  className="px-2 py-0.5 rounded-lg bg-white border border-neutral-300 text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
             )}
           </div>
 
-          {/* Dwell Duration Selection */}
-          <div className="mt-3.5">
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
-                Duration
-              </label>
-              <span className="text-[12px] font-bold text-neutral-900">
-                {formatDurationLabel(parkingDurationMinutes)}
+          {/* Tactile Duration Stepper Card */}
+          <div className="mt-4 p-3.5 rounded-2xl bg-neutral-50/80 border border-neutral-200/70">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                Target Dwell Duration
+              </span>
+              <span className="text-[11px] font-semibold text-neutral-500">
+                Steps: ±30 mins
               </span>
             </div>
 
-            <div className="grid grid-cols-5 gap-1">
-              {DURATION_STEPS.map((step) => {
-                const isSelected = parkingDurationMinutes === step.value
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => handleStep(-30)}
+                disabled={parkingDurationMinutes <= 30}
+                aria-label="Decrease 30 minutes"
+                className="w-11 h-11 rounded-xl bg-white border border-neutral-200/80 shadow-xs flex items-center justify-center text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:pointer-events-none active:scale-90 transition-all shrink-0"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+
+              <div className="flex-1 text-center py-1">
+                <div className="text-[26px] font-extrabold tracking-tight text-neutral-900 leading-none tabular-nums">
+                  {durationDisplay.primary}
+                </div>
+                <div className="text-[10px] font-medium text-neutral-400 mt-0.5">
+                  {parkingDurationMinutes / 30} × 30-min blocks
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleStep(30)}
+                disabled={parkingDurationMinutes >= 720}
+                aria-label="Increase 30 minutes"
+                className="w-11 h-11 rounded-xl bg-white border border-neutral-200/80 shadow-xs flex items-center justify-center text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:pointer-events-none active:scale-90 transition-all shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick Chips Inside Stepper */}
+            <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-neutral-200/60 justify-center">
+              {PRESET_DURATIONS.map((item) => {
+                const isSelected = parkingDurationMinutes === item.value
                 return (
                   <button
-                    key={step.value}
+                    key={item.value}
                     type="button"
-                    onClick={() => setParkingDurationMinutes(step.value)}
+                    onClick={() => setParkingDurationMinutes(item.value)}
                     className={cn(
-                      "py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 border",
+                      "flex-1 py-1 px-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 border",
                       isSelected
-                        ? "bg-neutral-900 text-white border-neutral-900 shadow-sm"
-                        : "bg-neutral-50 text-neutral-700 border-neutral-200/60 hover:bg-neutral-100",
+                        ? "bg-neutral-900 text-white border-neutral-900"
+                        : "bg-white text-neutral-600 border-neutral-200/70 hover:bg-neutral-100",
                     )}
                   >
-                    {step.label}
+                    {item.label}
                   </button>
                 )
               })}
             </div>
           </div>
 
-          {/* Stay Summary Window */}
-          <div className="mt-3 p-2.5 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-tesla-blue" />
-              <span className="text-[11px] font-semibold text-neutral-700">
-                {formatTimeString(effectiveArrivalDate)} &rarr;{" "}
-                {formatTimeString(departureDate)}
+          {/* Unified Inset Summary Card */}
+          <div className="mt-3 rounded-xl bg-white border border-neutral-200/80 p-3 shadow-xs space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-neutral-500 font-medium">Timeline:</span>
+              <span className="font-semibold text-neutral-800 flex items-center gap-1">
+                <span>{formatTimeString(effectiveArrivalDate)}</span>
+                <span className="text-neutral-300">→</span>
+                <strong className="text-[#007AFF] font-bold">
+                  {formatTimeString(departureDate)}
+                </strong>
               </span>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-              {formatDurationLabel(parkingDurationMinutes)}
-            </span>
+
+            <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-100">
+              <span className="text-neutral-500 font-medium">Rate baseline:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-neutral-400 text-[11px]">HDB ($1.20/hr)</span>
+                <span className="font-extrabold text-neutral-900 text-[13px]">
+                  ~{estimatedCost}
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Apply Action */}
+          {/* High-Impact Unified Primary CTA Button with Timing */}
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="mt-3 w-full py-2.5 rounded-xl bg-neutral-900 text-white text-[12px] font-bold uppercase tracking-wider shadow-sm hover:bg-neutral-800 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
+            className="mt-3.5 w-full h-12 rounded-2xl bg-[#007AFF] hover:bg-[#0056C6] text-white font-semibold text-[13px] shadow-[0_4px_16px_rgba(0,122,255,0.25)] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
-            <Check className="h-3.5 w-3.5" />
-            Done
+            <span>Apply Schedule • Depart by {formatTimeString(departureDate)}</span>
+            <ArrowRight className="h-4 w-4 opacity-90" />
           </button>
         </div>
       )}

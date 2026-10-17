@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParkingStore } from "@/store/useParkingStore"
 import { AppleIcon, GoogleMapsIcon } from "@/components/icons"
+import { cn } from "@/lib/utils"
 import {
   Clock,
   Footprints,
@@ -12,6 +13,7 @@ import {
   X,
   Check,
   ChevronDown,
+  AlertTriangle,
 } from "lucide-react"
 
 function formatFullTime(iso: string): string {
@@ -45,6 +47,69 @@ function calculateEstimatedHdbFee(parkedAt: string): { fee: string; note: string
     fee: `$${fee}`,
     note: `$0.60 per 30 mins (${halfHourBlocks} blocks)`,
   }
+}
+
+/**
+ * Rare UI: Inline Hesitation Delete Button
+ * Prevents accidental spot wipeouts via an in-place morphing 3-second buffer
+ */
+function InlineHesitationDeleteButton({ onConfirm }: { onConfirm: () => void }) {
+  const [isConfirming, setIsConfirming] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const handleClick = () => {
+    if (isConfirming) {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      onConfirm()
+    } else {
+      setIsConfirming(true)
+      timerRef.current = setTimeout(() => {
+        setIsConfirming(false)
+      }, 3000)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className={cn(
+        "relative overflow-hidden flex-1 h-11 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 border shadow-xs select-none",
+        isConfirming
+          ? "bg-[#FF3B30] text-white border-[#FF3B30] shadow-[0_4px_16px_rgba(255,59,48,0.3)] animate-pulse"
+          : "bg-red-50/70 hover:bg-red-100/70 text-red-600 border-red-200/60",
+      )}
+    >
+      {/* Depleting countdown progress bar on confirmation state */}
+      {isConfirming && (
+        <span
+          className="absolute inset-y-0 left-0 bg-white/20 pointer-events-none animate-countdown-deplete"
+        />
+      )}
+
+      {isConfirming ? (
+        <>
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0 relative z-10 text-white animate-bounce" />
+          <span className="relative z-10 text-[11px] font-extrabold text-white">
+            Tap to Confirm (3s)
+          </span>
+        </>
+      ) : (
+        <>
+          <Trash2 className="w-3.5 h-3.5 shrink-0 relative z-10" />
+          <span className="relative z-10 text-[11px]">
+            End Parking
+          </span>
+        </>
+      )}
+    </button>
+  )
 }
 
 export default function ParkedCarPassModal() {
@@ -109,11 +174,11 @@ export default function ParkedCarPassModal() {
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={() => setIsParkedPassOpen(false)}
       />
 
-      {/* Pass Ticket Container */}
+      {/* Unified Pass Card Container */}
       <div
         role="dialog"
         aria-modal="true"
@@ -125,12 +190,12 @@ export default function ParkedCarPassModal() {
           <div className="w-10 h-1 rounded-full bg-neutral-300" />
         </div>
 
-        {/* Apple Wallet Style Top Banner */}
+        {/* Apple Cupertino Pass Header */}
         <div className="bg-neutral-900 text-white px-5 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AppleIcon className="w-4 h-4 fill-white" />
-            <span className="text-[11px] font-bold tracking-widest uppercase text-neutral-300">
-              PARKWHERE PASS
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-[11px] font-bold tracking-widest uppercase text-neutral-200">
+              Active Parking Pass
             </span>
           </div>
           <button
@@ -146,14 +211,14 @@ export default function ParkedCarPassModal() {
         {/* Pass Body */}
         <div className="px-5 py-4 overflow-y-auto space-y-4">
           {/* Hero Duration Header */}
-          <div className="bg-neutral-50 rounded-2xl p-4 border border-neutral-100 flex items-center justify-between">
+          <div className="bg-neutral-50/90 rounded-2xl p-4 border border-neutral-200/60 flex items-center justify-between shadow-2xs">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
                 Parked Duration
               </span>
               <h2
                 id="parked-pass-title"
-                className="text-[24px] font-black tracking-tight text-neutral-900 leading-none"
+                className="text-[26px] font-black tracking-tight text-neutral-900 leading-none tabular-nums"
               >
                 {elapsed}
               </h2>
@@ -167,17 +232,17 @@ export default function ParkedCarPassModal() {
               <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
                 Est. Fee
               </span>
-              <span className="text-[24px] font-black tracking-tight text-blue-600 leading-none">
+              <span className="text-[24px] font-black tracking-tight text-[#007AFF] leading-none tabular-nums">
                 {fee}
               </span>
-              <p className="text-[10px] font-semibold text-neutral-400 mt-1">
+              <p className="text-[10px] font-medium text-neutral-400 mt-1">
                 {note}
               </p>
             </div>
           </div>
 
           {/* Carpark Location Card */}
-          <div className="p-3.5 rounded-2xl border border-neutral-200/80 bg-white">
+          <div className="p-3.5 rounded-2xl border border-neutral-200/80 bg-white shadow-2xs">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                 Location
@@ -189,7 +254,7 @@ export default function ParkedCarPassModal() {
               )}
             </div>
             <div className="flex items-start gap-2">
-              <MapPin className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
+              <MapPin className="w-4 h-4 text-[#007AFF] shrink-0 mt-0.5" />
               <div>
                 <p className="text-[14px] font-bold text-neutral-900 leading-snug">
                   {parkedCar.address}
@@ -203,8 +268,8 @@ export default function ParkedCarPassModal() {
 
           {/* Micro-Location Badges: Deck & Lot Number */}
           <div className="grid grid-cols-2 gap-2.5">
-            <div className="p-3 rounded-2xl bg-blue-50/60 border border-blue-100 flex flex-col justify-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-500 block mb-0.5">
+            <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-100/90 flex flex-col justify-center">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 block mb-0.5">
                 Deck / Floor
               </span>
               <span className="text-[18px] font-black text-blue-900 tracking-tight">
@@ -212,7 +277,7 @@ export default function ParkedCarPassModal() {
               </span>
             </div>
 
-            <div className="p-3 rounded-2xl bg-neutral-50 border border-neutral-200/70 flex flex-col justify-center">
+            <div className="p-3 rounded-2xl bg-neutral-50/90 border border-neutral-200/70 flex flex-col justify-center">
               <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 block mb-0.5">
                 Pillar / Lot
               </span>
@@ -289,20 +354,20 @@ export default function ParkedCarPassModal() {
             <button
               type="button"
               onClick={() => setShowNavOptions((v) => !v)}
-              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(37,99,235,0.3)] active:scale-[0.98] transition-all"
+              className="w-full h-12 rounded-2xl bg-[#007AFF] hover:bg-[#0056C6] text-white text-[13.5px] font-semibold tracking-tight flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(0,122,255,0.25)] active:scale-[0.98] transition-all"
             >
               <Footprints className="w-4 h-4" />
-              <span>Walk Back to Car</span>
+              <span>Walk back to car</span>
               <ChevronDown className="w-3.5 h-3.5 opacity-70" />
             </button>
           </div>
 
-          {/* Secondary Row: Share & End Parking */}
+          {/* Secondary Row: Share & End Parking (With Rare UI Inline Hesitation Confirm) */}
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleShare}
-              className="flex-1 h-10 rounded-xl bg-white border border-neutral-200/90 hover:bg-neutral-100 text-neutral-700 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+              className="flex-1 h-11 rounded-xl bg-white border border-neutral-200/90 hover:bg-neutral-100 text-neutral-700 text-xs font-semibold tracking-tight flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-2xs"
             >
               {copiedShare ? (
                 <>
@@ -312,19 +377,13 @@ export default function ParkedCarPassModal() {
               ) : (
                 <>
                   <Share2 className="w-3.5 h-3.5" />
-                  <span>Share Spot</span>
+                  <span>Share spot</span>
                 </>
               )}
             </button>
 
-            <button
-              type="button"
-              onClick={clearParkedCar}
-              className="flex-1 h-10 rounded-xl bg-neutral-100 hover:bg-red-50 hover:text-red-600 text-neutral-600 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all border border-neutral-200/50"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>End Parking</span>
-            </button>
+            {/* Rare UI delete-button pattern */}
+            <InlineHesitationDeleteButton onConfirm={clearParkedCar} />
           </div>
         </div>
       </div>
