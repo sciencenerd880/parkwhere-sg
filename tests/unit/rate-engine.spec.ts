@@ -20,6 +20,20 @@ describe("rate-engine — Mall identification and keywords", () => {
     expect(mall?.name).toBe("ION Orchard")
   })
 
+  it("correctly matches Raffles City and IMM Building", () => {
+    const raffles = matchMall("252 NORTH BRIDGE ROAD", "RC1")
+    expect(raffles?.name).toBe("Raffles City")
+
+    const imm = matchMall("IMM Building 2 Jurong East Street 21", "IMM")
+    expect(imm?.name).toBe("IMM Building")
+
+    const starVista = matchMall("1 Vista Exchange Green The Star Vista", "SV")
+    expect(starVista?.name).toBe("The Star Vista")
+
+    const wisma = matchMall("Wisma Atria 435 Orchard Road", "A0012")
+    expect(wisma?.name).toBe("Wisma Atria")
+  })
+
   it("returns null for non-mall residential carpark", () => {
     const mall = matchMall("BLK 106 TELOK BLANGAH CRESCENT", "TB1")
     expect(mall).toBeNull()

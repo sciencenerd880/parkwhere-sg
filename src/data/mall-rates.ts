@@ -1093,4 +1093,569 @@ export const mallRatesData: MallRateConfig[] = [
     ],
     remarks: "$4.00 per entry after 6:00 PM daily.",
   },
+  {
+    id: "RAFFLES_CITY",
+    keywords: ["RAFFLES CITY", "252 NORTH BRIDGE ROAD", "252 NORTH BRIDGE"],
+    name: "Raffles City",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "08:00",
+        end: "17:59",
+        firstHour: 2.60,
+        subsequentHalfHour: 1.30,
+      },
+      {
+        start: "18:00",
+        end: "07:59",
+        perEntry: 3.25,
+      },
+    ],
+    saturday: [
+      {
+        start: "08:00",
+        end: "07:59",
+        firstTwoHours: 2.60,
+        subsequentHalfHour: 1.30,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "08:00",
+        end: "07:59",
+        firstTwoHours: 2.60,
+        subsequentHalfHour: 1.30,
+      },
+    ],
+    remarks: "Weekdays: $3.25 per entry after 6:00 PM. Weekends: $2.60 for first 2 hours.",
+  },
+  {
+    id: "IMM_BUILDING",
+    keywords: ["IMM", "IMM BUILDING", "2 JURONG EAST STREET 21"],
+    name: "IMM Building",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "00:00",
+        end: "23:59",
+        firstHour: 0.00,
+        subsequentHalfHour: 0.80,
+      },
+    ],
+    saturday: [
+      {
+        start: "00:00",
+        end: "23:59",
+        firstHour: 1.20,
+        subsequentHalfHour: 0.80,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "00:00",
+        end: "23:59",
+        firstHour: 1.20,
+        subsequentHalfHour: 0.80,
+      },
+    ],
+    remarks: "Weekdays: 1st hour free parking (excluding PH). 10-min grace period.",
+  },
+  {
+    id: "THE_STAR_VISTA",
+    keywords: ["THE STAR VISTA", "STAR VISTA", "1 VISTA EXCHANGE GREEN"],
+    name: "The Star Vista",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "06:00",
+        end: "23:59",
+        firstHour: 1.90,
+        subsequentHalfHour: 0.95,
+      },
+      {
+        start: "00:00",
+        end: "05:59",
+        perEntry: 2.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "06:00",
+        end: "23:59",
+        firstHour: 1.90,
+        subsequentHalfHour: 0.95,
+        maxCap: 10.00,
+      },
+      {
+        start: "00:00",
+        end: "05:59",
+        perEntry: 2.00,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "06:00",
+        end: "23:59",
+        firstHour: 2.30,
+        subsequentHalfHour: 1.15,
+        maxCap: 10.00,
+      },
+      {
+        start: "00:00",
+        end: "05:59",
+        perEntry: 2.00,
+      },
+    ],
+    remarks: "Saturdays & Sundays capped at $10.00 between 6:00 AM and 11:59 PM.",
+  },
+  {
+    id: "MILLENIA_WALK",
+    keywords: ["MILLENIA WALK", "9 RAFFLES BOULEVARD"],
+    name: "Millenia Walk",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "07:00",
+        end: "17:59",
+        firstHour: 3.90,
+        subsequentHalfHour: 1.95,
+      },
+      {
+        start: "18:00",
+        end: "06:59",
+        perEntry: 3.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "07:00",
+        end: "06:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.70,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "07:00",
+        end: "06:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.70,
+      },
+    ],
+    remarks: "$3.00 per entry after 6:00 PM weekdays. Weekends: $2.80 for first 2 hours.",
+  },
+  {
+    id: "WISMA_ATRIA",
+    keywords: ["WISMA ATRIA", "435 ORCHARD ROAD"],
+    name: "Wisma Atria",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "00:00",
+        end: "16:59",
+        firstHour: 2.60,
+        subsequentHalfHour: 1.70,
+      },
+      {
+        start: "17:00",
+        end: "23:59",
+        perEntry: 5.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "00:00",
+        end: "16:59",
+        firstHour: 2.70,
+        subsequentHalfHour: 1.70,
+      },
+      {
+        start: "17:00",
+        end: "23:59",
+        perEntry: 5.00,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "00:00",
+        end: "16:59",
+        firstHour: 2.70,
+        subsequentHalfHour: 1.70,
+      },
+      {
+        start: "17:00",
+        end: "23:59",
+        perEntry: 5.00,
+      },
+    ],
+    remarks: "$5.00 per entry after 5:00 PM daily. Direct underground Orchard MRT link.",
+  },
+  {
+    id: "FUNAN_MALL",
+    keywords: ["FUNAN", "FUNAN MALL", "107 NORTH BRIDGE ROAD"],
+    name: "Funan Mall",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 2.40,
+        subsequentHalfHour: 1.30,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 3.30,
+      },
+    ],
+    saturday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstTwoHours: 2.60,
+        subsequentHalfHour: 1.30,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 3.30,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstTwoHours: 2.60,
+        subsequentHalfHour: 1.30,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 3.30,
+      },
+    ],
+    remarks: "$3.30 per entry after 6:00 PM daily. Indoor bicycle track & drive-through click & collect.",
+  },
+  {
+    id: "HARBOURFRONT_CENTRE",
+    keywords: ["HARBOURFRONT CENTRE", "1 MARITIME SQUARE"],
+    name: "HarbourFront Centre",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "07:00",
+        end: "17:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "06:59",
+        perEntry: 3.20,
+      },
+    ],
+    saturday: [
+      {
+        start: "07:00",
+        end: "17:59",
+        firstHour: 1.80,
+        subsequentHalfHour: 0.90,
+      },
+      {
+        start: "18:00",
+        end: "06:59",
+        perEntry: 3.50,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "07:00",
+        end: "17:59",
+        firstHour: 1.80,
+        subsequentHalfHour: 0.90,
+      },
+      {
+        start: "18:00",
+        end: "06:59",
+        perEntry: 3.50,
+      },
+    ],
+    remarks: "$3.20 per entry after 6:00 PM weekdays ($3.50 weekends). Adjacent to VivoCity.",
+  },
+  {
+    id: "ORCHARD_CENTRAL",
+    keywords: ["ORCHARD CENTRAL", "181 ORCHARD ROAD"],
+    name: "Orchard Central",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 2.80,
+        subsequentHalfHour: 1.40,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 4.20,
+      },
+    ],
+    saturday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 3.00,
+        subsequentHalfHour: 1.50,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 4.50,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 3.00,
+        subsequentHalfHour: 1.50,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 4.50,
+      },
+    ],
+    remarks: "ShopFarEast rewards parking redemptions available. Connects to 313@Somerset.",
+  },
+  {
+    id: "FAR_EAST_PLAZA",
+    keywords: ["FAR EAST PLAZA", "14 SCOTTS ROAD"],
+    name: "Far East Plaza",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "08:00",
+        end: "16:59",
+        firstHour: 2.20,
+        subsequentHalfHour: 1.10,
+      },
+      {
+        start: "17:00",
+        end: "07:59",
+        perEntry: 3.80,
+      },
+    ],
+    saturday: [
+      {
+        start: "08:00",
+        end: "16:59",
+        firstTwoHours: 3.50,
+        subsequentHalfHour: 1.20,
+      },
+      {
+        start: "17:00",
+        end: "07:59",
+        perEntry: 4.00,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "08:00",
+        end: "16:59",
+        firstTwoHours: 3.50,
+        subsequentHalfHour: 1.20,
+      },
+      {
+        start: "17:00",
+        end: "07:59",
+        perEntry: 4.00,
+      },
+    ],
+    remarks: "Popular central alternative along Scotts Road. $3.80 per entry after 5:00 PM.",
+  },
+  {
+    id: "THE_CENTREPOINT",
+    keywords: ["THE CENTREPOINT", "CENTREPOINT", "176 ORCHARD ROAD"],
+    name: "The Centrepoint",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstHour: 2.50,
+        subsequentHalfHour: 1.25,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 4.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 3.50,
+        subsequentHalfHour: 1.30,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 4.00,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 3.50,
+        subsequentHalfHour: 1.30,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 4.00,
+      },
+    ],
+    remarks: "$4.00 per entry after 5:00 PM daily. FRx rewards accepted.",
+  },
+  {
+    id: "BUKIT_PANJANG_PLAZA",
+    keywords: ["BUKIT PANJANG PLAZA", "1 JELEBU ROAD"],
+    name: "Bukit Panjang Plaza",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 2.80,
+      },
+    ],
+    saturday: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 2.80,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "00:00",
+        end: "17:59",
+        firstTwoHours: 2.80,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "18:00",
+        end: "23:59",
+        perEntry: 2.80,
+      },
+    ],
+    remarks: "$2.80 per entry after 6:00 PM daily.",
+  },
+  {
+    id: "THE_ESPLANADE",
+    keywords: ["ESPLANADE", "THE ESPLANADE", "1 ESPLANADE DRIVE"],
+    name: "The Esplanade Mall",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstHour: 2.30,
+        subsequentHalfHour: 1.15,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.50,
+      },
+    ],
+    saturday: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstTwoHours: 3.50,
+        subsequentHalfHour: 1.20,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.50,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "06:00",
+        end: "17:59",
+        firstTwoHours: 3.50,
+        subsequentHalfHour: 1.20,
+      },
+      {
+        start: "18:00",
+        end: "05:59",
+        perEntry: 3.50,
+      },
+    ],
+    remarks: "$3.50 per entry after 6:00 PM daily. Over 700 basement parking spaces.",
+  },
+  {
+    id: "CLARKE_QUAY",
+    keywords: ["CLARKE QUAY", "CQ @ CLARKE QUAY", "3 RIVER VALLEY ROAD"],
+    name: "CQ @ Clarke Quay",
+    gracePeriodMins: 10,
+    weekday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstHour: 1.60,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 4.00,
+      },
+    ],
+    saturday: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 3.20,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 4.50,
+      },
+    ],
+    sundayAndPh: [
+      {
+        start: "07:00",
+        end: "16:59",
+        firstTwoHours: 3.20,
+        subsequentHalfHour: 0.80,
+      },
+      {
+        start: "17:00",
+        end: "06:59",
+        perEntry: 4.50,
+      },
+    ],
+    remarks: "$4.00 per entry after 5:00 PM weekdays ($4.50 weekends).",
+  },
 ]

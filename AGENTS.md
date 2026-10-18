@@ -36,8 +36,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 
 ## Agent Workflow & Git Operations
-- **Confirmation Required:** Whenever a feature or enhancement is implemented, you must stop and get confirmation from the user before taking further major actions.
-- **Pushing to Vercel:** The user will typically use a prompt like `push` to trigger a GitHub push. When requested, automatically stage all changes, commit them with a descriptive message, and push to GitHub to trigger the Vercel deployment.
+- **Branching Strategy:**
+  - **Features & Non-trivial Enhancements:** Never commit directly to `main`. Always create an isolated feature branch (`feat/<feature-name>` or `fix/<bug-name>`).
+  - **Small Config / Docs / Hotfixes:** Direct commits to `main` are permitted for minor edits.
+- **Verification Gate (The Inner Loop):** Before staging or committing changes, always run the full verification gate: `npm run lint && npm run typecheck && npm test`. Ensure all tests pass with exit code 0.
+- **Pull Request Protocol (The Outer Loop):** When a feature or enhancement branch is complete:
+  1. Commit with a descriptive message following Conventional Commits (`feat: ...`, `fix: ...`).
+  2. Push the branch to GitHub.
+  3. Create a Pull Request (via `gh pr create` or providing the direct PR creation URL) including:
+     - Clear description of feature motivation and changes
+     - List of touched files
+     - Verification checklist (lint, typecheck, unit tests)
+- **Confirmation Required:** Always stop and confirm with the user before merging PRs or making major destructive changes.
+- **Pushing to GitHub/Vercel:** When the user prompts `push`, push the active branch (or `main`) with all staged and verified changes.
 
 ## Lessons Learnt Log
 - **Where:** `LESSONS_LEARNT.md` (repo root).

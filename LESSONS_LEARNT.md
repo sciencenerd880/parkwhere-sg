@@ -13,6 +13,29 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-18 — Loop Engineering Setup: Tiered Verification Gate, GitHub Actions CI & PR Harness
+
+- **Symptom:** Without automated continuous integration or pull request workflows, code pushed to the repository had no remote objective verification gate before triggering live Vercel deployments, creating risk of undetected regression cascades in agent-driven workflows.
+- **Root Cause:** Absence of a GitHub Actions workflow (`.github/workflows/ci.yml`) and lack of a structured PR branching harness in `AGENTS.md` left feature development reliant solely on local manual checks.
+- **Fix:**
+  - Added `.github/workflows/ci.yml` running `npm ci`, `npm run lint`, `npx tsc --noEmit`, `npm test` (Vitest), and `npm run build` with mock environment variables on every push and PR to `main`.
+  - Added `"typecheck": "tsc --noEmit"` to `package.json` for unified local and CI execution.
+  - Updated `AGENTS.md` under `Agent Workflow & Git Operations` to establish a two-tier loop: an inner verification gate (`npm run lint && npm run typecheck && npm test`) and an outer pull request protocol (`feat/<name>` branches with automated PR summaries).
+- **Verification:** Ran `npm run lint && npm run typecheck && npm test` locally (85/85 tests passed, 0 lint/type errors); verified YAML workflow syntax and mock env bindings.
+- **Lesson:** In loop-engineered AI development, an objective remote evaluation harness (CI) and branch isolation (PRs) prevent hallucinated errors from reaching production; the agent's system prompt (`AGENTS.md`) must codify this loop as a non-negotiable operational reflex.
+
+---
+
+## 2026-10-17 — Mall Coverage Expansion: Adding 13 LTA Live-Telemetry Malls to Rate Engine
+
+- **Symptom:** Commercial shopping malls actively streaming live lot counts in the LTA DataMall `CarParkAvailabilityv2` feed (e.g. Raffles City, IMM Building, The Star Vista, Millenia Walk, Wisma Atria) were treated as generic public lots ($1.20/hr flat rate) without mall badges (`isMall`), grace period details, or nearby public HDB savings calculations.
+- **Root Cause:** `mallRatesData` in `src/data/mall-rates.ts` only included 24 initial shopping malls. The 13 additional commercial developments lacked tariff structures and keyword match definitions in `rate-engine.ts`.
+- **Fix:** Added rate configurations, grace periods, remarks, and keyword definitions for 13 major commercial developments in `src/data/mall-rates.ts` (Raffles City, IMM Building, The Star Vista, Millenia Walk, Wisma Atria, Funan Mall, HarbourFront Centre, Orchard Central, Far East Plaza, The Centrepoint, Bukit Panjang Plaza, The Esplanade Mall, CQ @ Clarke Quay); added test coverage in `tests/unit/rate-engine.spec.ts`.
+- **Verification:** `npx tsc --noEmit` clean, 85/85 unit tests passed (`vitest run`), `npm run lint` clean (0 errors, 0 warnings).
+- **Lesson:** When expanding parking coverage, keep the rate calculation engine in sync with the live telemetry feed so that any gantry-connected development automatically unlocks enriched mall cards, realistic parking fees, and comparative savings benchmarks.
+
+---
+
 ## 2026-10-17 — Mobile Audit Refinements: Card De-cluttering, Clear CTAs & Touch Ergonomics
 
 - **Symptom:** Critical UI audit of the live mobile application on localhost:3001 revealed cognitive overload ("badge soup" of 4 colored pills per listing card), micro-font legibility failures under 11px, misleading duration CTA copy ("Confirm Parking" triggering false commitment anxiety), and dual competing back navigation controls in the mobile peek drawer.
