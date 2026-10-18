@@ -13,6 +13,19 @@
 > - **Lesson:**
 > ```
 
+## 2026-10-18 — Loop Verification Trial: Simulating Failure, Branch Protection Lock & Cloud Self-Healing
+
+- **Symptom:** Need to empirically prove that GitHub Actions CI physically blocks invalid code and unlocks automatically upon resolution, validating the closed-loop developer/agent harness.
+- **Root Cause:** Verifying whether repository rulesets enforce required status checks as hard merge blockers rather than passive advisory notices.
+- **Fix:**
+  - Created isolated branch `test/ci-lint-failure` with an intentional React hook violation (`useState` called conditionally inside an `if` block in `src/components/TestLintFailure.tsx`) and opened PR #3 without running local checks.
+  - Confirmed CI caught the violation in 32s with a red `❌`, and verified that setting GitHub Branch Ruleset (`Require status checks to pass: Lint, Typecheck, Test & Build` with `Required approvals: 0`) physically locked the "Merge pull request" button.
+  - Resolved the violation by lifting `useState` to top-level, verified inner loop locally (`npm run lint && npm run typecheck && npm test`), and pushed commit `5b60c49` to PR #3.
+- **Verification:** GitHub Actions re-ran on PR #3 and passed all checks in 42s (`Lint, Typecheck, Test & Build` green `✔`, Vercel preview green `✔`), automatically unblocking and unlocking the PR Merge button.
+- **Lesson:** Branch rulesets must enforce required status checks with approvals set to 0 for solo/agent workflows; this transforms CI from an advisory warning into a hard physical constraint, guaranteeing zero unverified merges.
+
+---
+
 ## 2026-10-18 — Loop Engineering Setup: Tiered Verification Gate, GitHub Actions CI & PR Harness
 
 - **Symptom:** Without automated continuous integration or pull request workflows, code pushed to the repository had no remote objective verification gate before triggering live Vercel deployments, creating risk of undetected regression cascades in agent-driven workflows.
